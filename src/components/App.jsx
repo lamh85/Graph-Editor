@@ -1,6 +1,9 @@
 
-import React, { Component } from "react"
+import React, { useState } from "react"
 import { hot } from "react-hot-loader"
+
+const SVG_HEIGHT = 500
+const SVG_WIDTH = 500
 
 const LINE_ATTRIBUTES = {
   stroke: 'red',
@@ -33,23 +36,106 @@ const renderLine = (endPoints, index) => {
   return <line {...attributes} />
 }
 
-const Circle = ({ x, y }) => {
-  return <circle cx={x} cy={y} fill="blue" strokeWidth="3" stroke="black" r="20" />
+const handleMouseDown = ({ id, setDraggedVertxId }) => {
+  setDraggedVertxId(id)
+}
+
+const handleMouseUp = ({ setDraggedVertxId }) => {
+  setDraggedVertxId(null)
+}
+
+const handleMouseMove = ({ event, setCursorX, setCursorY, setDraggedVertxId, draggedVertexId, vertexLocations, setVertexLocations }) => {
+  setCursorX(event.clientX)
+  setCursorY(event.clientY)
+
+  if (event.clientX >= SVG_WIDTH || clientInformation.clientY >= SVG_HEIGHT) {
+    setDraggedVertxId(null)
+  }
+
+  if (draggedVertexId) {
+    const location = {
+      ...vertexLocations,
+      [draggedVertexId]: {
+        x: event.clientX,
+        y: event.clientY
+      }
+    }
+
+    setVertexLocations(location)
+  }
+}
+
+const Circle = ({ x, y, index, id, setIsMouseDown, setCursorX, setCursorY, draggedVertexId, setDraggedVertxId }) => {
+  return (
+    <circle
+      key={index}
+      cx={x}
+      cy={y}
+      fill="blue"
+      strokeWidth="3"
+      stroke="black"
+      r="20"
+      draggable
+      onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
+      onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
+    />
+  )
+}
+
+const getDefaultVertexLocations = () => {
+  const locations = {}
+
+  vertices.forEach(vertex => {
+    locations[vertex.id] = { x: vertex.x, y: vertex.y }
+  })
+
+  return locations
 }
 
 const App = props => {
-  console.log(edges)
+  const [isMouseDown, setIsMouseDown] = useState(false)
+  const [cursorX, setCursorX] = useState(0)
+  const [cursorY, setCursorY] = useState(0)
+  const [draggedVertexId, setDraggedVertxId] = useState(null)
+
+  const defaultVertexLocations = getDefaultVertexLocations()
+  const [vertexLocations, setVertexLocations] = useState(defaultVertexLocations)
 
   return (
-    <svg height="500" width="500">
-      {
-        edges.map((edge, index) => renderLine(edge, index))
-      }
+    <>
+      <svg
+        width={SVG_WIDTH}
+        height={SVG_HEIGHT}
+        onMouseMove={event => handleMouseMove({ event, setCursorX, setCursorY, setDraggedVertxId, draggedVertexId, setVertexLocations, vertexLocations })}
+        onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
+      >
+        {
+          edges.map((edge, index) => renderLine(edge, index))
+        }
 
-      {
-        vertices.map((vertex, index) => <Circle x={vertex.x} y={vertex.y} key={index} />)
-      }
-    </svg>
+        {
+          vertices.map((vertex, index) => {
+            return (
+              <Circle
+                id={vertex.id}
+                // x={vertex.x}
+                x={vertexLocations[vertex.id].x}
+                // y={vertex.y}
+                y={vertexLocations[vertex.id].y}
+                index={index}
+                setIsMouseDown={setIsMouseDown}
+                setCursorX={setCursorX}
+                setCursorY={setCursorY}
+                draggedVertexId={draggedVertexId}
+                setDraggedVertxId={setDraggedVertxId}
+              />
+            )
+          })
+        }
+      </svg>
+      <div>{cursorX}, {cursorY}</div>
+      <div>{draggedVertexId}</div>
+    </>
   )
 }
 
