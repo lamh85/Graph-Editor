@@ -5,11 +5,6 @@ import { hot } from "react-hot-loader"
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 500
 
-const LINE_ATTRIBUTES = {
-  stroke: 'red',
-  strokeWidth: 2
-}
-
 const vertices = [
   { id: 1, x: 40, y: 40 },
   { id: 2, x: 200, y: 40 },
@@ -17,17 +12,17 @@ const vertices = [
 ]
 
 const edges = [
-  [vertices[0], vertices[1]],
-  [vertices[1], vertices[2]],
-  [vertices[2], vertices[0]],
+  [1, 2],
+  [2, 3],
+  [3, 1]
 ]
 
-const renderLine = (endPoints, index) => {
+const renderLine = ({vertices, index, vertexLocations}) => {
   const attributes = {
-    x1: endPoints[0].x,
-    y1: endPoints[0].y,
-    x2: endPoints[1].x,
-    y2: endPoints[1].y,
+    x1: vertexLocations[vertices[0]].x,
+    y1: vertexLocations[vertices[0]].y,
+    x2: vertexLocations[vertices[1]].x,
+    y2: vertexLocations[vertices[1]].y,
     stroke: 'red',
     strokeWidth: 2,
     key: index
@@ -110,7 +105,7 @@ const App = props => {
         onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
       >
         {
-          edges.map((edge, index) => renderLine(edge, index))
+          edges.map((vertices, index) => renderLine({vertices, index, vertexLocations}))
         }
 
         {
@@ -118,9 +113,7 @@ const App = props => {
             return (
               <Circle
                 id={vertex.id}
-                // x={vertex.x}
                 x={vertexLocations[vertex.id].x}
-                // y={vertex.y}
                 y={vertexLocations[vertex.id].y}
                 index={index}
                 setIsMouseDown={setIsMouseDown}
