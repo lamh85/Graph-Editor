@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "engines": {
     "node": ">=13.12"
   },
   "scripts": {
+    "start": "webpack serve --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +20,10 @@
     "url": "https://github.com/lamh85/Graph-Editor/issues"
   },
   "homepage": "https://github.com/lamh85/Graph-Editor#readme",
-  "dependencies": {},
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
@@ -28,6 +31,7 @@
     "@babel/preset-react": "^7.12.5",
     "babel-loader": "^8.2.1",
     "babel-plugin-styled-components": "^1.11.1",
+    "react-hot-loader": "^4.13.0",
     "webpack": "^5.4.0",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
