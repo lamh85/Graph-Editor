@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/lamh85/Graph-Editor/issues"
   },
-  "homepage": "https://github.com/lamh85/Graph-Editor#readme"
+  "homepage": "https://github.com/lamh85/Graph-Editor#readme",
+  "dependencies": {
+    "webpack": "^5.4.0"
+  }
 }
