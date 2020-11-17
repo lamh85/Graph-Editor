@@ -1,9 +1,8 @@
-
 import React, { useState } from "react"
 import { hot } from "react-hot-loader"
 
 const SVG_HEIGHT = 500
-const SVG_WIDTH = 500
+const SVG_WIDTH = 1000
 
 const vertices = [
   { id: 1, x: 40, y: 40 },
@@ -39,11 +38,13 @@ const handleMouseUp = ({ setDraggedVertxId }) => {
   setDraggedVertxId(null)
 }
 
+const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
+
 const handleMouseMove = ({ event, setCursorX, setCursorY, setDraggedVertxId, draggedVertexId, vertexLocations, setVertexLocations }) => {
   setCursorX(event.clientX)
   setCursorY(event.clientY)
 
-  if (event.clientX >= SVG_WIDTH || clientInformation.clientY >= SVG_HEIGHT) {
+  if (doesExceedBoundaries({ x: event.clientX, y: event.clientY })) {
     setDraggedVertxId(null)
   }
 
@@ -60,20 +61,30 @@ const handleMouseMove = ({ event, setCursorX, setCursorY, setDraggedVertxId, dra
   }
 }
 
-const Circle = ({ x, y, index, id, setIsMouseDown, setCursorX, setCursorY, draggedVertexId, setDraggedVertxId }) => {
+const Circle = ({
+  x,
+  y,
+  index,
+  id,
+  setDraggedVertxId
+}) => {
   return (
-    <circle
-      key={index}
-      cx={x}
-      cy={y}
-      fill="blue"
-      strokeWidth="3"
-      stroke="black"
-      r="20"
-      draggable
-      onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
-      onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
-    />
+    <g>
+      <circle
+        key={index}
+        cx={x}
+        cy={y}
+        fill="blue"
+        strokeWidth="3"
+        stroke="black"
+        r="20"
+        draggable
+        onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
+        onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
+      >
+      </circle>
+      <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
+    </g>
   )
 }
 
@@ -116,10 +127,6 @@ const App = props => {
                 x={vertexLocations[vertex.id].x}
                 y={vertexLocations[vertex.id].y}
                 index={index}
-                setIsMouseDown={setIsMouseDown}
-                setCursorX={setCursorX}
-                setCursorY={setCursorY}
-                draggedVertexId={draggedVertexId}
                 setDraggedVertxId={setDraggedVertxId}
               />
             )
