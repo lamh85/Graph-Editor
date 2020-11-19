@@ -5,17 +5,33 @@ const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
 
 const renderLine = ({ lineVertices, index, vertices }) => {
-  const attributes = {
-    x1: vertices[lineVertices[0]].x,
-    y1: vertices[lineVertices[0]].y,
-    x2: vertices[lineVertices[1]].x,
-    y2: vertices[lineVertices[1]].y,
+  if (index === 3) {
+    console.log(lineVertices)
+    console.log(vertices)
+  }
+
+  const { x: x1, y: y1 } = vertices[lineVertices[0]]
+  const { x: x2, y: y2 } = vertices[lineVertices[1]]
+
+  const lineProps = {
+    x1,
+    y1,
+    x2,
+    y2,
     stroke: 'red',
     strokeWidth: 2,
     key: index
   }
 
-  return <line {...attributes} />
+  const averageX = (x1 + x2) / 2
+  const averageY = (y1 + y2) / 2
+
+  return (
+    <g>
+      <line {...lineProps} />
+      <text x={averageX} y={averageY} fontSize="15" fill="black">L{index}</text>
+    </g>
+  )
 }
 
 const handleMouseDown = ({ id, setDraggedVertxId }) => {
@@ -98,9 +114,13 @@ const DEFAULT_EDGES = [
   [3, 1]
 ]
 
-const handleAddVertex = ({ vertices, setVertices }) => {
+const getHighestVertexId = vertices => {
   const ids = Object.keys(vertices)
-  const highestId = ids.reverse()[0]
+  return ids.reverse()[0]
+}
+
+const handleAddVertex = ({ vertices, setVertices }) => {
+  const highestId = getHighestVertexId(vertices)
   const nextId = Number(highestId) + 1
 
   const newVertices = {
@@ -112,8 +132,7 @@ const handleAddVertex = ({ vertices, setVertices }) => {
 }
 
 const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeIndex, vertices }) => {
-  const vertexIds = Object.keys(vertices)
-  const highestVertexId = vertexIds.reverse()[0]
+  const highestVertexId = getHighestVertexId(vertices)
   if (event.target.value > highestVertexId) return
 
   const newEdges = [...edges]
@@ -121,8 +140,16 @@ const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeIndex, verti
   setEdges(newEdges)
 }
 
+const handleAddEdge = ({ edges, setEdges }) => {
+  const newEdges = [
+    ...edges,
+    [1, 1]
+  ]
+
+  setEdges(newEdges)
+}
+
 const App = props => {
-  const [isMouseDown, setIsMouseDown] = useState(false)
   const [cursorX, setCursorX] = useState(0)
   const [cursorY, setCursorY] = useState(0)
   const [draggedVertexId, setDraggedVertxId] = useState(null)
@@ -173,6 +200,7 @@ const App = props => {
           edges.map((edge, index) => {
             return (
               <div>
+                L{index}
                 <input
                   type="number"
                   value={edge[0]}
@@ -187,6 +215,9 @@ const App = props => {
             )
           })
         }
+        <button onClick={() => handleAddEdge({ edges, setEdges })}>
+          Add Edge
+        </button>
       </div>
     </>
   )
