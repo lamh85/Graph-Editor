@@ -1,17 +1,24 @@
 import React, { useState } from "react"
+import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
 
-const renderLine = ({ lineVertices, index, vertices }) => {
-  if (index === 3) {
-    console.log(lineVertices)
-    console.log(vertices)
-  }
+const Row = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+`
 
-  const { x: x1, y: y1 } = vertices[lineVertices[0]]
-  const { x: x2, y: y2 } = vertices[lineVertices[1]]
+const renderLine = ({ lineVertices, index, vertices }) => {
+  const vertex0 = vertices[lineVertices[0]]
+  const vertex1 = vertices[lineVertices[1]]
+
+  if (!vertex0 || !vertex1) return null
+
+  const { x: x1, y: y1 } = vertex0
+  const { x: x2, y: y2 } = vertex1
 
   const lineProps = {
     x1,
@@ -44,10 +51,7 @@ const handleMouseUp = ({ setDraggedVertxId }) => {
 
 const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
 
-const handleMouseMove = ({ event, setCursorX, setCursorY, setDraggedVertxId, draggedVertexId, vertices, setVertices }) => {
-  setCursorX(event.clientX)
-  setCursorY(event.clientY)
-
+const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, vertices, setVertices }) => {
   if (doesExceedBoundaries({ x: event.clientX, y: event.clientY })) {
     setDraggedVertxId(null)
   }
@@ -73,7 +77,10 @@ const Circle = ({
   setDraggedVertxId
 }) => {
   return (
-    <g>
+    <g
+      onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
+      onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
+    >
       <circle
         key={index}
         cx={x}
@@ -82,9 +89,6 @@ const Circle = ({
         strokeWidth="3"
         stroke="black"
         r="20"
-        draggable
-        onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
-        onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
       >
       </circle>
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
@@ -108,19 +112,19 @@ const getDefaultVertices = () => {
   return locations
 }
 
-const DEFAULT_EDGES = [
-  [1, 2],
-  [2, 3],
-  [3, 1]
-]
+const DEFAULT_EDGES = {
+  1: [1, 2],
+  2: [2, 3],
+  3: [3, 1]
+}
 
-const getHighestVertexId = vertices => {
-  const ids = Object.keys(vertices)
+const getHighestObjectId = object => {
+  const ids = Object.keys(object)
   return ids.reverse()[0]
 }
 
 const handleAddVertex = ({ vertices, setVertices }) => {
-  const highestId = getHighestVertexId(vertices)
+  const highestId = getHighestObjectId(vertices)
   const nextId = Number(highestId) + 1
 
   const newVertices = {
@@ -131,27 +135,42 @@ const handleAddVertex = ({ vertices, setVertices }) => {
   setVertices(newVertices)
 }
 
-const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeIndex, vertices }) => {
-  const highestVertexId = getHighestVertexId(vertices)
-  if (event.target.value > highestVertexId) return
+const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeId, vertices }) => {
+  const vertexIds = Object.keys(vertices).sort()
 
-  const newEdges = [...edges]
-  newEdges[edgeIndex][edgeCorner] = event.target.value
+  const enteredValue = event.target.value
+
+  let validatedValue
+  if (vertexIds.includes(enteredValue)) {
+    validatedValue = enteredValue
+  } else {
+    validatedValue = vertexIds[0]
+  }
+
+  const newEdgeValue = [...edges[edgeId]]
+  newEdgeValue[edgeCorner] = validatedValue
+
+  const newEdges = {
+    ...edges,
+    [edgeId]: newEdgeValue
+  }
+
   setEdges(newEdges)
 }
 
 const handleAddEdge = ({ edges, setEdges }) => {
-  const newEdges = [
+  const highestId = getHighestObjectId(edges)
+  const newId = highestId + 1
+
+  const newEdges = {
     ...edges,
-    [1, 1]
-  ]
+    [newId]: [1, 1]
+  }
 
   setEdges(newEdges)
 }
 
 const App = props => {
-  const [cursorX, setCursorX] = useState(0)
-  const [cursorY, setCursorY] = useState(0)
   const [draggedVertexId, setDraggedVertxId] = useState(null)
 
   const defaultVertexLocations = getDefaultVertices()
@@ -164,11 +183,14 @@ const App = props => {
       <svg
         width={SVG_WIDTH}
         height={SVG_HEIGHT}
-        onMouseMove={event => handleMouseMove({ event, setCursorX, setCursorY, setDraggedVertxId, draggedVertexId, setVertices, vertices })}
+        onMouseMove={event => handleMouseMove({ event, setDraggedVertxId, draggedVertexId, setVertices, vertices })}
         onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
       >
         {
-          edges.map((lineVertices, index) => renderLine({ lineVertices, index, vertices }))
+          Object.keys(edges).map((edgeId, index) => {
+            const edge = edges[edgeId]
+            return renderLine({ lineVertices: edge, index, vertices })
+          })
         }
 
         {
@@ -185,40 +207,53 @@ const App = props => {
           })
         }
       </svg>
-      <div>
-        <div>Vertices:</div>
-        {
-          Object.keys(vertices).map(id => {
-            return <div>{id}: {vertices[id].x}, {vertices[id].y}</div>
-          })
-        }
-        <button onClick={() => handleAddVertex({ vertices, setVertices })}>
-          Add Vertex
-        </button>
-        <div>Edges:</div>
-        {
-          edges.map((edge, index) => {
-            return (
-              <div>
-                L{index}
-                <input
-                  type="number"
-                  value={edge[0]}
-                  onChange={event => handleEdgeChange({ event, edgeCorner: 0, edges, setEdges, edgeIndex: index, vertices })}
-                />
-                <input
-                  type="number"
-                  value={edge[1]}
-                  onChange={event => handleEdgeChange({ event, edgeCorner: 1, edges, setEdges, edgeIndex: index, vertices })}
-                />
-              </div>
-            )
-          })
-        }
-        <button onClick={() => handleAddEdge({ edges, setEdges })}>
-          Add Edge
-        </button>
-      </div>
+      <Row>
+        <div>
+          <div>Vertices:</div>
+          {
+            Object.keys(vertices).map(id => {
+              return (
+                <Row>
+                  <div>{id}: {vertices[id].x}, {vertices[id].y}</div>
+                  <button>Delete</button>
+                </Row>
+              )
+            })
+          }
+          <button onClick={() => handleAddVertex({ vertices, setVertices })}>
+            Add Vertex
+          </button>
+        </div>
+        <div>
+          <div>Edges:</div>
+          {
+            Object.keys(edges).map((edgeId, index) => {
+              const edge = edges[edgeId]
+
+              return (
+                <div>
+                  L{index}
+                  <input
+                    key={`${index}-0`}
+                    type="number"
+                    value={edge[0]}
+                    onChange={event => handleEdgeChange({ event, edgeCorner: 0, edges, setEdges, edgeId, vertices })}
+                  />
+                  <input
+                    key={`${index}-1`}
+                    type="number"
+                    value={edge[1]}
+                    onChange={event => handleEdgeChange({ event, edgeCorner: 1, edges, setEdges, edgeId, vertices })}
+                  />
+                </div>
+              )
+            })
+          }
+          <button onClick={() => handleAddEdge({ edges, setEdges })}>
+            Add Edge
+          </button>
+        </div>
+      </Row>
     </>
   )
 }
