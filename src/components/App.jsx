@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
+import { DEFAULT_EDGES, DEFAULT_VERTICES } from '../datasets/polygons'
+
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
 
@@ -96,28 +98,6 @@ const Circle = ({
   )
 }
 
-const getDefaultVertices = () => {
-  const vertices = [
-    { id: 1, x: 40, y: 40 },
-    { id: 2, x: 200, y: 40 },
-    { id: 3, x: 200, y: 200 }
-  ]
-
-  const locations = {}
-
-  vertices.forEach(vertex => {
-    locations[vertex.id] = { x: vertex.x, y: vertex.y }
-  })
-
-  return locations
-}
-
-const DEFAULT_EDGES = {
-  1: [1, 2],
-  2: [2, 3],
-  3: [3, 1]
-}
-
 const getHighestObjectId = object => {
   const ids = Object.keys(object)
   return ids.reverse()[0]
@@ -173,8 +153,7 @@ const handleAddEdge = ({ edges, setEdges }) => {
 const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
 
-  const defaultVertexLocations = getDefaultVertices()
-  const [vertices, setVertices] = useState(defaultVertexLocations)
+  const [vertices, setVertices] = useState(DEFAULT_VERTICES)
 
   const [edges, setEdges] = useState(DEFAULT_EDGES)
 
