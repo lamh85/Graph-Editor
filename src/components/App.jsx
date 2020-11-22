@@ -115,6 +115,12 @@ const handleAddVertex = ({ vertices, setVertices }) => {
   setVertices(newVertices)
 }
 
+const handleDeleteVertex = ({ id, vertices, setVertices }) => {
+  const newVertices = { ...vertices }
+  delete newVertices[id]
+  setVertices(newVertices)
+}
+
 const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeId, vertices }) => {
   const vertexIds = Object.keys(vertices).sort()
 
@@ -194,7 +200,7 @@ const App = props => {
               return (
                 <Row>
                   <div>{id}: {vertices[id].x}, {vertices[id].y}</div>
-                  <button>Delete</button>
+                  <button onClick={() => handleDeleteVertex({ id, vertices, setVertices })}>Delete</button>
                 </Row>
               )
             })
