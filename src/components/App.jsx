@@ -194,12 +194,12 @@ const App = props => {
       </svg>
       <Row>
         <div>
-          <div>Vertices:</div>
+          <h1>Vertices</h1>
           {
             Object.keys(vertices).map(id => {
               return (
                 <Row>
-                  <div>{id}: {vertices[id].x}, {vertices[id].y}</div>
+                  <div>{id}:: X: {vertices[id].x}, Y: {vertices[id].y}</div>
                   <button onClick={() => handleDeleteVertex({ id, vertices, setVertices })}>Delete</button>
                 </Row>
               )
@@ -210,7 +210,7 @@ const App = props => {
           </button>
         </div>
         <div>
-          <div>Edges:</div>
+          <h1>Edges</h1>
           {
             Object.keys(edges).map((edgeId, index) => {
               const edge = edges[edgeId]
