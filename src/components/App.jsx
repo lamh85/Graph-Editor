@@ -13,14 +13,19 @@ const Row = styled.div`
   align-items: flex-start;
 `
 
-const renderLine = ({ lineVertices, index, vertices }) => {
-  const vertex0 = vertices[lineVertices[0]]
-  const vertex1 = vertices[lineVertices[1]]
+const getVertexById = ({ vertices, id }) => vertices[id]
 
-  if (!vertex0 || !vertex1) return null
+const renderEdge = ({ edge, index, vertices }) => {
+  const vertexId1 = edge.end0.vertexId
+  const vertexId2 = edge.end1.vertexId
 
-  const { x: x1, y: y1 } = vertex0
-  const { x: x2, y: y2 } = vertex1
+  if (!vertexId1 || !vertexId2) return null
+
+  const vertex1 = getVertexById({ vertices, id: vertexId1 })
+  const vertex2 = getVertexById({ vertices, id: vertexId2 })
+
+  const { x: x1, y: y1 } = vertex1
+  const { x: x2, y: y2 } = vertex2
 
   const lineProps = {
     x1,
@@ -121,7 +126,7 @@ const handleDeleteVertex = ({ id, vertices, setVertices }) => {
   setVertices(newVertices)
 }
 
-const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeId, vertices }) => {
+const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId, vertices }) => {
   const vertexIds = Object.keys(vertices).sort()
 
   const enteredValue = event.target.value
@@ -133,25 +138,34 @@ const handleEdgeChange = ({ event, edges, edgeCorner, setEdges, edgeId, vertices
     validatedValue = vertexIds[0]
   }
 
-  const newEdgeValue = [...edges[edgeId]]
-  newEdgeValue[edgeCorner] = validatedValue
-
-  const newEdges = {
-    ...edges,
-    [edgeId]: newEdgeValue
-  }
+  const newEdges = [...edges]
+  const edgeIndex = edges.findIndex(edge => edge.id === edgeId)
+  const editedEdge = newEdges[edgeIndex]
+  editedEdge[endProperty].vertexId = validatedValue
+  newEdges[edgeIndex] = editedEdge
 
   setEdges(newEdges)
 }
 
 const handleAddEdge = ({ edges, setEdges }) => {
-  const highestId = getHighestObjectId(edges)
+  const edgeIds = edges.map(edge => edge.id)
+  const highestId = edgeIds.reverse()[0]
   const newId = highestId + 1
 
-  const newEdges = {
-    ...edges,
-    [newId]: [1, 1]
+  const newEdges = [...edges]
+  const newEdge = {
+    ...edges.reverse()[0],
+    id: newId,
+    end0: {
+      ...edges.reverse()[0].end0,
+      vertexId: null
+    },
+    end1: {
+      ...edges.reverse()[0].end1,
+      vertexId: null
+    }
   }
+  newEdges.push(newEdge)
 
   setEdges(newEdges)
 }
@@ -172,9 +186,8 @@ const App = props => {
         onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
       >
         {
-          Object.keys(edges).map((edgeId, index) => {
-            const edge = edges[edgeId]
-            return renderLine({ lineVertices: edge, index, vertices })
+          edges.map((edge, index) => {
+            return renderEdge({ edge, index, vertices })
           })
         }
 
@@ -212,23 +225,35 @@ const App = props => {
         <div>
           <h1>Edges</h1>
           {
-            Object.keys(edges).map((edgeId, index) => {
-              const edge = edges[edgeId]
-
+            edges.map((edge, index) => {
               return (
                 <div>
                   L{index}
                   <input
                     key={`${index}-0`}
                     type="number"
-                    value={edge[0]}
-                    onChange={event => handleEdgeChange({ event, edgeCorner: 0, edges, setEdges, edgeId, vertices })}
+                    value={edge.end0.vertexId}
+                    onChange={event => handleEdgeChange({
+                      event,
+                      endProperty: 'end0',
+                      edges,
+                      edgeId: edge.id,
+                      setEdges,
+                      vertices
+                    })}
                   />
                   <input
                     key={`${index}-1`}
                     type="number"
-                    value={edge[1]}
-                    onChange={event => handleEdgeChange({ event, edgeCorner: 1, edges, setEdges, edgeId, vertices })}
+                    value={edge.end1.vertexId}
+                    onChange={event => handleEdgeChange({
+                      event,
+                      endProperty: 'end1',
+                      edges,
+                      edgeId: edge.id,
+                      setEdges,
+                      vertices
+                    })}
                   />
                 </div>
               )
