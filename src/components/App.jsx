@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
 import { DEFAULT_EDGES, DEFAULT_VERTICES } from '../datasets/polygons'
+import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
+import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
+import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -19,10 +22,15 @@ const renderEdge = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
   const vertexId2 = edge.end1.vertexId
 
-  if (!vertexId1 || !vertexId2) return null
-
   const vertex1 = getVertexById({ vertices, id: vertexId1 })
   const vertex2 = getVertexById({ vertices, id: vertexId2 })
+
+  if (!vertex1 || !vertex2) return null
+
+  if (vertexId1 === 1 && vertexId2 === 2) {
+    console.log('=====================')
+    console.log(getVertexTangent({ vertex1, vertex2 }))
+  }
 
   const { x: x1, y: y1 } = vertex1
   const { x: x2, y: y2 } = vertex2
@@ -95,35 +103,12 @@ const Circle = ({
         fill="blue"
         strokeWidth="3"
         stroke="black"
-        r="20"
+        r={CIRCLE_CONFIG.radius}
       >
       </circle>
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
     </g>
   )
-}
-
-const getHighestObjectId = object => {
-  const ids = Object.keys(object)
-  return ids.reverse()[0]
-}
-
-const handleAddVertex = ({ vertices, setVertices }) => {
-  const highestId = getHighestObjectId(vertices)
-  const nextId = Number(highestId) + 1
-
-  const newVertices = {
-    ...vertices,
-    [nextId]: { x: 20, y: 20 }
-  }
-
-  setVertices(newVertices)
-}
-
-const handleDeleteVertex = ({ id, vertices, setVertices }) => {
-  const newVertices = { ...vertices }
-  delete newVertices[id]
-  setVertices(newVertices)
 }
 
 const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId, vertices }) => {
