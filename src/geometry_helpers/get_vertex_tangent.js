@@ -1,39 +1,11 @@
 import { CIRCLE as CIRCLE_CONFIG } from './shapes_config'
-
-export const getDistance = ({ vertex1, vertex2 }) => {
-  const { x: x1, y: y1 } = vertex1
-  const { x: x2, y: y2 } = vertex2
-
-  const hasMissingCoordinate = [x1, y1, x2, y2].some(item => {
-    return item === undefined || item === null
-  })
-
-  if (hasMissingCoordinate) return null
-
-  const height = Math.abs(y2 - y1)
-  const width = Math.abs(x2 - x1)
-  const xDirection = x2 >= x1 ? 1 : -1
-  // The Y values on a cartesian plane is the inverse of a computer screen
-  const yPixelDirection = y2 >= y1 ? 1 : -1
-
-  return { height, width, xDirection, yPixelDirection }
-}
-
-const getPivotDirection = ({ xDirection, yPixelDirection }) => {
-  const isRightUp = xDirection >= 0 && yPixelDirection <= 0
-  const isLeftDown = xDirection < 0 && yPixelDirection > 0
-
-  // If right-up or left-down, then counter-clockwise
-  if ( isRightUp || isLeftDown ) return -1
-
-  return 1
-}
+import { getDistance } from './general'
 
 // export const getVertexTangent = ({ vertex1, vertex2 }) => {
 //   const {
 //     height: sideAdjacent,
 //     width: sideOpposite,
-//     xDirection,
+//     xPixelDirection,
 //     yPixelDirection
 //   } = getDistance({ vertex1, vertex2 })
 
@@ -42,12 +14,12 @@ const getPivotDirection = ({ xDirection, yPixelDirection }) => {
 //   const radiusXDelta = CIRCLE_CONFIG.radius * Math.sin(angle)
 
 //   const vertex1Tangent = {
-//     x: vertex1.x + (xDirection * radiusXDelta),
+//     x: vertex1.x + (xPixelDirection * radiusXDelta),
 //     y: vertex1.y + (yPixelDirection * radiusYDelta)
 //   }
 
 //   const vertex2Tangent = {
-//     x: vertex2.x + (-1 * xDirection * radiusXDelta),
+//     x: vertex2.x + (-1 * xPixelDirection * radiusXDelta),
 //     y: vertex2.y + (-1 * yPixelDirection * radiusYDelta)
 //   }
 
@@ -58,26 +30,26 @@ export const getVertexTangent = ({ vertex1, vertex2 }) => {
   const {
     height: verticesHeight,
     width: verticesWidth,
-    xDirection,
+    xPixelDirection,
     yPixelDirection
-  } = getDistance({ vertex1, vertex2 })
+  } = getDistance({ origin: vertex1, destination: vertex2 })
 
   const slope = verticesHeight / verticesWidth
-
+ 
   const radiusSquared = CIRCLE_CONFIG.radius ** 2
   const radiusWidth = Math.sqrt( radiusSquared / (1 + slope ** 2) )
   const radiusHeight = radiusWidth * slope
 
   const vertex1Tangent = {
-    x: vertex1.x + (xDirection * radiusWidth),
+    x: vertex1.x + (xPixelDirection * radiusWidth),
     y: vertex1.y + (yPixelDirection * radiusHeight),
     yPixelDirection
   }
 
   const vertex2Tangent = {
-    x: vertex2.x + (-1 * xDirection * radiusWidth),
+    x: vertex2.x + (-1 * xPixelDirection * radiusWidth),
     y: vertex2.y + (-1 * yPixelDirection * radiusHeight),
-    yPixelDirection
+    yPixelDirection: (-1 * yPixelDirection)
   }
 
   return { vertex1Tangent, vertex2Tangent }
