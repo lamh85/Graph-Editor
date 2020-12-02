@@ -112,21 +112,10 @@ const Circle = ({
 }
 
 const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId, vertices }) => {
-  const vertexIds = Object.keys(vertices).sort()
-
-  const enteredValue = event.target.value
-
-  let validatedValue
-  if (vertexIds.includes(enteredValue)) {
-    validatedValue = enteredValue
-  } else {
-    validatedValue = vertexIds[0]
-  }
-
   const newEdges = [...edges]
   const edgeIndex = edges.findIndex(edge => edge.id === edgeId)
   const editedEdge = newEdges[edgeIndex]
-  editedEdge[endProperty].vertexId = validatedValue
+  editedEdge[endProperty].vertexId = event.target.value
   newEdges[edgeIndex] = editedEdge
 
   setEdges(newEdges)
