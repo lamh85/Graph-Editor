@@ -6,6 +6,7 @@ import { DEFAULT_EDGES, DEFAULT_VERTICES } from '../datasets/polygons'
 import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
 import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
+import { getArrowProps } from '../geometry_helpers/shapes_config'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -28,8 +29,9 @@ const renderEdge = ({ edge, index, vertices }) => {
   if (!vertex1 || !vertex2) return null
 
   if (vertexId1 === 1 && vertexId2 === 2) {
-    console.log('=====================')
-    console.log(getVertexTangent({ vertex1, vertex2 }))
+    getArrowProps({ destination: vertex1, origin: vertex2 })
+    // console.log('=====================')
+    // console.log(getVertexTangent({ vertex1, vertex2 }))
   }
 
   const { x: x1, y: y1 } = vertex1

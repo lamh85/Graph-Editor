@@ -1,31 +1,6 @@
 import { CIRCLE as CIRCLE_CONFIG } from './shapes_config'
 import { getDistance } from './general'
 
-// export const getVertexTangent = ({ vertex1, vertex2 }) => {
-//   const {
-//     height: sideAdjacent,
-//     width: sideOpposite,
-//     xPixelDirection,
-//     yPixelDirection
-//   } = getDistance({ vertex1, vertex2 })
-
-//   const angle = Math.atan(sideOpposite / sideAdjacent)
-//   const radiusYDelta = CIRCLE_CONFIG.radius * Math.cos(angle)
-//   const radiusXDelta = CIRCLE_CONFIG.radius * Math.sin(angle)
-
-//   const vertex1Tangent = {
-//     x: vertex1.x + (xPixelDirection * radiusXDelta),
-//     y: vertex1.y + (yPixelDirection * radiusYDelta)
-//   }
-
-//   const vertex2Tangent = {
-//     x: vertex2.x + (-1 * xPixelDirection * radiusXDelta),
-//     y: vertex2.y + (-1 * yPixelDirection * radiusYDelta)
-//   }
-
-//   return { vertex1Tangent, vertex2Tangent }
-// }
-
 export const getVertexTangent = ({ vertex1, vertex2 }) => {
   const {
     height: verticesHeight,

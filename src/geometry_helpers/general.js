@@ -25,3 +25,12 @@ export const getDistance = ({ origin, destination }) => {
 
   return { height, width, xPixelDirection, yPixelDirection, arcAngle, arcDirection }
 }
+
+export const getDestinationCoordinates = ({
+  origin,
+  distance,
+  angle,
+  arcDirection
+}) => {
+
+}

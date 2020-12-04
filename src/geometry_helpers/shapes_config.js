@@ -18,6 +18,10 @@ export const getArrowProps = ({ destination, origin }) => {
     arcAngle,
     arcDirection
   } = getDistance({ origin, destination })
+
+  console.log('arc ===============')
+  console.log(arcAngle)
+  console.log(arcDirection)
 }
 
 const getPivotDirection = ({ xPixelDirection, yPixelDirection }) => {
