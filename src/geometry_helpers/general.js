@@ -1,3 +1,5 @@
+import { getSideLength } from './trigonometry'
+
 export const getDistance = ({ origin, destination }) => {
   if (!origin && !destination) return null
 
@@ -30,7 +32,23 @@ export const getDestinationCoordinates = ({
   origin,
   distance,
   angle,
-  arcDirection
+  xDirection,
+  yDirection
 }) => {
+  const horizontalDistance = getSideLength({
+    sideQuery: 'adjacent',
+    hypotenuse: distance,
+    angle,
+  })
 
+  const verticalDistance = getSideLength({
+    sideQuery: 'opposite',
+    hypotenuse: distance,
+    angle
+  })
+
+  const x = origin.x + xDirection * horizontalDistance
+  const y = origin.y + yDirection * verticalDistance
+
+  return { x, y }
 }
