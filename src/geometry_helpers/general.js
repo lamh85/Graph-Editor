@@ -53,18 +53,18 @@ export const getDestinationCoordinates = ({
   return { x, y }
 }
 
+const coordinatesReducer = (accumulated, current) => {
+  return {
+    x: (accumulated.x + current.x),
+    y: (accumulated.y + current.y)
+  }
+}
+
 export const translateCoordinates = coordinatePairs => {
   if (!coordinatePairs) return null
 
-  const reducer = (accumulated, current) => {
-    return {
-      x: (accumulated.x + current.x),
-      y: (accumulated.y + current.y)
-    }
-  }
-
   return coordinatePairs.reduce(
-    reducer,
+    coordinatesReducer,
     { x: 0, y: 0 }
   )
 }
@@ -79,5 +79,5 @@ export const coordinatesToSvgPoints = (coordinates = []) => {
     svgPoints = `${svgPoints} ${x},${y}`
   })
 
-  return svgPoints
+  return svgPoints.trim()
 }
