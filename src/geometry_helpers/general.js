@@ -52,3 +52,32 @@ export const getDestinationCoordinates = ({
 
   return { x, y }
 }
+
+export const translateCoordinates = coordinatePairs => {
+  if (!coordinatePairs) return null
+
+  const reducer = (accumulated, current) => {
+    return {
+      x: (accumulated.x + current.x),
+      y: (accumulated.y + current.y)
+    }
+  }
+
+  return coordinatePairs.reduce(
+    reducer,
+    { x: 0, y: 0 }
+  )
+}
+
+export const coordinatesToSvgPoints = (coordinates = []) => {
+  if (coordinates.length === 0) return null
+
+  let svgPoints = ''
+
+  coordinates.forEach(pair => {
+    const { x, y } = pair
+    svgPoints = `${svgPoints} ${x},${y}`
+  })
+
+  return svgPoints
+}
