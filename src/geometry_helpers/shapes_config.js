@@ -1,8 +1,11 @@
-import { getDistance } from './general'
+import { getDistance, buildCssRotation } from './general'
+import { buildEqualateral } from './special_triangles'
 
 export const CIRCLE = {
   radius: 20
 }
+
+const ARROW_SIDE_LENGTH = 20
 
 export const getArrowProps = ({ destination, origin }) => {
   const { x: destinationX, y: destinationY } = destination
@@ -15,13 +18,27 @@ export const getArrowProps = ({ destination, origin }) => {
   if (hasMissingCoordinate) return null
 
   const {
-    arcAngle,
-    arcDirection
+    xPixelDirection,
+    yPixelDirection,
+    arcAngle
   } = getDistance({ origin, destination })
 
-  console.log('arc ===============')
-  console.log(arcAngle)
-  console.log(arcDirection)
+  const triangleCoordinates = buildEqualateral({
+    origin: destination,
+    sideLength: ARROW_SIDE_LENGTH
+  })
+
+  const svgPoints = coordinatesToSvgPoints(
+    Object.values(triangleCoordinates)
+  )
+
+  const cssRotation = buildCssRotation({
+    radians: arcAngle,
+    xPixelDirection,
+    yPixelDirection
+  })
+
+  return { svgPoints, cssRotation }
 }
 
 const getPivotDirection = ({ xPixelDirection, yPixelDirection }) => {

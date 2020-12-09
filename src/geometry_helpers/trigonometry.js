@@ -1,21 +1,3 @@
-export const getSideLength = ({
-  adjacent,
-  opposite,
-  hypotenuse,
-  sideQuery,
-  angle
-}) => {
-  if (!angle || !sideQuery) return null
-
-  const sideLengthLookup = {
-    adjacent: () => getAdjacentLength({ angle, opposite, hypotenuse }),
-    opposite: () => getOppositeLength({ angle, adjacent, hypotenuse }),
-    hypotenuse: () => getHypotenuseLength({ angle, adjacent, opposite })
-  }
-
-  return sideLengthLookup[sideQuery]()
-}
-
 const getAdjacentLength = ({
   angle,
   opposite,
@@ -44,4 +26,34 @@ const getHypotenuseLength = ({
   if (!adjacent && !opposite) return null
   if (adjacent) return adjacent / Math.cos(angle)
   if (opposite) return opposite / Math.sin(angle)
+}
+
+export const getSideLength = ({
+  adjacent,
+  opposite,
+  hypotenuse,
+  sideQuery,
+  angle
+}) => {
+  if (!angle || !sideQuery) return null
+
+  const sideLengthLookup = {
+    adjacent: () => getAdjacentLength({ angle, opposite, hypotenuse }),
+    opposite: () => getOppositeLength({ angle, adjacent, hypotenuse }),
+    hypotenuse: () => getHypotenuseLength({ angle, adjacent, opposite })
+  }
+
+  return sideLengthLookup[sideQuery]()
+}
+
+export const getAngle = ({
+  adjacent,
+  opposite,
+  hypotenuse
+}) => {
+  if (adjacent && opposite) return Math.tan(opposite/adjacent)
+  if (adjacent && hypotenuse) return Math.cos(adjacent/hypotenuse)
+  if (opposite && hypotenuse) return Math.sin(opposite/hypotenuse)
+
+  return null
 }
