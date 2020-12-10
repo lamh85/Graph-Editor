@@ -9,11 +9,16 @@ export const getVertexTangent = ({ vertex1, vertex2 }) => {
     yPixelDirection
   } = getDistance({ origin: vertex1, destination: vertex2 })
 
-  const slope = verticesHeight / verticesWidth
- 
-  const radiusSquared = CIRCLE_CONFIG.radius ** 2
-  const radiusWidth = Math.sqrt( radiusSquared / (1 + slope ** 2) )
-  const radiusHeight = radiusWidth * slope
+  let radiusWidth, radiusHeight
+  if (verticesWidth === 0) {
+    radiusWidth = 0
+    radiusHeight = CIRCLE_CONFIG.radius
+  } else {
+    const slope = verticesHeight / verticesWidth
+    const radiusSquared = CIRCLE_CONFIG.radius ** 2
+    radiusWidth = Math.sqrt(radiusSquared / (1 + slope ** 2))
+    radiusHeight = radiusWidth * slope
+  }
 
   const vertex1Tangent = {
     x: vertex1.x + (xPixelDirection * radiusWidth),

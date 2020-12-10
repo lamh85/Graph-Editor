@@ -7,6 +7,7 @@ import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygon
 import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { getArrowProps } from '../geometry_helpers/shapes_config'
+import { coordinatesToSvgPoints } from '../geometry_helpers/general'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -28,12 +29,6 @@ const renderEdge = ({ edge, index, vertices }) => {
 
   if (!vertex1 || !vertex2) return null
 
-  if (vertexId1 === 1 && vertexId2 === 2) {
-    getArrowProps({ destination: vertex1, origin: vertex2 })
-    // console.log('=====================')
-    // console.log(getVertexTangent({ vertex1, vertex2 }))
-  }
-
   const { x: x1, y: y1 } = vertex1
   const { x: x2, y: y2 } = vertex2
 
@@ -50,9 +45,26 @@ const renderEdge = ({ edge, index, vertices }) => {
   const averageX = (x1 + x2) / 2
   const averageY = (y1 + y2) / 2
 
+  const { vertex1Tangent, vertex2Tangent } = getVertexTangent({ vertex1, vertex2 })
+
+  const arrowProps = getArrowProps({
+    towards: vertex1Tangent,
+    away: vertex2Tangent
+  })
+
+  let arrow = null
+
+  if (arrowProps !== null) {
+    const { svgPoints, cssRotation } = arrowProps
+    const rotationOrigin = coordinatesToSvgPoints([vertex1Tangent])
+    const transform = `rotate(${cssRotation}, ${rotationOrigin})`
+    arrow = <polygon points={svgPoints} stroke="red" fill="yellow" transform={transform} />
+  }
+
   return (
     <g>
       <line {...lineProps} />
+      {arrow}
       <text x={averageX} y={averageY} fontSize="15" fill="black">L{index}</text>
     </g>
   )

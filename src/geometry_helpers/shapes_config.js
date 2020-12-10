@@ -1,4 +1,4 @@
-import { getDistance, buildCssRotation } from './general'
+import { getDistance, buildCssRotation, coordinatesToSvgPoints } from './general'
 import { buildEqualateral } from './special_triangles'
 
 export const CIRCLE = {
@@ -7,26 +7,31 @@ export const CIRCLE = {
 
 const ARROW_SIDE_LENGTH = 20
 
-export const getArrowProps = ({ destination, origin }) => {
-  const { x: destinationX, y: destinationY } = destination
-  const { x: originX, y: originY } = origin
+export const getArrowProps = ({ towards, away }) => {
+  const { x: towardsX, y: towardsY } = towards
+  const { x: awayX, y: awayY } = away
 
-  const hasMissingCoordinate = [destinationX, destinationY, originX, originY].some(item => {
+  const hasMissingCoordinate = [towardsX, towardsY, awayX, awayY].some(item => {
     return item === undefined || item === null
   })
 
   if (hasMissingCoordinate) return null
 
+  const distance = getDistance({ origin: towards, destination: away })
+  if (!distance) return null
+
   const {
     xPixelDirection,
     yPixelDirection,
     arcAngle
-  } = getDistance({ origin, destination })
+  } = distance
 
   const triangleCoordinates = buildEqualateral({
-    origin: destination,
+    pivotPoint: towards,
     sideLength: ARROW_SIDE_LENGTH
   })
+
+  if (!triangleCoordinates) return null
 
   const svgPoints = coordinatesToSvgPoints(
     Object.values(triangleCoordinates)
