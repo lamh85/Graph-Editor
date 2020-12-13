@@ -20,6 +20,28 @@ const Row = styled.div`
 
 const getVertexById = ({ vertices, id }) => vertices[id]
 
+const renderArrow = ({ towardsVertex, awayVertex }) => {
+  const { tangentOrigin, tangentDestination } = getVertexTangent({
+    vertexOrigin: towardsVertex,
+    vertexDestination: awayVertex
+  })
+
+
+  const arrowProps = getArrowProps({
+    towards: tangentOrigin,
+    away: tangentDestination
+  })
+
+  if (arrowProps === null) {
+    return null
+  } else {
+    const { svgPoints, cssRotation } = arrowProps
+    const rotationOrigin = coordinatesToSvgPoints([tangentOrigin])
+    const transform = `rotate(${cssRotation}, ${rotationOrigin})`
+    return <polygon points={svgPoints} stroke="red" fill="yellow" transform={transform} />
+  }
+}
+
 const renderEdge = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
   const vertexId2 = edge.end1.vertexId
@@ -45,26 +67,10 @@ const renderEdge = ({ edge, index, vertices }) => {
   const averageX = (x1 + x2) / 2
   const averageY = (y1 + y2) / 2
 
-  const { vertex1Tangent, vertex2Tangent } = getVertexTangent({ vertex1, vertex2 })
-
-  const arrowProps = getArrowProps({
-    towards: vertex1Tangent,
-    away: vertex2Tangent
-  })
-
-  let arrow = null
-
-  if (arrowProps !== null) {
-    const { svgPoints, cssRotation } = arrowProps
-    const rotationOrigin = coordinatesToSvgPoints([vertex1Tangent])
-    const transform = `rotate(${cssRotation}, ${rotationOrigin})`
-    arrow = <polygon points={svgPoints} stroke="red" fill="yellow" transform={transform} />
-  }
-
   return (
     <g>
       <line {...lineProps} />
-      {arrow}
+      {renderArrow({ towardsVertex: vertex1, awayVertex: vertex2 })}
       <text x={averageX} y={averageY} fontSize="15" fill="black">L{index}</text>
     </g>
   )

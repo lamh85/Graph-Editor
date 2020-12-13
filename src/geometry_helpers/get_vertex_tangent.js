@@ -1,13 +1,16 @@
 import { CIRCLE as CIRCLE_CONFIG } from './shapes_config'
 import { getDistance } from './general'
 
-export const getVertexTangent = ({ vertex1, vertex2 }) => {
+export const getVertexTangent = ({
+  vertexOrigin,
+  vertexDestination
+}) => {
   const {
     height: verticesHeight,
     width: verticesWidth,
     xPixelDirection,
     yPixelDirection
-  } = getDistance({ origin: vertex1, destination: vertex2 })
+  } = getDistance({ origin: vertexOrigin, destination: vertexDestination })
 
   let radiusWidth, radiusHeight
   if (verticesWidth === 0) {
@@ -20,17 +23,17 @@ export const getVertexTangent = ({ vertex1, vertex2 }) => {
     radiusHeight = radiusWidth * slope
   }
 
-  const vertex1Tangent = {
-    x: vertex1.x + (xPixelDirection * radiusWidth),
-    y: vertex1.y + (yPixelDirection * radiusHeight),
+  const tangentOrigin = {
+    x: vertexOrigin.x + (xPixelDirection * radiusWidth),
+    y: vertexOrigin.y + (yPixelDirection * radiusHeight),
     yPixelDirection
   }
 
-  const vertex2Tangent = {
-    x: vertex2.x + (-1 * xPixelDirection * radiusWidth),
-    y: vertex2.y + (-1 * yPixelDirection * radiusHeight),
+  const tangentDestination = {
+    x: vertexDestination.x + (-1 * xPixelDirection * radiusWidth),
+    y: vertexDestination.y + (-1 * yPixelDirection * radiusHeight),
     yPixelDirection: (-1 * yPixelDirection)
   }
 
-  return { vertex1Tangent, vertex2Tangent }
+  return { tangentOrigin, tangentDestination }
 }
