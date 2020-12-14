@@ -80,10 +80,6 @@ const handleMouseDown = ({ id, setDraggedVertxId }) => {
   setDraggedVertxId(id)
 }
 
-const handleMouseUp = ({ setDraggedVertxId }) => {
-  setDraggedVertxId(null)
-}
-
 const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
 
 const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, vertices, setVertices }) => {
@@ -114,7 +110,6 @@ const Circle = ({
   return (
     <g
       onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
-      onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
     >
       <circle
         key={index}
@@ -131,7 +126,7 @@ const Circle = ({
   )
 }
 
-const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId, vertices }) => {
+const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId }) => {
   const newEdges = [...edges]
   const edgeIndex = edges.findIndex(edge => edge.id === edgeId)
   const editedEdge = newEdges[edgeIndex]
@@ -164,20 +159,38 @@ const handleAddEdge = ({ edges, setEdges }) => {
   setEdges(newEdges)
 }
 
+const EdgeEndInput = ({ key, value, handleChange }) => {
+  return (
+    <input
+      key={key}
+      type="number"
+      value={value}
+      onChange={handleChange}
+    />
+  )
+}
+
 const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
-
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
-
   const [edges, setEdges] = useState(DEFAULT_EDGES)
+
+  const commonProps = {
+    setDraggedVertxId,
+    draggedVertexId,
+    setVertices,
+    vertices,
+    edges,
+    setEdges
+  }
 
   return (
     <>
       <svg
         width={SVG_WIDTH}
         height={SVG_HEIGHT}
-        onMouseMove={event => handleMouseMove({ event, setDraggedVertxId, draggedVertexId, setVertices, vertices })}
-        onMouseUp={event => handleMouseUp({ setDraggedVertxId })}
+        onMouseMove={event => handleMouseMove({ ...commonProps, event })}
+        onMouseUp={() => setDraggedVertxId(null)}
       >
         {
           edges.map((edge, index) => {
@@ -223,30 +236,24 @@ const App = props => {
               return (
                 <div>
                   L{index}
-                  <input
+                  <EdgeEndInput
                     key={`${index}-0`}
-                    type="number"
                     value={edge.end0.vertexId}
-                    onChange={event => handleEdgeChange({
+                    handleChange={event => handleEdgeChange({
+                      ...commonProps,
                       event,
                       endProperty: 'end0',
-                      edges,
-                      edgeId: edge.id,
-                      setEdges,
-                      vertices
+                      edgeId: edge.id
                     })}
                   />
-                  <input
+                  <EdgeEndInput
                     key={`${index}-1`}
-                    type="number"
-                    value={edge.end1.vertexId}
-                    onChange={event => handleEdgeChange({
+                    value={edge.end0.vertexId}
+                    handleChange={event => handleEdgeChange({
+                      ...commonProps,
                       event,
                       endProperty: 'end1',
-                      edges,
-                      edgeId: edge.id,
-                      setEdges,
-                      vertices
+                      edgeId: edge.id
                     })}
                   />
                 </div>
