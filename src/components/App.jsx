@@ -170,6 +170,48 @@ const EdgeEndInput = ({ key, value, handleChange }) => {
   )
 }
 
+const EdgesPanel = ({ commonProps }) => {
+  const { setEdges, edges } = commonProps
+
+  return (
+    <div>
+      <h1>Edges</h1>
+      {
+        edges.map((edge, index) => {
+          return (
+            <div>
+              L{index}
+              <EdgeEndInput
+                key={`${index}-0`}
+                value={edge.end0.vertexId}
+                handleChange={event => handleEdgeChange({
+                  ...commonProps,
+                  event,
+                  endProperty: 'end0',
+                  edgeId: edge.id
+                })}
+              />
+              <EdgeEndInput
+                key={`${index}-1`}
+                value={edge.end0.vertexId}
+                handleChange={event => handleEdgeChange({
+                  ...commonProps,
+                  event,
+                  endProperty: 'end1',
+                  edgeId: edge.id
+                })}
+              />
+            </div>
+          )
+        })
+      }
+      <button onClick={() => handleAddEdge({ edges, setEdges })}>
+        Add Edge
+      </button>
+    </div>
+  )
+}
+
 const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
@@ -229,41 +271,7 @@ const App = props => {
             Add Vertex
           </button>
         </div>
-        <div>
-          <h1>Edges</h1>
-          {
-            edges.map((edge, index) => {
-              return (
-                <div>
-                  L{index}
-                  <EdgeEndInput
-                    key={`${index}-0`}
-                    value={edge.end0.vertexId}
-                    handleChange={event => handleEdgeChange({
-                      ...commonProps,
-                      event,
-                      endProperty: 'end0',
-                      edgeId: edge.id
-                    })}
-                  />
-                  <EdgeEndInput
-                    key={`${index}-1`}
-                    value={edge.end0.vertexId}
-                    handleChange={event => handleEdgeChange({
-                      ...commonProps,
-                      event,
-                      endProperty: 'end1',
-                      edgeId: edge.id
-                    })}
-                  />
-                </div>
-              )
-            })
-          }
-          <button onClick={() => handleAddEdge({ edges, setEdges })}>
-            Add Edge
-          </button>
-        </div>
+        <EdgesPanel commonProps={commonProps} />
       </Row>
     </>
   )
