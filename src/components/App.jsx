@@ -2,7 +2,11 @@ import React, { useState } from "react"
 import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
-import { DEFAULT_EDGES, DEFAULT_VERTICES } from '../datasets/polygons'
+import {
+  DEFAULT_EDGES,
+  DEFAULT_VERTICES,
+  DEFAULT_ARROWS
+} from '../datasets/polygons'
 import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
 import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
@@ -212,6 +216,32 @@ const EdgesPanel = ({ commonProps }) => {
   )
 }
 
+const ArrowsPanel = props => {
+  const [arrows, setArrows] = useState(DEFAULT_ARROWS)
+
+  return (
+    <div>
+      <h1>Arrows</h1>
+      <div>
+        {
+          arrows.map((arrow, index) => {
+            const { id, edgeId, endId, shape } = arrow
+
+            return (
+              <Row key={index}>
+                <div>ID: {id}</div>
+                <div>Edge ID: {edgeId}</div>
+                <div>End ID: {endId}</div>
+                <div>Shape: {shape}</div>
+              </Row>
+            )
+          })
+        }
+      </div>
+    </div>
+  )
+}
+
 const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
@@ -272,6 +302,7 @@ const App = props => {
           </button>
         </div>
         <EdgesPanel commonProps={commonProps} />
+        <ArrowsPanel />
       </Row>
     </>
   )

@@ -1,4 +1,4 @@
-const DEFAULT_EDGES = [
+export const DEFAULT_EDGES = [
   {
     id: 1,
     end0: {
@@ -34,13 +34,29 @@ const DEFAULT_EDGES = [
   }
 ]
 
-const DEFAULT_VERTICES = {
+export const DEFAULT_VERTICES = {
   1: { x: 40, y: 40 },
   2: { x: 200, y: 40 },
   3: { x: 200, y: 200 }
 }
 
-export {
-  DEFAULT_EDGES,
-  DEFAULT_VERTICES
-}
+export const DEFAULT_ARROWS = [
+  {
+    id: 1,
+    edgeId: 1,
+    endId: 0,
+    shape: 'triangle'
+  },
+  {
+    id: 2,
+    edgeId: 2,
+    endId: 1,
+    shape: 'triangle'
+  },
+  {
+    id: 3,
+    edgeId: 3,
+    endId: 0,
+    shape: 'triangle'
+  }
+]
