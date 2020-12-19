@@ -46,7 +46,7 @@ const renderArrow = ({ towardsVertex, awayVertex }) => {
   }
 }
 
-const renderEdge = ({ edge, index, vertices }) => {
+const renderConnections = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
   const vertexId2 = edge.end1.vertexId
 
@@ -246,6 +246,7 @@ const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
   const [edges, setEdges] = useState(DEFAULT_EDGES)
+  const [arrows, setArrows] = useState(DEFAULT_ARROWS)
 
   const commonProps = {
     setDraggedVertxId,
@@ -266,7 +267,7 @@ const App = props => {
       >
         {
           edges.map((edge, index) => {
-            return renderEdge({ edge, index, vertices })
+            return renderConnections({ edge, index, vertices, arrows })
           })
         }
 
