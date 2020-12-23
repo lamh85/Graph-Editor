@@ -11,6 +11,7 @@ import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { getArrowProps } from '../geometry_helpers/shapes_config'
 import { coordinatesToSvgPoints } from '../geometry_helpers/general'
+import { useArray } from '../hooks/useArray'
 import { Editor } from './Editor.jsx'
 
 const SVG_HEIGHT = 500
@@ -128,7 +129,11 @@ const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
   const [edges, setEdges] = useState(DEFAULT_EDGES)
-  const [arrows, setArrows] = useState(DEFAULT_ARROWS)
+  const {
+    state: arrows,
+    push: createArrow,
+    removeByProperty: deleteArrow,
+  } = useArray(DEFAULT_ARROWS)
 
   const commonProps = {
     setDraggedVertxId,
@@ -173,7 +178,8 @@ const App = props => {
         edges={edges}
         setEdges={setEdges}
         arrows={arrows}
-        setArrows={setArrows}
+        createArrow={createArrow}
+        deleteArrow={deleteArrow}
       />
     </>
   )

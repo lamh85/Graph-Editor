@@ -64,32 +64,25 @@ const EdgesPanel = ({ setEdges, edges }) => {
     <div>
       <h1>Edges</h1>
       {
-        edges.map((edge, index) => {
+        edges.map(edge => {
           return (
-            <div>
-              L{index}
-              <EdgeEndInput
-                key={`${index}-0`}
-                value={edge.end0.vertexId}
-                handleChange={event => handleEdgeChange({
-                  edges,
-                  setEdges,
-                  event,
-                  endProperty: 'end0',
-                  edgeId: edge.id
-                })}
-              />
-              <EdgeEndInput
-                key={`${index}-1`}
-                value={edge.end1.vertexId}
-                handleChange={event => handleEdgeChange({
-                  edges,
-                  setEdges,
-                  event,
-                  endProperty: 'end1',
-                  edgeId: edge.id
-                })}
-              />
+            <div key={edge.id}>
+              ID: {edge.id}
+              {[0, 1].map((endNumber) => {
+                return (
+                  <EdgeEndInput
+                    key={`${edge.id}-${endNumber}`}
+                    value={edge[`end${endNumber}`].vertexId}
+                    handleChange={event => handleEdgeChange({
+                      edges,
+                      setEdges,
+                      event,
+                      endProperty: `end${endNumber}`,
+                      edgeId: edge.id
+                    })}
+                  />
+                )
+              })}
             </div>
           )
         })
@@ -101,7 +94,7 @@ const EdgesPanel = ({ setEdges, edges }) => {
   )
 }
 
-const ArrowsPanel = ({ arrows, setArrows }) => {
+const ArrowsPanel = ({ arrows, createArrow, deleteArrow }) => {
   return (
     <div>
       <h1>Arrows</h1>
@@ -116,6 +109,9 @@ const ArrowsPanel = ({ arrows, setArrows }) => {
                 <div>Edge ID: {edgeId}</div>
                 <div>End ID: {endId}</div>
                 <div>Shape: {shape}</div>
+                <button onClick={() => deleteArrow('id', id)}>
+                  Delete
+                </button>
               </Row>
             )
           })
@@ -131,7 +127,8 @@ const Editor = ({
   edges,
   setEdges,
   arrows,
-  setArrows
+  createArrow,
+  deleteArrow
 }) => {
   return (
     <StyledEditor>
@@ -152,7 +149,11 @@ const Editor = ({
         </button>
       </div>
       <EdgesPanel setEdges={setEdges} edges={edges} />
-      <ArrowsPanel arrows={arrows} setArrows={setArrows} />
+      <ArrowsPanel
+        arrows={arrows}
+        createArrow={createArrow}
+        deleteArrow={deleteArrow}
+      />
     </StyledEditor>
   )
 }
