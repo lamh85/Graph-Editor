@@ -94,7 +94,14 @@ const EdgesPanel = ({ setEdges, edges }) => {
   )
 }
 
-const ArrowsPanel = ({ arrows, createArrow, deleteArrow }) => {
+const handleArrowEndChange = (event, updateArrow) => {
+  const { arrowId, endId } = event.target.dataset
+  const id = parseInt(arrowId)
+  const value = parseInt(endId)
+  updateArrow({ id, property: 'endId', value })
+}
+
+const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
   return (
     <div>
       <h1>Arrows</h1>
@@ -103,16 +110,31 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow }) => {
           arrows.map((arrow, index) => {
             const { id, edgeId, endId, shape } = arrow
 
+            const radioProps = {
+              type: "radio",
+              'data-arrow-id': id,
+              onChange: event => handleArrowEndChange(event, updateArrow)
+            }
+
             return (
-              <Row key={index}>
-                <div>ID: {id}</div>
-                <div>Edge ID: {edgeId}</div>
-                <div>End ID: {endId}</div>
-                <div>Shape: {shape}</div>
-                <button onClick={() => deleteArrow('id', id)}>
-                  Delete
+              <>
+                <Row key={index}>
+                  <div>ID: {id}</div>
+                  <div>Edge ID: {edgeId}</div>
+                  <div>End 0:</div>
+                  <div>
+                    <input {...radioProps} checked={endId === 0} data-end-id={0} />
+                  </div>
+                  <div>End 1:</div>
+                  <div>
+                    <input {...radioProps} checked={endId === 1} data-end-id={1} />
+                  </div>
+                  <div>Shape: {shape}</div>
+                  <button onClick={() => deleteArrow('id', id)}>
+                    Delete
                 </button>
-              </Row>
+                </Row>
+              </>
             )
           })
         }
@@ -128,7 +150,8 @@ const Editor = ({
   setEdges,
   arrows,
   createArrow,
-  deleteArrow
+  deleteArrow,
+  updateArrow
 }) => {
   return (
     <StyledEditor>
@@ -153,6 +176,7 @@ const Editor = ({
         arrows={arrows}
         createArrow={createArrow}
         deleteArrow={deleteArrow}
+        updateArrow={updateArrow}
       />
     </StyledEditor>
   )

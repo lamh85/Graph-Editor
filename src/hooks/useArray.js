@@ -25,5 +25,19 @@ export const useArray = initialValue => {
     setState(newState)
   }
 
-  return { state, push, removeByProperty, removeByValue }
+  const updateItem = ({ id, property, value }) => {
+    const index = state.findIndex(item => item.id === id)
+    if (index === -1) return
+
+    const updatedItem = {
+      ...[...state][index],
+      [property]: value
+    }
+    
+    const newState = [...state]
+    newState.splice(index, 1, updatedItem)
+    setState(newState)
+  }
+
+  return { state, push, removeByProperty, removeByValue, updateItem }
 }

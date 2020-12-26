@@ -25,7 +25,6 @@ const renderArrow = ({ towardsVertex, awayVertex }) => {
     vertexDestination: awayVertex
   })
 
-
   const arrowProps = getArrowProps({
     towards: tangentOrigin,
     away: tangentDestination
@@ -41,7 +40,23 @@ const renderArrow = ({ towardsVertex, awayVertex }) => {
   }
 }
 
-const renderConnections = ({ edge, index, vertices }) => {
+const renderArrows = ({ arrows, edges, vertices }) => {
+  return arrows.map((arrow, index) => {
+    const edge = edges.find(edge => edge.id === arrow.edgeId)
+    const endKey = `end${arrow.endId}`
+    const towardsVertexId = edge[endKey].vertexId
+    const towardsVertex = vertices[towardsVertexId]
+
+    const awayEndId = arrow.endId === 0 ? 1 : 0
+    const awayEndKey = `end${awayEndId}`
+    const awayVertexId = edge[awayEndKey].vertexId
+    const awayVertex = vertices[awayVertexId]
+
+    return renderArrow({ towardsVertex, awayVertex })
+  })
+}
+
+const renderEdge = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
   const vertexId2 = edge.end1.vertexId
 
@@ -69,7 +84,6 @@ const renderConnections = ({ edge, index, vertices }) => {
   return (
     <g>
       <line {...lineProps} />
-      {renderArrow({ towardsVertex: vertex1, awayVertex: vertex2 })}
       <text x={averageX} y={averageY} fontSize="15" fill="black">L{index}</text>
     </g>
   )
@@ -133,6 +147,7 @@ const App = props => {
     state: arrows,
     push: createArrow,
     removeByProperty: deleteArrow,
+    updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
   const commonProps = {
@@ -154,10 +169,10 @@ const App = props => {
       >
         {
           edges.map((edge, index) => {
-            return renderConnections({ edge, index, vertices, arrows })
+            return renderEdge({ edge, index, vertices, arrows })
           })
         }
-
+        {renderArrows({ arrows, edges, vertices })}
         {
           Object.keys(vertices).map((vertexId, index) => {
             return (
@@ -180,6 +195,7 @@ const App = props => {
         arrows={arrows}
         createArrow={createArrow}
         deleteArrow={deleteArrow}
+        updateArrow={updateArrow}
       />
     </>
   )
