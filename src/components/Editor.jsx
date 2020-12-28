@@ -2,7 +2,7 @@ import React from "react"
 import styled from 'styled-components'
 
 import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
-import { Input } from './common/Input.jsx'
+import { ARROW_TEMPLATE } from '../datasets/polygons'
 
 const StyledEditor = styled.div`
   display: flex;
@@ -14,6 +14,10 @@ const Row = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
+
+  > *:not(last-child) {
+    margin-right: 10px
+  }
 `
 
 const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId }) => {
@@ -118,61 +122,66 @@ const handleArrowChange = (event, updateArrow) => {
 }
 
 const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
+  const highestId = arrows.map(arrow => arrow.id).reverse()[0]
+  const newId = highestId + 1
+  const newArrowProps = { ...ARROW_TEMPLATE, id: newId }
+
   return (
     <div>
       <h1>Arrows</h1>
-      <div>
-        {
-          arrows.map((arrow, index) => {
-            const { id, edgeId, endId, shape } = arrow
+      {
+        arrows.map((arrow, index) => {
+          const { id, edgeId, endId, shape } = arrow
 
-            const inputProps = {
-              'data-arrow-id': id,
-              onChange: event => handleArrowChange(event, updateArrow)
-            }
+          const inputProps = {
+            'data-arrow-id': id,
+            onChange: event => handleArrowChange(event, updateArrow)
+          }
 
-            const radioProps = { ...inputProps, type: 'radio', 'data-property': 'endId' }
+          const radioProps = { ...inputProps, type: 'radio', 'data-property': 'endId' }
 
-            return (
-              <>
-                <Row key={index}>
-                  <div>ID: {id}</div>
-                  <div>
-                    Edge ID:
-                    <input
-                      {...inputProps}
-                      value={edgeId}
-                      data-property="edgeId"
-                    />
-                  </div>
-                  <div>End 0:</div>
-                  <div>
-                    <input
-                      {...radioProps}
-                      key={`${index}-0`}
-                      checked={parseInt(endId) === 0}
-                      value={0}
-                    />
-                  </div>
-                  <div>End 1:</div>
-                  <div>
-                    <input
-                      {...radioProps}
-                      key={`${index}-1`}
-                      checked={parseInt(endId) === 1}
-                      value={1}
-                    />
-                  </div>
-                  <div>Shape: {shape}</div>
-                  <button onClick={() => deleteArrow('id', id)}>
-                    Delete
-                  </button>
-                </Row>
-              </>
-            )
-          })
-        }
-      </div>
+          return (
+            <>
+              <Row key={index}>
+                <div>ID: {id}</div>
+                <div>
+                  Edge ID:
+                  <input
+                    {...inputProps}
+                    value={edgeId}
+                    data-property="edgeId"
+                  />
+                </div>
+                <div>End 0:</div>
+                <div>
+                  <input
+                    {...radioProps}
+                    key={`${index}-0`}
+                    checked={parseInt(endId) === 0}
+                    value={0}
+                  />
+                </div>
+                <div>End 1:</div>
+                <div>
+                  <input
+                    {...radioProps}
+                    key={`${index}-1`}
+                    checked={parseInt(endId) === 1}
+                    value={1}
+                  />
+                </div>
+                <div>Shape: {shape}</div>
+                <button onClick={() => deleteArrow('id', id)}>
+                  Delete
+                </button>
+              </Row>
+            </>
+          )
+        })
+      }
+      <button onClick={() => createArrow(newArrowProps)}>
+        Add Arrow
+      </button>
     </div>
   )
 }
