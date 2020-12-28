@@ -2,6 +2,7 @@ import React from "react"
 import styled from 'styled-components'
 
 import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
+import { Input } from './common/Input.jsx'
 
 const StyledEditor = styled.div`
   display: flex;
@@ -94,11 +95,26 @@ const EdgesPanel = ({ setEdges, edges }) => {
   )
 }
 
-const handleArrowEndChange = (event, updateArrow) => {
-  const { arrowId, endId } = event.target.dataset
+const validateArrowValue = (property, value) => {
+  const formatter = {
+    endId: parseInt,
+    edgeId: parseInt,
+    id: parseInt
+  }[property]
+
+  if (!formatter) return value
+
+  const formatted = formatter(value)
+  if (String(formatted) === 'NaN') return value
+  return formatted
+}
+
+const handleArrowChange = (event, updateArrow) => {
+  const { dataset, value: valueRaw } = event.target
+  const { arrowId, property } = dataset
+  const value = validateArrowValue(property, valueRaw)
   const id = parseInt(arrowId)
-  const value = parseInt(endId)
-  updateArrow({ id, property: 'endId', value })
+  updateArrow({ id, property, value })
 }
 
 const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
@@ -110,29 +126,47 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
           arrows.map((arrow, index) => {
             const { id, edgeId, endId, shape } = arrow
 
-            const radioProps = {
-              type: "radio",
+            const inputProps = {
               'data-arrow-id': id,
-              onChange: event => handleArrowEndChange(event, updateArrow)
+              onChange: event => handleArrowChange(event, updateArrow)
             }
+
+            const radioProps = { ...inputProps, type: 'radio', 'data-property': 'endId' }
 
             return (
               <>
                 <Row key={index}>
                   <div>ID: {id}</div>
-                  <div>Edge ID: {edgeId}</div>
+                  <div>
+                    Edge ID:
+                    <input
+                      {...inputProps}
+                      value={edgeId}
+                      data-property="edgeId"
+                    />
+                  </div>
                   <div>End 0:</div>
                   <div>
-                    <input {...radioProps} checked={endId === 0} data-end-id={0} />
+                    <input
+                      {...radioProps}
+                      key={`${index}-0`}
+                      checked={parseInt(endId) === 0}
+                      value={0}
+                    />
                   </div>
                   <div>End 1:</div>
                   <div>
-                    <input {...radioProps} checked={endId === 1} data-end-id={1} />
+                    <input
+                      {...radioProps}
+                      key={`${index}-1`}
+                      checked={parseInt(endId) === 1}
+                      value={1}
+                    />
                   </div>
                   <div>Shape: {shape}</div>
                   <button onClick={() => deleteArrow('id', id)}>
                     Delete
-                </button>
+                  </button>
                 </Row>
               </>
             )

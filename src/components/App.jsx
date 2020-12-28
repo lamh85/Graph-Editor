@@ -43,6 +43,8 @@ const renderArrow = ({ towardsVertex, awayVertex }) => {
 const renderArrows = ({ arrows, edges, vertices }) => {
   return arrows.map((arrow, index) => {
     const edge = edges.find(edge => edge.id === arrow.edgeId)
+    if (!edge) return null
+
     const endKey = `end${arrow.endId}`
     const towardsVertexId = edge[endKey].vertexId
     const towardsVertex = vertices[towardsVertexId]
