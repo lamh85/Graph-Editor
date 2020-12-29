@@ -121,6 +121,27 @@ const handleArrowChange = (event, updateArrow) => {
   updateArrow({ id, property, value })
 }
 
+const ArrowEdgeEndForm = ({
+  arrowId,
+  arrowEdgeEndId,
+  formEndId,
+  inputProps
+}) => {
+  const keyPrefix = `${arrowId}-${arrowEdgeEndId}`
+
+  return (
+    <>
+      <div key={`${keyPrefix}-title`}>End {formEndId}</div>
+      <input
+        key={`${keyPrefix}-input`}
+        checked={parseInt(arrowEdgeEndId) === formEndId}
+        value={formEndId}
+        {...inputProps}
+      />
+    </>
+  )
+}
+
 const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
   const highestId = arrows.map(arrow => arrow.id).reverse()[0]
   const newId = highestId + 1
@@ -152,24 +173,18 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
                     data-property="edgeId"
                   />
                 </div>
-                <div>End 0:</div>
-                <div>
-                  <input
-                    {...radioProps}
-                    key={`${index}-0`}
-                    checked={parseInt(endId) === 0}
-                    value={0}
-                  />
-                </div>
-                <div>End 1:</div>
-                <div>
-                  <input
-                    {...radioProps}
-                    key={`${index}-1`}
-                    checked={parseInt(endId) === 1}
-                    value={1}
-                  />
-                </div>
+                {
+                  [0, 1].map(formEndId => {
+                    return (
+                      <ArrowEdgeEndForm
+                        arrowId={id}
+                        arrowEdgeEndId={endId}
+                        formEndId={formEndId}
+                        inputProps={radioProps}
+                      />
+                    )
+                  })
+                }
                 <div>Shape: {shape}</div>
                 <button onClick={() => deleteArrow('id', id)}>
                   Delete
