@@ -17,6 +17,10 @@ import { Editor } from './Editor.jsx'
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
 
+const StyledSvg = styled.svg`
+  background: lightgrey;
+`
+
 const getVertexById = ({ vertices, id }) => vertices[id]
 
 const renderArrow = ({ towardsVertex, awayVertex }) => {
@@ -115,6 +119,10 @@ const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, vertices, 
   }
 }
 
+const handleContextClick = event => {
+  event.preventDefault()
+}
+
 const Circle = ({
   x,
   y,
@@ -163,11 +171,12 @@ const App = props => {
 
   return (
     <>
-      <svg
+      <StyledSvg
         width={SVG_WIDTH}
         height={SVG_HEIGHT}
         onMouseMove={event => handleMouseMove({ ...commonProps, event })}
         onMouseUp={() => setDraggedVertxId(null)}
+        onContextMenu={handleContextClick}
       >
         {
           edges.map((edge, index) => {
@@ -188,7 +197,7 @@ const App = props => {
             )
           })
         }
-      </svg>
+      </StyledSvg>
       <Editor
         vertices={vertices}
         setVertices={setVertices}
