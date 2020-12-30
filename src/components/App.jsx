@@ -7,12 +7,10 @@ import {
   DEFAULT_VERTICES,
   DEFAULT_ARROWS
 } from '../datasets/polygons'
-import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
-import { getArrowProps } from '../geometry_helpers/shapes_config'
-import { coordinatesToSvgPoints } from '../geometry_helpers/general'
 import { useArray } from '../hooks/useArray'
 import { PositionWrapper } from './common/Wrappers.jsx'
+import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 
 const SVG_HEIGHT = 500
@@ -32,45 +30,6 @@ const ContextMenu = styled.div`
 `
 
 const getVertexById = ({ vertices, id }) => vertices[id]
-
-const renderArrow = ({ towardsVertex, awayVertex }) => {
-  const { tangentOrigin, tangentDestination } = getVertexTangent({
-    vertexOrigin: towardsVertex,
-    vertexDestination: awayVertex
-  })
-
-  const arrowProps = getArrowProps({
-    towards: tangentOrigin,
-    away: tangentDestination
-  })
-
-  if (arrowProps === null) {
-    return null
-  } else {
-    const { svgPoints, cssRotation } = arrowProps
-    const rotationOrigin = coordinatesToSvgPoints([tangentOrigin])
-    const transform = `rotate(${cssRotation}, ${rotationOrigin})`
-    return <polygon points={svgPoints} stroke="red" fill="yellow" transform={transform} />
-  }
-}
-
-const renderArrows = ({ arrows, edges, vertices }) => {
-  return arrows.map((arrow, index) => {
-    const edge = edges.find(edge => edge.id === arrow.edgeId)
-    if (!edge) return null
-
-    const endKey = `end${arrow.endId}`
-    const towardsVertexId = edge[endKey].vertexId
-    const towardsVertex = vertices[towardsVertexId]
-
-    const awayEndId = arrow.endId === 0 ? 1 : 0
-    const awayEndKey = `end${awayEndId}`
-    const awayVertexId = edge[awayEndKey].vertexId
-    const awayVertex = vertices[awayVertexId]
-
-    return renderArrow({ towardsVertex, awayVertex })
-  })
-}
 
 const renderEdge = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
@@ -211,7 +170,7 @@ const App = props => {
               return renderEdge({ edge, index, vertices, arrows })
             })
           }
-          {renderArrows({ arrows, edges, vertices })}
+          <Arrows arrows={arrows} edges={edges} vertices={vertices} />
           {
             Object.keys(vertices).map((vertexId, index) => {
               return (
