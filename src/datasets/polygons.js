@@ -34,11 +34,11 @@ export const DEFAULT_EDGES = [
   }
 ]
 
-export const DEFAULT_VERTICES = {
-  1: { x: 40, y: 40 },
-  2: { x: 200, y: 40 },
-  3: { x: 200, y: 200 }
-}
+export const DEFAULT_VERTICES = [
+  { id: 1, x: 40, y: 40 },
+  { id: 2, x: 200, y: 40 },
+  { id: 3, x: 200, y: 200 }
+]
 
 const ARROW_TYPES = {
   TRIANGLE: 'triangle'

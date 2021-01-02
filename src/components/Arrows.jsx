@@ -32,12 +32,12 @@ const Arrows = ({ arrows, edges, vertices }) => {
 
     const endKey = `end${arrow.endId}`
     const towardsVertexId = edge[endKey].vertexId
-    const towardsVertex = vertices[towardsVertexId]
+    const towardsVertex = vertices.find(vertex => vertex.id === towardsVertexId)
 
     const awayEndId = arrow.endId === 0 ? 1 : 0
     const awayEndKey = `end${awayEndId}`
     const awayVertexId = edge[awayEndKey].vertexId
-    const awayVertex = vertices[awayVertexId]
+    const awayVertex = vertices.find(vertex => vertex.id === awayVertexId)
 
     return (
       <Arrow

@@ -216,10 +216,11 @@ const Editor = ({
       <div>
         <h1>Vertices</h1>
         {
-          Object.keys(vertices).map(id => {
+          vertices.map((vertex, index) => {
+            const { id } = vertex
             return (
-              <Row>
-                <div>{id}:: X: {vertices[id].x}, Y: {vertices[id].y}</div>
+              <Row key={index}>
+                <div>{id}:: X: {vertex.x}, Y: {vertex.y}</div>
                 <button onClick={() => handleDeleteVertex({ id, vertices, setVertices })}>Delete</button>
               </Row>
             )

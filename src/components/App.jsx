@@ -29,7 +29,9 @@ const ContextMenu = styled.div`
   top: ${props => props.top || 0}px
 `
 
-const getVertexById = ({ vertices, id }) => vertices[id]
+const getVertexById = ({ vertices, id }) => {
+  return vertices.find(vertex => vertex.id === id)
+}
 
 const renderEdge = ({ edge, index, vertices }) => {
   const vertexId1 = edge.end0.vertexId
@@ -76,15 +78,19 @@ const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, vertices, 
   }
 
   if (draggedVertexId) {
-    const location = {
-      ...vertices,
-      [draggedVertexId]: {
-        x: event.clientX,
-        y: event.clientY
-      }
+    const vertexIndex = vertices
+      .findIndex(vertex => vertex.id === draggedVertexId)
+
+    const updatedVertex = {
+      ...vertices[vertexIndex],
+      x: event.clientX,
+      y: event.clientY
     }
 
-    setVertices(location)
+    const newVertices = [...vertices]
+    newVertices.splice(vertexIndex, 1, updatedVertex)
+
+    setVertices(newVertices)
   }
 }
 
@@ -196,12 +202,12 @@ const App = props => {
           }
           <Arrows arrows={arrows} edges={edges} vertices={vertices} />
           {
-            Object.keys(vertices).map((vertexId, index) => {
+            vertices.map((vertex, index) => {
               return (
                 <Circle
-                  id={vertexId}
-                  x={vertices[vertexId].x}
-                  y={vertices[vertexId].y}
+                  id={vertex.id}
+                  x={vertex.x}
+                  y={vertex.y}
                   index={index}
                   setDraggedVertxId={setDraggedVertxId}
                 />
