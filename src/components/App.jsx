@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
@@ -128,7 +128,31 @@ const Circle = ({
   )
 }
 
+const handleDocumentClick = ({ event, contextMenuNode, setIsContextMenuOpen }) => {
+  if (!Object.is(contextMenuNode.current, event.target)) {
+    setIsContextMenuOpen(false)
+  }
+}
+
 const App = props => {
+  useEffect(() => {
+    const mouseDownParams = [
+      'mousedown',
+      event => handleDocumentClick({
+        event,
+        contextMenuNode,
+        setIsContextMenuOpen
+      })
+    ]
+
+    document.addEventListener(...mouseDownParams)
+
+    return () => {
+      document.removeEventListener(...mouseDownParams)
+    }
+  }, [])
+
+  const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [vertices, setVertices] = useState(DEFAULT_VERTICES)
   const [edges, setEdges] = useState(DEFAULT_EDGES)
@@ -187,6 +211,7 @@ const App = props => {
         </StyledSvg>
         {isContextMenuOpen && (
           <ContextMenu
+            ref={contextMenuNode}
             left={contextMenuLocation.x}
             top={contextMenuLocation.y}
           >
