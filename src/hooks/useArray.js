@@ -3,7 +3,17 @@ import { useState } from "react"
 export const useArray = initialValue => {
   const [state, setState] = useState(initialValue)
 
-  const push = item => setState([...state, item])
+  const find = id => state.find(item => item.id === id)
+
+  const highestId = state
+    .map(items => items.id)
+    .reverse()[0]
+
+  const newId = highestId + 1
+
+  const push = item => setState(
+    [...state, { ...item, id: newId }]
+  )
 
   const removeByProperty = (property, value) => {
     const itemIndex = state.findIndex(item => {
@@ -39,5 +49,12 @@ export const useArray = initialValue => {
     setState(newState)
   }
 
-  return { state, push, removeByProperty, removeByValue, updateItem }
+  return {
+    state,
+    find,
+    push,
+    removeByProperty,
+    removeByValue,
+    updateItem
+  }
 }
