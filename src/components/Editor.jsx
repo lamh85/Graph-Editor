@@ -23,7 +23,7 @@ const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId }) => {
   const newEdges = [...edges]
   const edgeIndex = edges.findIndex(edge => edge.id === edgeId)
   const editedEdge = newEdges[edgeIndex]
-  editedEdge[endProperty].vertexId = event.target.value
+  editedEdge[endProperty].vertexId = parseInt(event.target.value)
   newEdges[edgeIndex] = editedEdge
 
   setEdges(newEdges)
