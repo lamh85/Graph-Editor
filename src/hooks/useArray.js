@@ -5,11 +5,11 @@ export const useArray = initialValue => {
 
   const find = id => state.find(item => item.id === id)
 
-  const highestId = state
+  const maxId = state
     .map(items => items.id)
     .reverse()[0]
 
-  const newId = highestId + 1
+  const newId = maxId + 1
 
   const push = item => setState(
     [...state, { ...item, id: newId }]
