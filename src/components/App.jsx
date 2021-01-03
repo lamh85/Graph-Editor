@@ -2,11 +2,8 @@ import React, { useState, useEffect, useRef } from "react"
 import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
-import {
-  DEFAULT_EDGES,
-  DEFAULT_VERTICES,
-  DEFAULT_ARROWS
-} from '../models/polygons'
+import { DEFAULT_VERTICES, DEFAULT_ARROWS } from '../models/polygons'
+import { SEED as EDGES_SEED } from '../models/edge'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
 import { PositionWrapper } from './common/Wrappers.jsx'
@@ -154,7 +151,7 @@ const App = props => {
 
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
-  const [edges, setEdges] = useState(DEFAULT_EDGES)
+  const [edges, setEdges] = useState(EDGES_SEED)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const [contextMenuLocation, setContextMenuLocation] = useState({})
 
