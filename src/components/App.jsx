@@ -6,7 +6,7 @@ import {
   DEFAULT_EDGES,
   DEFAULT_VERTICES,
   DEFAULT_ARROWS
-} from '../datasets/polygons'
+} from '../models/polygons'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
 import { PositionWrapper } from './common/Wrappers.jsx'

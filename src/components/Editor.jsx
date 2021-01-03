@@ -1,7 +1,7 @@
 import React from "react"
 import styled from 'styled-components'
 
-import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../datasets/polygons'
+import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../models/polygons'
 
 const StyledEditor = styled.div`
   display: flex;
