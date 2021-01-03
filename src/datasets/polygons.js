@@ -40,6 +40,8 @@ export const DEFAULT_VERTICES = [
   { id: 3, x: 200, y: 200 }
 ]
 
+export const VERTEX_TEMPLATE = { x: 20, y: 20 }
+
 const ARROW_TYPES = {
   TRIANGLE: 'triangle'
 }

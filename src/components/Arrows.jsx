@@ -5,6 +5,8 @@ import { coordinatesToSvgPoints } from '../geometry_helpers/general'
 import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 
 const Arrow = ({ towardsVertex, awayVertex }) => {
+  if (!towardsVertex || !awayVertex) return null
+
   const { tangentOrigin, tangentDestination } = getVertexTangent({
     vertexOrigin: towardsVertex,
     vertexDestination: awayVertex

@@ -35,15 +35,20 @@ export const useArray = initialValue => {
     setState(newState)
   }
 
-  const updateItem = ({ id, property, value }) => {
+  const updateItem = ({ id, property, value, propertySet }) => {
     const index = state.findIndex(item => item.id === id)
     if (index === -1) return
 
+    let newProperties = { [property]: value }
+    if (propertySet) {
+      newProperties = propertySet
+    }
+
     const updatedItem = {
       ...[...state][index],
-      [property]: value
+      ...newProperties
     }
-    
+
     const newState = [...state]
     newState.splice(index, 1, updatedItem)
     setState(newState)

@@ -1,8 +1,7 @@
 import React from "react"
 import styled from 'styled-components'
 
-import { handleAddVertex, handleDeleteVertex } from '../state_interfaces/polygons'
-import { ARROW_TEMPLATE } from '../datasets/polygons'
+import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../datasets/polygons'
 
 const StyledEditor = styled.div`
   display: flex;
@@ -203,7 +202,8 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
 
 const Editor = ({
   vertices,
-  setVertices,
+  createVertex,
+  deleteVertex,
   edges,
   setEdges,
   arrows,
@@ -221,12 +221,12 @@ const Editor = ({
             return (
               <Row key={index}>
                 <div>{id}:: X: {vertex.x}, Y: {vertex.y}</div>
-                <button onClick={() => handleDeleteVertex({ id, vertices, setVertices })}>Delete</button>
+                <button onClick={() => deleteVertex('id', id)}>Delete</button>
               </Row>
             )
           })
         }
-        <button onClick={() => handleAddVertex({ vertices, setVertices })}>
+        <button onClick={() => createVertex(VERTEX_TEMPLATE)}>
           Add Vertex
         </button>
       </div>

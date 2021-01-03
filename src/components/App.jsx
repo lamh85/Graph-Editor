@@ -72,25 +72,19 @@ const handleMouseDown = ({ id, setDraggedVertxId }) => {
 
 const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
 
-const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, vertices, setVertices }) => {
+const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVertex }) => {
   if (doesExceedBoundaries({ x: event.clientX, y: event.clientY })) {
     setDraggedVertxId(null)
   }
 
   if (draggedVertexId) {
-    const vertexIndex = vertices
-      .findIndex(vertex => vertex.id === draggedVertexId)
-
-    const updatedVertex = {
-      ...vertices[vertexIndex],
-      x: event.clientX,
-      y: event.clientY
-    }
-
-    const newVertices = [...vertices]
-    newVertices.splice(vertexIndex, 1, updatedVertex)
-
-    setVertices(newVertices)
+    updateVertex({
+      id: draggedVertexId,
+      propertySet: {
+        x: event.clientX,
+        y: event.clientY
+      }
+    })
   }
 }
 
@@ -160,10 +154,17 @@ const App = props => {
 
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
-  const [vertices, setVertices] = useState(DEFAULT_VERTICES)
   const [edges, setEdges] = useState(DEFAULT_EDGES)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const [contextMenuLocation, setContextMenuLocation] = useState({})
+
+  const {
+    state: vertices,
+    find: findVertex,
+    push: createVertex,
+    removeByProperty: deleteVertex,
+    updateItem: updateVertex
+  } = useArray(DEFAULT_VERTICES)
 
   const {
     state: arrows,
@@ -172,22 +173,15 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
-  const commonProps = {
-    setDraggedVertxId,
-    draggedVertexId,
-    setVertices,
-    vertices,
-    edges,
-    setEdges
-  }
-
   return (
     <>
       <PositionWrapper>
         <StyledSvg
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          onMouseMove={event => handleMouseMove({ ...commonProps, event })}
+          onMouseMove={
+            event => handleMouseMove({ event, setDraggedVertxId, draggedVertexId, updateVertex })
+          }
           onMouseUp={() => setDraggedVertxId(null)}
           onContextMenu={event => handleContextClick({
             event,
@@ -227,7 +221,8 @@ const App = props => {
       </PositionWrapper>
       <Editor
         vertices={vertices}
-        setVertices={setVertices}
+        createVertex={createVertex}
+        deleteVertex={deleteVertex}
         edges={edges}
         setEdges={setEdges}
         arrows={arrows}
