@@ -17,6 +17,10 @@ const StyledSvg = styled.svg`
   background: lightgrey;
 `
 
+const CircleG = styled.g`
+  cursor: pointer;
+`
+
 const ContextMenu = styled.div`
   height: 100px;
   width: 100px;
@@ -107,7 +111,7 @@ const Circle = ({
   setDraggedVertxId
 }) => {
   return (
-    <g
+    <CircleG
       onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
     >
       <circle
@@ -121,7 +125,7 @@ const Circle = ({
       >
       </circle>
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
-    </g>
+    </CircleG>
   )
 }
 
