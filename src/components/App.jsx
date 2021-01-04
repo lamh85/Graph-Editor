@@ -7,6 +7,7 @@ import { SEED as EDGES_SEED } from '../models/edge'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
 import { PositionWrapper } from './common/Wrappers.jsx'
+import { Grid } from './Grid.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 
@@ -190,6 +191,7 @@ const App = props => {
             setContextMenuLocation
           })}
         >
+          <Grid width={SVG_WIDTH} height={SVG_HEIGHT} />
           {
             edges.map((edge, index) => {
               return renderEdge({ edge, index, vertices, arrows })
