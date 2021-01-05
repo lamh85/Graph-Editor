@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from 'styled-components'
 
 import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../models/polygons'
@@ -200,7 +200,19 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
   )
 }
 
+const handleGridIncrementChange = (event, setGridSizeInput) => {
+  let newValue = parseInt(event.target.value)
+
+  if (String(newValue) === 'NaN') {
+    newValue = ''
+  }
+
+  setGridSizeInput(newValue)
+}
+
 const Editor = ({
+  gridIncrement,
+  setGridIncrement,
   vertices,
   createVertex,
   deleteVertex,
@@ -211,9 +223,19 @@ const Editor = ({
   deleteArrow,
   updateArrow
 }) => {
+  const [gridSizeInput, setGridSizeInput] = useState(gridIncrement)
+
   return (
     <StyledEditor>
       <div>
+        <h1>Grid Square Size</h1>
+        <input
+          value={gridSizeInput}
+          onChange={event => handleGridIncrementChange(event, setGridSizeInput)}
+        />
+        <button onClick={() => setGridIncrement(gridSizeInput)}>
+          Apply
+        </button>
         <h1>Vertices</h1>
         {
           vertices.map((vertex, index) => {

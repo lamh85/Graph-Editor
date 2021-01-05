@@ -5,6 +5,8 @@ const StyledG = styled.g`
 `
 
 const buildIncrementedSeries = (maximum, increment) => {
+  if ( String(increment) === 'NaN' ) return []
+
   const series = [0]
   const validatedIncrement = parseInt(increment)
 
@@ -59,11 +61,12 @@ const ParallelLinesSets = ({ svgWidth, svgHeight, increment }) => {
 
 const Grid = ({
   height,
-  width
+  width,
+  increment
 }) => {
   return (
     <StyledG>
-      <ParallelLinesSets svgWidth={width} svgHeight={height} increment="10" />
+      <ParallelLinesSets svgWidth={width} svgHeight={height} increment={increment} />
     </StyledG>
   )
 }

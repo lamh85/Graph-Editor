@@ -159,6 +159,7 @@ const App = props => {
   const [edges, setEdges] = useState(EDGES_SEED)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const [contextMenuLocation, setContextMenuLocation] = useState({})
+  const [gridIncrement, setGridIncrement] = useState(10)
 
   const {
     state: vertices,
@@ -191,7 +192,7 @@ const App = props => {
             setContextMenuLocation
           })}
         >
-          <Grid width={SVG_WIDTH} height={SVG_HEIGHT} />
+          <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
             edges.map((edge, index) => {
               return renderEdge({ edge, index, vertices, arrows })
@@ -223,6 +224,8 @@ const App = props => {
         )}
       </PositionWrapper>
       <Editor
+        gridIncrement={gridIncrement}
+        setGridIncrement={setGridIncrement}
         vertices={vertices}
         createVertex={createVertex}
         deleteVertex={deleteVertex}
