@@ -15,7 +15,7 @@ const Row = styled.div`
   align-items: flex-start;
 
   > *:not(last-child) {
-    margin-right: 10px
+    margin-right: 10px;
   }
 `
 
