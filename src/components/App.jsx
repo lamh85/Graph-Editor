@@ -86,15 +86,21 @@ const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVert
 const handleContextClick = ({
   event,
   setIsContextMenuOpen,
-  setContextMenuLocation
+  setContextMenuLocation,
+  setContextMenuItems,
+  createVertex
 }) => {
   event.preventDefault()
 
   setIsContextMenuOpen(true)
-  setContextMenuLocation({
-    x: event.clientX,
-    y: event.clientY
-  })
+  const coordinates = { x: event.clientX, y: event.clientY }
+  setContextMenuLocation(coordinates)
+
+  const clickHandler = () => createVertex(coordinates)
+
+  setContextMenuItems([
+    { display: 'Create vertex here', onClick: clickHandler }
+  ])
 }
 
 const Circle = ({
@@ -156,6 +162,7 @@ const App = props => {
   const [edges, setEdges] = useState(EDGES_SEED)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const [contextMenuLocation, setContextMenuLocation] = useState({})
+  const [contextMenuItems, setContextMenuItems] = useState([])
   const [gridIncrement, setGridIncrement] = useState(10)
 
   const {
@@ -186,7 +193,9 @@ const App = props => {
           onContextMenu={event => handleContextClick({
             event,
             setIsContextMenuOpen,
-            setContextMenuLocation
+            setContextMenuLocation,
+            setContextMenuItems,
+            createVertex
           })}
         >
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
@@ -216,12 +225,7 @@ const App = props => {
             coordX={contextMenuLocation.x}
             coordY={contextMenuLocation.y}
             closeMenu={() => setIsContextMenuOpen(false)}
-            items={[
-              {
-                display: 'display',
-                clickAction: event => console.log('item\'s clickAction function')
-              }
-            ]}
+            items={contextMenuItems}
           />
         )}
       </PositionWrapper>

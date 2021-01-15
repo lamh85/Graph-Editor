@@ -9,6 +9,14 @@ const StyledContextMenu = styled.div`
   top: ${props => props.top || 0}px
 `
 
+const MenuItem = styled.div`
+  cursor: pointer;
+
+  &:hover {
+    background: yellow;
+  }
+`
+
 const handleItemClick = ({ event, clickAction, closeMenu }) => {
   console.log('handleItemClick')
   // event.preventDefault()
@@ -24,17 +32,16 @@ export const ContextMenu = ({ nodeRef, coordX, coordY, items, closeMenu }) => {
       top={coordY}
     >
       {items && items.map(item => {
-        const { clickAction, display } = item
         return (
-          <div
+          <MenuItem
             onClick={event => handleItemClick({
               event,
-              clickAction,
+              clickAction: item.onClick,
               closeMenu
             })}
           >
-            {display}
-          </div>
+            {item.display}
+          </MenuItem>
         )
       })}
     </StyledContextMenu>
