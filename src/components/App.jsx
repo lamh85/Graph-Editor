@@ -4,12 +4,14 @@ import { hot } from "react-hot-loader"
 
 import { DEFAULT_VERTICES, DEFAULT_ARROWS } from '../models/polygons'
 import { SEED as EDGES_SEED } from '../models/edge'
+import { doShareLineage } from '../dom_helpers/lineage'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
+import { ContextMenu } from './ContextMenu.jsx'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -20,15 +22,6 @@ const StyledSvg = styled.svg`
 
 const CircleG = styled.g`
   cursor: pointer;
-`
-
-const ContextMenu = styled.div`
-  height: 100px;
-  width: 100px;
-  background: white;
-  position: absolute;
-  left: ${props => props.left || 0}px;
-  top: ${props => props.top || 0}px
 `
 
 const getVertexById = ({ vertices, id }) => {
@@ -131,6 +124,10 @@ const Circle = ({
 }
 
 const handleDocumentClick = ({ event, contextMenuNode, setIsContextMenuOpen }) => {
+  if (doShareLineage(event.target, contextMenuNode.current)) {
+    return
+  }
+
   if (!Object.is(contextMenuNode.current, event.target)) {
     setIsContextMenuOpen(false)
   }
@@ -215,12 +212,17 @@ const App = props => {
         </StyledSvg>
         {isContextMenuOpen && (
           <ContextMenu
-            ref={contextMenuNode}
-            left={contextMenuLocation.x}
-            top={contextMenuLocation.y}
-          >
-            blah
-          </ContextMenu>
+            nodeRef={contextMenuNode}
+            coordX={contextMenuLocation.x}
+            coordY={contextMenuLocation.y}
+            closeMenu={() => setIsContextMenuOpen(false)}
+            items={[
+              {
+                display: 'display',
+                clickAction: event => console.log('item\'s clickAction function')
+              }
+            ]}
+          />
         )}
       </PositionWrapper>
       <Editor
