@@ -7,6 +7,7 @@ import { SEED as EDGES_SEED } from '../models/edge'
 import { doShareLineage } from '../dom_helpers/lineage'
 import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
+import { useContextMenu } from '../hooks/useContextMenu'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import Arrows from './Arrows.jsx'
@@ -85,22 +86,18 @@ const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVert
 
 const handleContextClick = ({
   event,
-  setIsContextMenuOpen,
-  setContextMenuLocation,
-  setContextMenuItems,
+  renderContextMenu,
   createVertex
 }) => {
   event.preventDefault()
 
-  setIsContextMenuOpen(true)
   const coordinates = { x: event.clientX, y: event.clientY }
-  setContextMenuLocation(coordinates)
-
   const clickHandler = () => createVertex(coordinates)
-
-  setContextMenuItems([
+  const menuItems = [
     { display: 'Create vertex here', onClick: clickHandler }
-  ])
+  ]
+
+  renderContextMenu({ ...coordinates, menuItems })
 }
 
 const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
@@ -120,8 +117,20 @@ const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
   })
 }
 
-const renderVertexContextMenu = ({ vertexId, vertices, edges }) => {
+const handleVertexContextClick = ({ vertexId, vertices, edges, renderContextMenu, event }) => {
+  event.preventDefault()
+  event.stopPropagation()
   const unconnectedVertices = getUnconnectedVertices({ vertexId, vertices, edges })
+
+  const menuItems = unconnectedVertices.map(vertexId => {
+    return { display: vertexId, onClick: () => console.log('clicked ', vertexId) }
+  })
+
+  renderContextMenu({
+    x: event.clientX,
+    y: event.clientY,
+    menuItems
+  })
 }
 
 const Circle = ({
@@ -130,7 +139,7 @@ const Circle = ({
   index,
   id,
   setDraggedVertxId,
-  setContextMenuItems,
+  renderContextMenu,
   vertices,
   edges
 }) => {
@@ -138,11 +147,7 @@ const Circle = ({
     <CircleG
       onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
       onContextMenu={event => {
-        event.preventDefault()
-        event.stopPropagation()
-        const contextMenuItems = renderVertexContextMenu({ vertexId: id, vertices, edges })
-
-        console.log(contextMenuItems)
+        return handleVertexContextClick({ vertexId: id, vertices, edges, renderContextMenu, event })
       }}
     >
       <circle
@@ -160,13 +165,13 @@ const Circle = ({
   )
 }
 
-const handleDocumentClick = ({ event, contextMenuNode, setIsContextMenuOpen }) => {
+const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
   if (doShareLineage(event.target, contextMenuNode.current)) {
     return
   }
 
   if (!Object.is(contextMenuNode.current, event.target)) {
-    setIsContextMenuOpen(false)
+    unRenderContextMenu()
   }
 }
 
@@ -177,7 +182,7 @@ const App = props => {
       event => handleDocumentClick({
         event,
         contextMenuNode,
-        setIsContextMenuOpen
+        unRenderContextMenu
       })
     ]
 
@@ -191,10 +196,15 @@ const App = props => {
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [edges, setEdges] = useState(EDGES_SEED)
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
-  const [contextMenuLocation, setContextMenuLocation] = useState({})
-  const [contextMenuItems, setContextMenuItems] = useState([])
   const [gridIncrement, setGridIncrement] = useState(10)
+
+  const {
+    render: renderContextMenu,
+    unRender: unRenderContextMenu,
+    isRendering: isRenderingContextMenu,
+    coordinates: contextMenuCoordinates,
+    items: contextMenuItems
+  } = useContextMenu()
 
   const {
     state: vertices,
@@ -223,9 +233,7 @@ const App = props => {
           onMouseUp={() => setDraggedVertxId(null)}
           onContextMenu={event => handleContextClick({
             event,
-            setIsContextMenuOpen,
-            setContextMenuLocation,
-            setContextMenuItems,
+            renderContextMenu,
             createVertex
           })}
         >
@@ -245,7 +253,7 @@ const App = props => {
                   y={vertex.y}
                   index={index}
                   setDraggedVertxId={setDraggedVertxId}
-                  setContextMenuItems={setContextMenuItems}
+                  renderContextMenu={renderContextMenu}
                   vertices={vertices}
                   edges={edges}
                 />
@@ -253,12 +261,12 @@ const App = props => {
             })
           }
         </StyledSvg>
-        {isContextMenuOpen && (
+        {isRenderingContextMenu && (
           <ContextMenu
             nodeRef={contextMenuNode}
-            coordX={contextMenuLocation.x}
-            coordY={contextMenuLocation.y}
-            closeMenu={() => setIsContextMenuOpen(false)}
+            coordX={contextMenuCoordinates.x}
+            coordY={contextMenuCoordinates.y}
+            closeMenu={unRenderContextMenu}
             items={contextMenuItems}
           />
         )}
