@@ -93,11 +93,11 @@ const handleContextClick = ({
 
   const coordinates = { x: event.clientX, y: event.clientY }
   const clickHandler = () => createVertex(coordinates)
-  const menuItems = [
+  const items = [
     { display: 'Create vertex here', onClick: clickHandler }
   ]
 
-  renderContextMenu({ ...coordinates, menuItems })
+  renderContextMenu({ ...coordinates, items })
 }
 
 const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
@@ -129,7 +129,7 @@ const handleVertexContextClick = ({ vertexId, vertices, edges, renderContextMenu
   renderContextMenu({
     x: event.clientX,
     y: event.clientY,
-    menuItems
+    items: menuItems
   })
 }
 
