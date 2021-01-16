@@ -1,15 +1,19 @@
 import React, { useState } from "react"
 import styled from 'styled-components'
 
+import { Triangle } from './common/Triangle.jsx'
+
 const StyledContextMenu = styled.div`
   width: 100px;
   background: white;
   position: absolute;
   left: ${props => props.left || 0}px;
-  top: ${props => props.top || 0}px
+  top: ${props => props.top || 0}px;
 `
 
 const MenuItem = styled.div`
+  display: flex;
+  align-items: center;
   cursor: pointer;
 
   &:hover {
@@ -23,6 +27,16 @@ const handleItemClick = ({ event, clickAction, closeMenu }) => {
   clickAction(event)
   closeMenu()
 }
+
+const RightIcon = (
+  <Triangle
+    leftSlopeWidth={10}
+    height={20}
+    rightSlopeWidth={10}
+    color="black"
+    direction="right"
+  />
+)
 
 export const ContextMenu = ({ nodeRef, coordX, coordY, items, closeMenu }) => {
   return (
@@ -41,6 +55,7 @@ export const ContextMenu = ({ nodeRef, coordX, coordY, items, closeMenu }) => {
             })}
           >
             {item.display}
+            { item.subItems && RightIcon }
           </MenuItem>
         )
       })}

@@ -103,16 +103,47 @@ const handleContextClick = ({
   ])
 }
 
+const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
+  const vertexEdges = edges.filter(edge => {
+    return edge.end0.vertexId === vertexId || edge.end1.vertexId === vertexId
+  })
+
+  const connectedVertices = []
+  vertexEdges.forEach(edge => {
+    connectedVertices.push(edge.end0.vertexId)
+    connectedVertices.push(edge.end1.vertexId)
+  })
+
+  const allVertexIds = vertices.map(vertex => vertex.id)
+  return allVertexIds.filter(id => {
+    return !connectedVertices.includes(id) && id !== vertexId
+  })
+}
+
+const renderVertexContextMenu = ({ vertexId, vertices, edges }) => {
+  const unconnectedVertices = getUnconnectedVertices({ vertexId, vertices, edges })
+}
+
 const Circle = ({
   x,
   y,
   index,
   id,
-  setDraggedVertxId
+  setDraggedVertxId,
+  setContextMenuItems,
+  vertices,
+  edges
 }) => {
   return (
     <CircleG
       onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
+      onContextMenu={event => {
+        event.preventDefault()
+        event.stopPropagation()
+        const contextMenuItems = renderVertexContextMenu({ vertexId: id, vertices, edges })
+
+        console.log(contextMenuItems)
+      }}
     >
       <circle
         key={index}
@@ -214,6 +245,9 @@ const App = props => {
                   y={vertex.y}
                   index={index}
                   setDraggedVertxId={setDraggedVertxId}
+                  setContextMenuItems={setContextMenuItems}
+                  vertices={vertices}
+                  edges={edges}
                 />
               )
             })
