@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Triangle } from './common/Triangle.jsx'
 
 const StyledContextMenu = styled.div`
-  width: 100px;
+  max-width: 200px;
   background: white;
   position: absolute;
   left: ${props => props.left || 0}px;
@@ -15,6 +15,8 @@ const MenuItem = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  padding: 5px;
+  border: 1px solid grey;
 
   &:hover {
     background: yellow;
