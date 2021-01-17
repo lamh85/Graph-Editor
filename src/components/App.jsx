@@ -182,6 +182,7 @@ const App = props => {
             vertices={vertices}
             edges={edges}
             createEdge={createEdge}
+            deleteEdge={deleteEdge}
             setDraggedVertxId={setDraggedVertxId}
             renderContextMenu={renderContextMenu}
           />
