@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import styled from 'styled-components'
 
 import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../models/polygons'
+import { TEMPLATE as EDGE_TEMPLATE } from '../models/edge'
 
 const StyledEditor = styled.div`
   display: flex;
@@ -19,14 +20,18 @@ const Row = styled.div`
   }
 `
 
-const handleEdgeChange = ({ event, edges, endProperty, setEdges, edgeId }) => {
-  const newEdges = [...edges]
-  const edgeIndex = edges.findIndex(edge => edge.id === edgeId)
-  const editedEdge = newEdges[edgeIndex]
-  editedEdge[endProperty].vertexId = parseInt(event.target.value)
-  newEdges[edgeIndex] = editedEdge
+const handleEdgeChange = ({ event, endProperty, updateEdge, edgeId, editedEdge }) => {
+  const vertexId = parseInt(event.target.value)
+  const newAttributeValue = {
+    ...editedEdge[endProperty],
+    vertexId
+  }
 
-  setEdges(newEdges)
+  updateEdge({
+    id: edgeId,
+    property: endProperty,
+    value: newAttributeValue
+  })
 }
 
 const EdgeEndInput = ({ key, value, handleChange }) => {
@@ -40,30 +45,7 @@ const EdgeEndInput = ({ key, value, handleChange }) => {
   )
 }
 
-const handleAddEdge = ({ edges, setEdges }) => {
-  const edgeIds = edges.map(edge => edge.id)
-  const highestId = edgeIds.reverse()[0]
-  const newId = highestId + 1
-
-  const newEdges = [...edges]
-  const newEdge = {
-    ...edges.reverse()[0],
-    id: newId,
-    end0: {
-      ...edges.reverse()[0].end0,
-      vertexId: null
-    },
-    end1: {
-      ...edges.reverse()[0].end1,
-      vertexId: null
-    }
-  }
-  newEdges.push(newEdge)
-
-  setEdges(newEdges)
-}
-
-const EdgesPanel = ({ setEdges, edges }) => {
+const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
   return (
     <div>
       <h1>Edges</h1>
@@ -78,11 +60,11 @@ const EdgesPanel = ({ setEdges, edges }) => {
                     key={`${edge.id}-${endNumber}`}
                     value={edge[`end${endNumber}`].vertexId}
                     handleChange={event => handleEdgeChange({
-                      edges,
-                      setEdges,
+                      updateEdge,
                       event,
                       endProperty: `end${endNumber}`,
-                      edgeId: edge.id
+                      edgeId: edge.id,
+                      editedEdge: edge
                     })}
                   />
                 )
@@ -91,7 +73,7 @@ const EdgesPanel = ({ setEdges, edges }) => {
           )
         })
       }
-      <button onClick={() => handleAddEdge({ edges, setEdges })}>
+      <button onClick={() => createEdge(EDGE_TEMPLATE)}>
         Add Edge
       </button>
     </div>
@@ -217,7 +199,8 @@ const Editor = ({
   createVertex,
   deleteVertex,
   edges,
-  setEdges,
+  createEdge,
+  updateEdge,
   arrows,
   createArrow,
   deleteArrow,
@@ -252,7 +235,11 @@ const Editor = ({
           Add Vertex
         </button>
       </div>
-      <EdgesPanel setEdges={setEdges} edges={edges} />
+      <EdgesPanel
+        createEdge={createEdge}
+        updateEdge={updateEdge}
+        edges={edges}
+      />
       <ArrowsPanel
         arrows={arrows}
         createArrow={createArrow}

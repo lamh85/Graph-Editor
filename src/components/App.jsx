@@ -5,11 +5,11 @@ import { hot } from "react-hot-loader"
 import { DEFAULT_VERTICES, DEFAULT_ARROWS } from '../models/polygons'
 import { SEED as EDGES_SEED } from '../models/edge'
 import { doShareLineage } from '../dom_helpers/lineage'
-import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
+import { Vertices } from './Vertices.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
@@ -19,10 +19,6 @@ const SVG_WIDTH = 750
 
 const StyledSvg = styled.svg`
   background: lightgrey;
-`
-
-const CircleG = styled.g`
-  cursor: pointer;
 `
 
 const getVertexById = ({ vertices, id }) => {
@@ -62,10 +58,6 @@ const renderEdge = ({ edge, index, vertices }) => {
   )
 }
 
-const handleMouseDown = ({ id, setDraggedVertxId }) => {
-  setDraggedVertxId(id)
-}
-
 const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
 
 const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVertex }) => {
@@ -100,71 +92,6 @@ const handleContextClick = ({
   renderContextMenu({ ...coordinates, items })
 }
 
-const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
-  const vertexEdges = edges.filter(edge => {
-    return edge.end0.vertexId === vertexId || edge.end1.vertexId === vertexId
-  })
-
-  const connectedVertices = []
-  vertexEdges.forEach(edge => {
-    connectedVertices.push(edge.end0.vertexId)
-    connectedVertices.push(edge.end1.vertexId)
-  })
-
-  const allVertexIds = vertices.map(vertex => vertex.id)
-  return allVertexIds.filter(id => {
-    return !connectedVertices.includes(id) && id !== vertexId
-  })
-}
-
-const handleVertexContextClick = ({ vertexId, vertices, edges, renderContextMenu, event }) => {
-  event.preventDefault()
-  event.stopPropagation()
-  const unconnectedVertices = getUnconnectedVertices({ vertexId, vertices, edges })
-
-  const menuItems = unconnectedVertices.map(vertexId => {
-    return { display: vertexId, onClick: () => console.log('clicked ', vertexId) }
-  })
-
-  renderContextMenu({
-    x: event.clientX,
-    y: event.clientY,
-    items: menuItems
-  })
-}
-
-const Circle = ({
-  x,
-  y,
-  index,
-  id,
-  setDraggedVertxId,
-  renderContextMenu,
-  vertices,
-  edges
-}) => {
-  return (
-    <CircleG
-      onMouseDown={event => handleMouseDown({ id, setDraggedVertxId })}
-      onContextMenu={event => {
-        return handleVertexContextClick({ vertexId: id, vertices, edges, renderContextMenu, event })
-      }}
-    >
-      <circle
-        key={index}
-        cx={x}
-        cy={y}
-        fill="blue"
-        strokeWidth="3"
-        stroke="black"
-        r={CIRCLE_CONFIG.radius}
-      >
-      </circle>
-      <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
-    </CircleG>
-  )
-}
-
 const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
   if (doShareLineage(event.target, contextMenuNode.current)) {
     return
@@ -195,7 +122,6 @@ const App = props => {
 
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
-  const [edges, setEdges] = useState(EDGES_SEED)
   const [gridIncrement, setGridIncrement] = useState(10)
 
   const {
@@ -213,6 +139,14 @@ const App = props => {
     removeByProperty: deleteVertex,
     updateItem: updateVertex
   } = useArray(DEFAULT_VERTICES)
+
+  const {
+    state: edges,
+    find: findEdge,
+    push: createEdge,
+    removeByProperty: deleteEdge,
+    updateItem: updateEdge
+  } = useArray(EDGES_SEED)
 
   const {
     state: arrows,
@@ -244,22 +178,13 @@ const App = props => {
             })
           }
           <Arrows arrows={arrows} edges={edges} vertices={vertices} />
-          {
-            vertices.map((vertex, index) => {
-              return (
-                <Circle
-                  id={vertex.id}
-                  x={vertex.x}
-                  y={vertex.y}
-                  index={index}
-                  setDraggedVertxId={setDraggedVertxId}
-                  renderContextMenu={renderContextMenu}
-                  vertices={vertices}
-                  edges={edges}
-                />
-              )
-            })
-          }
+          <Vertices
+            vertices={vertices}
+            edges={edges}
+            createEdge={createEdge}
+            setDraggedVertxId={setDraggedVertxId}
+            renderContextMenu={renderContextMenu}
+          />
         </StyledSvg>
         {isRenderingContextMenu && (
           <ContextMenu
@@ -278,7 +203,8 @@ const App = props => {
         createVertex={createVertex}
         deleteVertex={deleteVertex}
         edges={edges}
-        setEdges={setEdges}
+        createEdge={createEdge}
+        updateEdge={updateEdge}
         arrows={arrows}
         createArrow={createArrow}
         deleteArrow={deleteArrow}
