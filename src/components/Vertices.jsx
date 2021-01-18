@@ -110,6 +110,7 @@ const handleMouseDown = ({
 const Circle = ({
   x,
   y,
+  radius,
   index,
   id,
   setDraggedVertxId,
@@ -140,7 +141,7 @@ const Circle = ({
         cx={x}
         cy={y}
         fill="black"
-        r={CIRCLE_CONFIG.radius}
+        r={radius}
         onMouseDown={event => handleMouseDown({
           event,
           id,
@@ -153,7 +154,7 @@ const Circle = ({
         cx={x}
         cy={y}
         fill="red"
-        r={CIRCLE_CONFIG.radius - 5}
+        r={radius - 5}
         onMouseDown={() => setDraggedVertxId(id)}
       />
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
@@ -177,6 +178,7 @@ export const Vertices = ({
         id={vertex.id}
         x={vertex.x}
         y={vertex.y}
+        radius={vertex.radius}
         index={index}
         setDraggedVertxId={setDraggedVertxId}
         setResizedVertexId={setResizedVertexId}

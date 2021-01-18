@@ -13,6 +13,8 @@ import { Vertices } from './Vertices.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
+import { getDistance, getPixelDirection } from "../geometry_helpers/general"
+import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -91,8 +93,28 @@ const handleMouseMove = ({
 
   if (resizedVertexId) {
     const vertex = findVertex(resizedVertexId)
-    
-    console.log('resizing')
+
+    const {
+      height: cursorFromVertexY,
+      width: cursorFromVertexX
+    } = getDistance({
+      origin: vertex,
+      destination: {
+        x: event.clientX,
+        y: event.clientY
+      }
+    })
+
+    const cursorFromVertexHyp = getHypotenuseLength({
+      adjacent: cursorFromVertexY,
+      opposite: cursorFromVertexX
+    })
+
+    updateVertex({
+      id: resizedVertexId,
+      property: 'radius',
+      value: cursorFromVertexHyp
+    })
   }
 }
 
@@ -190,6 +212,7 @@ const App = props => {
               setDraggedVertxId,
               resizedVertexId,
               setResizedVertexId,
+              dragCursorOrigin,
               updateVertex,
               findVertex
             })

@@ -18,12 +18,17 @@ const getOppositeLength = ({
   if (adjacent) return adjacent * Math.tan(angle)
 }
 
-const getHypotenuseLength = ({
+export const getHypotenuseLength = ({
   angle,
   adjacent,
   opposite
 }) => {
   if (!adjacent && !opposite) return null
+
+  if (adjacent && opposite) {
+    return (adjacent ** 2 + opposite ** 2) ** 0.5
+  }
+
   if (adjacent) return adjacent / Math.cos(angle)
   if (opposite) return opposite / Math.sin(angle)
 }
