@@ -53,16 +53,30 @@ const renderEdge = ({ edge, index, vertices }) => {
   return (
     <g>
       <line {...lineProps} />
-      <text x={averageX} y={averageY} fontSize="15" fill="black">L{index}</text>
+      <text x={averageX} y={averageY} fontSize="15" fill="black">Edge {edge.id}</text>
     </g>
   )
 }
 
 const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
 
-const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVertex }) => {
+const handleMouseup = ({ setDraggedVertxId, setResizedVertexId }) => {
+  setDraggedVertxId(null)
+  setResizedVertexId(null)
+}
+
+const handleMouseMove = ({
+  event,
+  draggedVertexId,
+  setDraggedVertxId,
+  resizedVertexId,
+  setResizedVertexId,
+  updateVertex,
+  findVertex
+}) => {
   if (doesExceedBoundaries({ x: event.clientX, y: event.clientY })) {
     setDraggedVertxId(null)
+    setResizedVertexId(null)
   }
 
   if (draggedVertexId) {
@@ -73,6 +87,12 @@ const handleMouseMove = ({ event, setDraggedVertxId, draggedVertexId, updateVert
         y: event.clientY
       }
     })
+  }
+
+  if (resizedVertexId) {
+    const vertex = findVertex(resizedVertexId)
+    
+    console.log('resizing')
   }
 }
 
@@ -122,6 +142,8 @@ const App = props => {
 
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
+  const [resizedVertexId, setResizedVertexId] = useState(null)
+  const [dragCursorOrigin, setDragCursorOrigin] = useState({ x: null, y: null })
   const [gridIncrement, setGridIncrement] = useState(10)
 
   const {
@@ -162,9 +184,17 @@ const App = props => {
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
           onMouseMove={
-            event => handleMouseMove({ event, setDraggedVertxId, draggedVertexId, updateVertex })
+            event => handleMouseMove({
+              event,
+              draggedVertexId,
+              setDraggedVertxId,
+              resizedVertexId,
+              setResizedVertexId,
+              updateVertex,
+              findVertex
+            })
           }
-          onMouseUp={() => setDraggedVertxId(null)}
+          onMouseUp={() => handleMouseup({ setDraggedVertxId, setResizedVertexId })}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
@@ -184,6 +214,8 @@ const App = props => {
             createEdge={createEdge}
             deleteEdge={deleteEdge}
             setDraggedVertxId={setDraggedVertxId}
+            setResizedVertexId={setResizedVertexId}
+            setDragCursorOrigin={setDragCursorOrigin}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>

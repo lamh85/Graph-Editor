@@ -6,8 +6,14 @@ import {
   getConnectedVertices
 } from '../data_analyses/elements'
 
-const CircleG = styled.g`
+const CircleGroup = styled.g`
   cursor: pointer;
+`
+
+const CircleOuter = styled.circle`
+  &:hover {
+    cursor: col-resize;
+  }
 `
 
 const handleConnectVertexClick = ({ vertex1Id, vertex2Id, createEdge }) => {
@@ -90,8 +96,15 @@ const handleVertexContextClick = ({
   })
 }
 
-const handleMouseDown = ({ id, setDraggedVertxId }) => {
-  setDraggedVertxId(id)
+const handleMouseDown = ({
+  event,
+  id,
+  setResizedVertexId,
+  setDragCursorOrigin
+}) => {
+  setResizedVertexId(id)
+  const { clientX: x, clientY: y } = event
+  setDragCursorOrigin({ x, y })
 }
 
 const Circle = ({
@@ -100,15 +113,16 @@ const Circle = ({
   index,
   id,
   setDraggedVertxId,
+  setResizedVertexId,
   renderContextMenu,
   vertices,
   edges,
   createEdge,
-  deleteEdge
+  deleteEdge,
+  setDragCursorOrigin
 }) => {
   return (
-    <CircleG
-      onMouseDown={() => handleMouseDown({ id, setDraggedVertxId })}
+    <CircleGroup
       onContextMenu={event => {
         return handleVertexContextClick({
           vertexId: id,
@@ -121,18 +135,29 @@ const Circle = ({
         })
       }}
     >
-      <circle
-        key={index}
+      <CircleOuter
+        key={`outer-${index}`}
         cx={x}
         cy={y}
-        fill="blue"
-        strokeWidth="3"
-        stroke="black"
+        fill="black"
         r={CIRCLE_CONFIG.radius}
-      >
-      </circle>
+        onMouseDown={event => handleMouseDown({
+          event,
+          id,
+          setResizedVertexId,
+          setDragCursorOrigin
+        })}
+      />
+      <circle
+        key={`inner-${index}`}
+        cx={x}
+        cy={y}
+        fill="red"
+        r={CIRCLE_CONFIG.radius - 5}
+        onMouseDown={() => setDraggedVertxId(id)}
+      />
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
-    </CircleG>
+    </CircleGroup>
   )
 }
 
@@ -142,7 +167,9 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   setDraggedVertxId,
-  renderContextMenu
+  setResizedVertexId,
+  renderContextMenu,
+  setDragCursorOrigin
 }) => {
   return vertices.map((vertex, index) => {
     return (
@@ -152,6 +179,8 @@ export const Vertices = ({
         y={vertex.y}
         index={index}
         setDraggedVertxId={setDraggedVertxId}
+        setResizedVertexId={setResizedVertexId}
+        setDragCursorOrigin={setDragCursorOrigin}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
         edges={edges}

@@ -15,10 +15,10 @@ export const getVertexTangent = ({
   let radiusWidth, radiusHeight
   if (verticesWidth === 0) {
     radiusWidth = 0
-    radiusHeight = CIRCLE_CONFIG.radius
+    radiusHeight = vertexDestination.radius
   } else {
     const slope = verticesHeight / verticesWidth
-    const radiusSquared = CIRCLE_CONFIG.radius ** 2
+    const radiusSquared = vertexDestination.radius ** 2
     radiusWidth = Math.sqrt(radiusSquared / (1 + slope ** 2))
     radiusHeight = radiusWidth * slope
   }
