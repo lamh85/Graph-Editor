@@ -6,7 +6,7 @@ import {
   getConnectedVertices
 } from '../data_analyses/elements'
 
-const CircleGroup = styled.g`
+const CircleInner = styled.circle`
   cursor: pointer;
 `
 
@@ -123,7 +123,7 @@ const Circle = ({
   setDragCursorOrigin
 }) => {
   return (
-    <CircleGroup
+    <g
       onContextMenu={event => {
         return handleVertexContextClick({
           vertexId: id,
@@ -149,7 +149,7 @@ const Circle = ({
           setDragCursorOrigin
         })}
       />
-      <circle
+      <CircleInner
         key={`inner-${index}`}
         cx={x}
         cy={y}
@@ -158,7 +158,7 @@ const Circle = ({
         onMouseDown={() => setDraggedVertxId(id)}
       />
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
-    </CircleGroup>
+    </g>
   )
 }
 

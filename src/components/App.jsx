@@ -13,7 +13,7 @@ import { Vertices } from './Vertices.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
-import { getDistance, getPixelDirection } from "../geometry_helpers/general"
+import { getDistance } from "../geometry_helpers/general"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 
 const SVG_HEIGHT = 500
@@ -126,7 +126,7 @@ const handleContextClick = ({
   event.preventDefault()
 
   const coordinates = { x: event.clientX, y: event.clientY }
-  const clickHandler = () => createVertex(coordinates)
+  const clickHandler = () => createVertex({ ...coordinates, radius: 20 })
   const items = [
     { display: 'Create vertex here', onClick: clickHandler }
   ]
