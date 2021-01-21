@@ -21,6 +21,8 @@ export const getVertexTangent = ({
   vertexOrigin,
   vertexDestination
 }) => {
+  if (!vertexOrigin || !vertexDestination) return null
+
   const {
     height: verticesHeight,
     width: verticesWidth,

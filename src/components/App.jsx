@@ -30,11 +30,15 @@ const renderEdge = ({ edge, index, tangents }) => {
 
   const end0Coordinates = tangents.find(tangent => {
     return tangent.endId === 0 && tangent.edgeId === edge.id
-  }).coordinates
+  })?.coordinates
+
+  if (!end0Coordinates) return null
 
   const end1Coordinates = tangents.find(tangent => {
     return tangent.endId === 1 && tangent.edgeId === edge.id
-  }).coordinates
+  })?.coordinates
+
+  if (!end1Coordinates) return null
 
   const { x: x1, y: y1 } = end0Coordinates
   const { x: x2, y: y2 } = end1Coordinates
@@ -148,7 +152,7 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
   const tangents = []
 
   edges.forEach(edge => {
-    if (!edge.end0.vertexId && !edge.end1.vertexId) return
+    if (!edge.end0?.vertexId || !edge.end1?.vertexId) return
 
     const {
       tangentOrigin,
