@@ -2,50 +2,45 @@ import React from "react"
 
 import { getArrowProps } from '../geometry_helpers/shapes_config'
 import { coordinatesToSvgPoints } from '../geometry_helpers/general'
-import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 
-const Arrow = ({ towardsVertex, awayVertex }) => {
-  if (!towardsVertex || !awayVertex) return null
-
-  const { tangentOrigin, tangentDestination } = getVertexTangent({
-    vertexOrigin: towardsVertex,
-    vertexDestination: awayVertex
-  })
-
-  const arrowProps = getArrowProps({
-    towards: tangentOrigin,
-    away: tangentDestination
-  })
+const Arrow = ({ towards, away }) => {
+  const arrowProps = getArrowProps({ towards, away})
 
   if (arrowProps === null) {
     return null
   } else {
     const { svgPoints, cssRotation } = arrowProps
-    const rotationOrigin = coordinatesToSvgPoints([tangentOrigin])
+    const rotationOrigin = coordinatesToSvgPoints([towards])
     const transform = `rotate(${cssRotation}, ${rotationOrigin})`
     return <polygon points={svgPoints} stroke="red" fill="yellow" transform={transform} />
   }
 }
 
-const Arrows = ({ arrows, edges, vertices }) => {
-  return arrows.map((arrow, index) => {
-    const edge = edges.find(edge => edge.id === arrow.edgeId)
-    if (!edge) return null
+const Arrows = ({ arrows, tangents }) => {
+  if (!tangents?.length) return null
 
-    const endKey = `end${arrow.endId}`
-    const towardsVertexId = edge[endKey].vertexId
-    const towardsVertex = vertices.find(vertex => vertex.id === towardsVertexId)
+  return arrows.map(arrow => {
+    const { edgeId, endId } = arrow
 
-    const awayEndId = arrow.endId === 0 ? 1 : 0
-    const awayEndKey = `end${awayEndId}`
-    const awayVertexId = edge[awayEndKey].vertexId
-    const awayVertex = vertices.find(vertex => vertex.id === awayVertexId)
+    const towards = tangents.find(tangent => {
+      return tangent.endId === endId && tangent.edgeId === edgeId
+    })?.coordinates
+
+    if (!towards) return null
+
+    const awayEndId = endId === 0 ? 1 : 0
+
+    const away = tangents.find(tangent => {
+      return tangent.endId === awayEndId && tangent.edgeId === edgeId
+    })?.coordinates
+
+    if (!away) return null
 
     return (
       <Arrow
-        key={index}
-        towardsVertex={towardsVertex}
-        awayVertex={awayVertex}
+        key={arrow.id}
+        towards={towards}
+        away={away}
       />
     )
   })

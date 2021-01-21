@@ -24,8 +24,6 @@ const MenuItem = styled.div`
 `
 
 const handleItemClick = ({ event, clickAction, closeMenu }) => {
-  console.log('handleItemClick')
-  // event.preventDefault()
   clickAction(event)
   closeMenu()
 }

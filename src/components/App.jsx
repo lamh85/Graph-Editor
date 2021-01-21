@@ -15,6 +15,7 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { getDistance } from "../geometry_helpers/general"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
+import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
@@ -23,21 +24,20 @@ const StyledSvg = styled.svg`
   background: lightgrey;
 `
 
-const getVertexById = ({ vertices, id }) => {
-  return vertices.find(vertex => vertex.id === id)
-}
+const renderEdge = ({ edge, index, tangents }) => {
+  const { end0, end1 } = edge
+  if (!end0.vertexId || !end1.vertexId || !tangents?.length) return
 
-const renderEdge = ({ edge, index, vertices }) => {
-  const vertexId1 = edge.end0.vertexId
-  const vertexId2 = edge.end1.vertexId
+  const end0Coordinates = tangents.find(tangent => {
+    return tangent.endId === 0 && tangent.edgeId === edge.id
+  }).coordinates
 
-  const vertex1 = getVertexById({ vertices, id: vertexId1 })
-  const vertex2 = getVertexById({ vertices, id: vertexId2 })
+  const end1Coordinates = tangents.find(tangent => {
+    return tangent.endId === 1 && tangent.edgeId === edge.id
+  }).coordinates
 
-  if (!vertex1 || !vertex2) return null
-
-  const { x: x1, y: y1 } = vertex1
-  const { x: x2, y: y2 } = vertex2
+  const { x: x1, y: y1 } = end0Coordinates
+  const { x: x2, y: y2 } = end1Coordinates
 
   const lineProps = {
     x1,
@@ -144,6 +144,38 @@ const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) =>
   }
 }
 
+const updateTangents = ({ edges, findVertex, setTangents }) => {
+  const tangents = []
+
+  edges.forEach(edge => {
+    if (!edge.end0.vertexId && !edge.end1.vertexId) return
+
+    const {
+      tangentOrigin,
+      tangentDestination
+    } = getVertexTangent({
+      vertexOrigin: findVertex(edge.end0.vertexId),
+      vertexDestination: findVertex(edge.end1.vertexId),
+    })
+
+    tangents.push({
+      edgeId: edge.id,
+      endId: 0,
+      vertexId: edge.end0.vertexId,
+      coordinates: tangentOrigin
+    })
+
+    tangents.push({
+      edgeId: edge.id,
+      endId: 1,
+      vertexId: edge.end1.vertexId,
+      coordinates: tangentDestination
+    })
+  })
+
+  setTangents(tangents)
+}
+
 const App = props => {
   useEffect(() => {
     const mouseDownParams = [
@@ -167,6 +199,7 @@ const App = props => {
   const [resizedVertexId, setResizedVertexId] = useState(null)
   const [dragCursorOrigin, setDragCursorOrigin] = useState({ x: null, y: null })
   const [gridIncrement, setGridIncrement] = useState(10)
+  const [tangents, setTangents] = useState([])
 
   const {
     render: renderContextMenu,
@@ -191,6 +224,10 @@ const App = props => {
     removeByProperty: deleteEdge,
     updateItem: updateEdge
   } = useArray(EDGES_SEED)
+
+  useEffect(() => {
+    updateTangents({ edges, findVertex, setTangents })
+  }, [vertices, edges])
 
   const {
     state: arrows,
@@ -227,10 +264,13 @@ const App = props => {
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
             edges.map((edge, index) => {
-              return renderEdge({ edge, index, vertices, arrows })
+              return renderEdge({ edge, index, tangents })
             })
           }
-          <Arrows arrows={arrows} edges={edges} vertices={vertices} />
+          <Arrows
+            arrows={arrows}
+            tangents={tangents}
+          />
           <Vertices
             vertices={vertices}
             edges={edges}
