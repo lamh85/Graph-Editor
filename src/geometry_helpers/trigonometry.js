@@ -33,24 +33,6 @@ export const getHypotenuseLength = ({
   if (opposite) return opposite / Math.sin(angle)
 }
 
-export const getSideLength = ({
-  adjacent,
-  opposite,
-  hypotenuse,
-  sideQuery,
-  angle
-}) => {
-  if (!angle || !sideQuery) return null
-
-  const sideLengthLookup = {
-    adjacent: () => getAdjacentLength({ angle, opposite, hypotenuse }),
-    opposite: () => getOppositeLength({ angle, adjacent, hypotenuse }),
-    hypotenuse: () => getHypotenuseLength({ angle, adjacent, opposite })
-  }
-
-  return sideLengthLookup[sideQuery]()
-}
-
 export const getAngle = ({
   adjacent,
   opposite,

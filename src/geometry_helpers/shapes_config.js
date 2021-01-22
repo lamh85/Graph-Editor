@@ -1,4 +1,5 @@
-import { getDistance, buildCssRotation, coordinatesToSvgPoints } from './general'
+import { buildCssRotation, coordinatesToSvgPoints } from './general'
+import { getDistance } from './get_distance'
 import { buildEqualateral } from './special_triangles'
 
 export const CIRCLE = {

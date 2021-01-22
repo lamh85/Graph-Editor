@@ -1,5 +1,3 @@
-// import { translateCoordinates } from './general'
-
 // One side will be completely vertical, and on the right side
 export const buildEqualateral = ({ pivotPoint, sideLength }) => {
   if (!pivotPoint.x || !pivotPoint.y || !sideLength) return null

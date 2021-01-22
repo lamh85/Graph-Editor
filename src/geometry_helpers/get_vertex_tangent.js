@@ -1,5 +1,5 @@
 import { CIRCLE as CIRCLE_CONFIG } from './shapes_config'
-import { getDistance } from './general'
+import { getDistance } from './get_distance'
 
 const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight

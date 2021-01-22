@@ -13,7 +13,7 @@ import { Vertices } from './Vertices.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
-import { getDistance } from "../geometry_helpers/general"
+import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
 
