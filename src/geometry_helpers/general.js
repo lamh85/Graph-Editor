@@ -29,6 +29,6 @@ export const buildCssRotation = ({
   }
 }
 
-export const radiansToDegrees = radians => {
+const radiansToDegrees = radians => {
   return radians / Math.PI * 180
 }
