@@ -114,45 +114,45 @@ export const getRectangleTangent = ({ width, height, centre, externalPoint }) =>
     centre, height, width
   })
 
-  const externalYDistance = centre.y - externalPoint.y
+  console.log('boundaries')
+  console.log(boundaries)
 
-  const diagonalSlope = getSlope(centre, boundaries.topRight)
+  // Positive slope = top-left to bottom-right
+  // Negative slope = top-right to bottom-left
 
-  const diagonalRightX = getSlopeDimension({
-    height: externalYDistance,
-    slope: diagonalSlope
-  })
+  /* 
+  get diagonal slopes
+  get external point's slope
+  is the point above or below the rectangle's centre?
 
-  const diagonalTopRightXDistance = diagonalRightX - centre.x
-  const diagonalLeftX = centre.x - diagonalTopRightXDistance
+  above the rectangle,
+    going from left to right,
+      the cursor encounters positive slope then negative slope
+      IE: decreasing number
+  below the rectangle,
+    going from left to right,
+      the cursour encounters the negative slope then positive slope
+      IE: increasing number
+  */
 
-  let closestSide = 'left'
-  if (externalPoint.x === diagonalLeftX) {
-    closestSide = 'topLeft'
-  } else if (
-    externalPoint.x > diagonalLeftX && externalPoint.x < diagonalRightX
-  ) {
-    closestSide = 'top'
-  } else if (externalPoint.x === diagonalRightX) {
-    closestSide = 'topRight'
-  } else if (externalPoint.x > diagonalRightX) {
-    closestSide = 'right'
+  const SLOPE = {
+    rectangle: {
+      topLeft: getSlope(centre, boundaries.topLeft),
+      topRight: getSlope(centre, boundaries.topRight),
+      bottomLeft: getSlope(centre, boundaries.bottomLeft),
+      bottomRight: getSlope(centre, boundaries.bottomRight)
+    },
+    externalPoint: getSlope(centre, externalPoint)
   }
 
-  if (externalPoint.y > centre.y && closestSide.includes('top')) {
-    closestSide = closestSide.replace('top', 'bottom')
-  }
+  const externalPointDirection = externalPoint.y > centre.y
+    ? 'below'
+    : 'above'
 
-  const cornerNames = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight']
-  if (cornerNames.includes(closestSide)) {
-    return boundaries[closestSide]
-  } else {
-    return getRectangleSideTangent({
-      closestSide,
-      width,
-      height,
-      centre,
-      externalPoint
-    })
-  }
+  let closestSide
+  // From left to right:
+    // the slope is
+      // small negative, large negative, 
+  // TODO, need a high level conditional for positive/negative slope of external point
+
 }

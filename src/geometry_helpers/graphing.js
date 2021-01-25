@@ -21,6 +21,6 @@ export const getSlopeDimension = ({
 }) => {
   // slope = height / width
 
-  if (height) return slope * width
-  if (width) return height / slope
+  if (height) return height / slope
+  if (width) return slope * width
 }
