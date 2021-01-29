@@ -1,5 +1,11 @@
-import { getDistance } from './get_distance'
-import { getSlope, getSlopeDimension } from './graphing'
+import { getDistance, getCoordinateDifference } from './get_distance'
+import {
+  getSlope,
+  getSlopeDimension,
+  compareSlope
+} from './graphing'
+import { capitalizeWord } from '../helpers/string'
+import { getAngle, getAdjacentLength } from './trigonometry'
 
 const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
@@ -109,50 +115,88 @@ const getRectangleSideTangent = ({
   }
 }
 
+const getRectangleClosestSide = ({
+  querySlope,
+  benchMarkSlope,
+  horizontalSide,
+  verticalSide
+}) => {
+  const comparisonResult = compareSlope({
+    querySlope,
+    benchMarkSlope
+  })
+
+  if (comparisonResult === 0) return horizontalSide + capitalizeWord(verticalSide)
+  return comparisonResult === 1 ? horizontalSide : verticalSide
+}
+
+const getQuadrant4Tangent = ({ externalPoint, height, width }) => {
+  const diagonalSlope = height / width
+  const externalSlope = externalPoint.y / externalPoint.x
+
+  if (externalSlope === diagonalSlope) {
+    return { height, width, origin }
+  } else if (externalSlope > diagonalSlope) {
+    return {
+      x: height / externalSlope,
+      y: height
+    }
+  } else {
+    return {
+      x: width,
+      y: width * externalSlope
+    }
+  }
+}
+
 export const getRectangleTangent = ({ width, height, centre, externalPoint }) => {
+  const externalDifference = getCoordinateDifference({
+    origin: centre,
+    destination: externalPoint
+  })
+
   const boundaries = getRectangleBoundaries({
     centre, height, width
   })
 
-  console.log('boundaries')
-  console.log(boundaries)
-
-  // Positive slope = top-left to bottom-right
-  // Negative slope = top-right to bottom-left
-
-  /* 
-  get diagonal slopes
-  get external point's slope
-  is the point above or below the rectangle's centre?
-
-  above the rectangle,
-    going from left to right,
-      the cursor encounters positive slope then negative slope
-      IE: decreasing number
-  below the rectangle,
-    going from left to right,
-      the cursour encounters the negative slope then positive slope
-      IE: increasing number
-  */
-
-  const SLOPE = {
-    rectangle: {
-      topLeft: getSlope(centre, boundaries.topLeft),
-      topRight: getSlope(centre, boundaries.topRight),
-      bottomLeft: getSlope(centre, boundaries.bottomLeft),
-      bottomRight: getSlope(centre, boundaries.bottomRight)
-    },
-    externalPoint: getSlope(centre, externalPoint)
+  if (externalDifference.x === 0) {
+    return {
+      x: centre.x,
+      y: externalDifference.y > 0
+        ? boundaries.bottom
+        : boundaries.top
+    }
+  } else if (externalDifference.y === 0) {
+    return {
+      x: externalDifference.x > 0
+        ? boundaries.right
+        : boundaries.left
+    }
   }
 
-  const externalPointDirection = externalPoint.y > centre.y
-    ? 'below'
-    : 'above'
+  const halfWidth = width / 2
+  const halfHeight = height / 2
 
-  let closestSide
-  // From left to right:
-    // the slope is
-      // small negative, large negative, 
-  // TODO, need a high level conditional for positive/negative slope of external point
+  const quadrantTangent = getQuadrant4Tangent({
+    height: halfHeight,
+    width: halfWidth,
+    externalPoint: {
+      x: Math.abs(externalDifference.x),
+      y: Math.abs(externalDifference.y)
+    }
+  })
 
+  const translatedTangent = {
+    x: quadrantTangent.x + centre.x,
+    y: quadrantTangent.y + centre.y
+  }
+
+  return {
+    x: externalDifference.x < 0
+      ? translatedTangent.x - 2 * quadrantTangent.x
+      : translatedTangent.x,
+    y: externalDifference.y < 0
+      ? translatedTangent.y - 2 * quadrantTangent.y
+      : translatedTangent.y
+  }
 }

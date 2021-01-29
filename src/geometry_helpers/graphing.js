@@ -24,3 +24,12 @@ export const getSlopeDimension = ({
   if (height) return height / slope
   if (width) return slope * width
 }
+
+export const compareSlope = ({ querySlope, benchMarkSlope }) => {
+  const absQuerySlope = Math.abs(querySlope)
+  const absBenchMarkSlope = Math.abs(benchMarkSlope)
+
+  if (absQuerySlope === absBenchMarkSlope) return 0
+
+  return absQuerySlope > absBenchMarkSlope ? 1 : -1
+}

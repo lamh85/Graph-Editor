@@ -38,9 +38,9 @@ export const getAngle = ({
   opposite,
   hypotenuse
 }) => {
-  if (adjacent && opposite) return Math.tan(opposite/adjacent)
-  if (adjacent && hypotenuse) return Math.cos(adjacent/hypotenuse)
-  if (opposite && hypotenuse) return Math.sin(opposite/hypotenuse)
+  if (adjacent && opposite) return Math.atan(opposite/adjacent)
+  if (adjacent && hypotenuse) return Math.acos(adjacent/hypotenuse)
+  if (opposite && hypotenuse) return Math.asin(opposite/hypotenuse)
 
   return null
 }

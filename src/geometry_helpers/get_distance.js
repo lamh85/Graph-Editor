@@ -1,4 +1,4 @@
-const getPixelDirection = ({ x1, x2, y1, y2 }) => {
+export const getPixelDirection = ({ x1, x2, y1, y2 }) => {
   const xPixelDirection = x2 >= x1 ? 1 : -1
   // The Y values on a cartesian plane is the inverse of a computer screen
   const yPixelDirection = y2 >= y1 ? 1 : -1
@@ -7,7 +7,7 @@ const getPixelDirection = ({ x1, x2, y1, y2 }) => {
 }
 
 export const getDistance = ({ origin, destination }) => {
-  if (!origin && !destination) return null
+  if (!origin || !destination) return null
 
   const { x: x1, y: y1 } = origin
   const { x: x2, y: y2 } = destination
@@ -30,4 +30,16 @@ export const getDistance = ({ origin, destination }) => {
   }
 
   return { height, width, xPixelDirection, yPixelDirection, arcAngle, arcDirection }
+}
+
+export const getCoordinateDifference = ({ origin, destination }) => {
+  if (!origin || !destination) return null
+
+  const { x: x1, y: y1 } = origin
+  const { x: x2, y: y2 } = destination
+
+  return {
+    x: x2 - x1,
+    y: y2 - y1
+  }
 }
