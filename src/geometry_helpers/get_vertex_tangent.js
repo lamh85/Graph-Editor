@@ -133,7 +133,7 @@ export const getRectangleTangent = ({ width, height, centre, externalPoint }) =>
   const halfWidth = width / 2
   const halfHeight = height / 2
 
-  const quadrantTangent = getQuadrant4Tangent({
+  const quadrant4Tangent = getQuadrant4Tangent({
     height: halfHeight,
     width: halfWidth,
     externalPoint: {
@@ -143,16 +143,16 @@ export const getRectangleTangent = ({ width, height, centre, externalPoint }) =>
   })
 
   const translatedTangent = {
-    x: quadrantTangent.x + centre.x,
-    y: quadrantTangent.y + centre.y
+    x: quadrant4Tangent.x + centre.x,
+    y: quadrant4Tangent.y + centre.y
   }
 
   return {
     x: externalDifference.x < 0
-      ? translatedTangent.x - 2 * quadrantTangent.x
+      ? translatedTangent.x - 2 * quadrant4Tangent.x
       : translatedTangent.x,
     y: externalDifference.y < 0
-      ? translatedTangent.y - 2 * quadrantTangent.y
+      ? translatedTangent.y - 2 * quadrant4Tangent.y
       : translatedTangent.y
   }
 }
