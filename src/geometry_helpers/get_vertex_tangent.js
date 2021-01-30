@@ -1,11 +1,4 @@
 import { getDistance, getCoordinateDifference } from './get_distance'
-import {
-  getSlope,
-  getSlopeDimension,
-  compareSlope
-} from './graphing'
-import { capitalizeWord } from '../helpers/string'
-import { getAngle, getAdjacentLength } from './trigonometry'
 
 const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
