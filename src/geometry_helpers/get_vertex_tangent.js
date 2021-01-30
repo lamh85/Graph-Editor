@@ -86,50 +86,6 @@ const getRectangleBoundaries = ({ centre, height, width }) => {
   return { top, left, right, bottom, topLeft, topRight, bottomLeft, bottomRight }
 }
 
-const getRectangleSideTangent = ({
-  closestSide,
-  width,
-  height,
-  centre,
-  externalPoint
-}) => {
-  const slopeExternal = getSlope(centre, externalPoint)
-  const boundaries = getRectangleBoundaries({
-    centre, height, width
-  })
-
-  if (['top', 'bottom'].includes(closestSide)) {
-    const xDistance = getSlopeDimension({
-      slope: slopeExternal,
-      height: height / 2
-    })
-    const x = centre.x + xDistance
-    return { x, y: boundaries[closestSide] }
-  } else if (closestSide === 'left') {
-    const yDistance = getSlopeDimension({
-      slope: slopeExternal,
-      width: width / 2
-    })
-    const y = centre.y + yDistance
-    return { x: boundaries[closestSide], y }
-  }
-}
-
-const getRectangleClosestSide = ({
-  querySlope,
-  benchMarkSlope,
-  horizontalSide,
-  verticalSide
-}) => {
-  const comparisonResult = compareSlope({
-    querySlope,
-    benchMarkSlope
-  })
-
-  if (comparisonResult === 0) return horizontalSide + capitalizeWord(verticalSide)
-  return comparisonResult === 1 ? horizontalSide : verticalSide
-}
-
 const getQuadrant4Tangent = ({ externalPoint, height, width }) => {
   const diagonalSlope = height / width
   const externalSlope = externalPoint.y / externalPoint.x
