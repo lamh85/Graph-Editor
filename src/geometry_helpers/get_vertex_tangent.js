@@ -84,7 +84,7 @@ const getQuadrant4Tangent = ({ externalPoint, height, width }) => {
   const externalSlope = externalPoint.y / externalPoint.x
 
   if (externalSlope === diagonalSlope) {
-    return { height, width }
+    return { x: width, y: height }
   } else if (externalSlope > diagonalSlope) {
     return {
       x: height / externalSlope,
