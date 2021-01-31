@@ -46,13 +46,3 @@ export const getArrowProps = ({ towards, away }) => {
 
   return { svgPoints, cssRotation }
 }
-
-const getPivotDirection = ({ xPixelDirection, yPixelDirection }) => {
-  const isRightUp = xPixelDirection >= 0 && yPixelDirection <= 0
-  const isLeftDown = xPixelDirection < 0 && yPixelDirection > 0
-
-  // If right-up or left-down, then counter-clockwise
-  if (isRightUp || isLeftDown) return -1
-
-  return 1
-}
