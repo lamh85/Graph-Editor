@@ -1,4 +1,4 @@
-import { buildCssRotation, coordinatesToSvgPoints } from './general'
+import { coordinatesToSvgPoints } from './general'
 import { getDistance } from './get_distance'
 import { buildEqualateral } from './special_triangles'
 
@@ -7,6 +7,28 @@ export const CIRCLE = {
 }
 
 const ARROW_SIDE_LENGTH = 20
+
+const radiansToDegrees = radians => {
+  return radians / Math.PI * 180
+}
+
+export const buildCssRotation = ({
+  radians,
+  xPixelDirection,
+  yPixelDirection
+}) => {
+  const angleDegrees = radiansToDegrees(radians)
+
+  if (xPixelDirection === 1 && yPixelDirection === -1) {
+    return (360 - angleDegrees)
+  } else if (xPixelDirection === 1 && yPixelDirection === 1) {
+    return angleDegrees
+  } else if (xPixelDirection === -1 && yPixelDirection === 1) {
+    return (180 - angleDegrees)
+  } else if (xPixelDirection === -1 && yPixelDirection === -1) {
+    return (180 + angleDegrees)
+  }
+}
 
 export const getArrowProps = ({ towards, away }) => {
   const { x: towardsX, y: towardsY } = towards

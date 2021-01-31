@@ -10,25 +10,3 @@ export const coordinatesToSvgPoints = (coordinates = []) => {
 
   return svgPoints.trim()
 }
-
-export const buildCssRotation = ({
-  radians,
-  xPixelDirection,
-  yPixelDirection
-}) => {
-  const angleDegrees = radiansToDegrees(radians)
-
-  if (xPixelDirection === 1 && yPixelDirection === -1) {
-    return (360 - angleDegrees)
-  } else if (xPixelDirection === 1 && yPixelDirection === 1) {
-    return angleDegrees
-  } else if (xPixelDirection === -1 && yPixelDirection === 1) {
-    return (180 - angleDegrees)
-  } else if (xPixelDirection === -1 && yPixelDirection === -1) {
-    return (180 + angleDegrees)
-  }
-}
-
-const radiansToDegrees = radians => {
-  return radians / Math.PI * 180
-}
