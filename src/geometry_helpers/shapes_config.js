@@ -1,6 +1,5 @@
 import { coordinatesToSvgPoints } from './general'
 import { getDistance } from './get_distance'
-import { buildEqualateral } from './special_triangles'
 
 export const CIRCLE = {
   radius: 20
@@ -27,6 +26,20 @@ export const buildCssRotation = ({
     return (180 - angleDegrees)
   } else if (xPixelDirection === -1 && yPixelDirection === -1) {
     return (180 + angleDegrees)
+  }
+}
+
+export const buildEqualateral = ({ pivotPoint, sideLength }) => {
+  if (!pivotPoint.x || !pivotPoint.y || !sideLength) return null
+
+  const rightX = pivotPoint.x + sideLength * Math.sqrt(3) / 2
+  const topY = pivotPoint.y - sideLength / 2
+  const bottomY = pivotPoint.y + sideLength / 2
+
+  return {
+    top: { x: rightX, y: topY },
+    left: pivotPoint,
+    bottom: { x: rightX, y: bottomY }
   }
 }
 
