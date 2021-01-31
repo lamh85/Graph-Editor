@@ -23,11 +23,17 @@ Root level - Each folder is a different type of a user and/or environment:
 
 Within the source code
 1. Divide by different parts of the flow
+  * DOM helpers
+  * React/DB data analysis
   * primitive helpers - arrays, strings, etc
   * geometry helpers
   * hooks
   * renders
-2. 
+  * Typescript declarations
+2. Within the flow segment, divide by resource:
+  * Vertices
+  * Edges
+  * Arrows
 
 # Old ideas
 
