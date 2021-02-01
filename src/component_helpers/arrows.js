@@ -1,14 +1,22 @@
-import { coordinatesToSvgPoints } from './general'
-import { getDistance } from './get_distance'
-
-export const CIRCLE = {
-  radius: 20
-}
+import { getDistance } from '../geometry_helpers/get_distance'
 
 const ARROW_SIDE_LENGTH = 20
 
 const radiansToDegrees = radians => {
   return radians / Math.PI * 180
+}
+
+export const coordinatesToSvgPoints = (coordinates = []) => {
+  if (coordinates.length === 0) return null
+
+  let svgPoints = ''
+
+  coordinates.forEach(pair => {
+    const { x, y } = pair
+    svgPoints = `${svgPoints} ${x},${y}`
+  })
+
+  return svgPoints.trim()
 }
 
 export const buildCssRotation = ({

@@ -1,7 +1,9 @@
 import React from "react"
 
-import { getArrowProps } from '../geometry_helpers/shapes_config'
-import { coordinatesToSvgPoints } from '../geometry_helpers/general'
+import {
+  getArrowProps,
+  coordinatesToSvgPoints
+} from '../component_helpers/arrows'
 
 const Arrow = ({ towards, away }) => {
   const arrowProps = getArrowProps({ towards, away})
