@@ -1,6 +1,5 @@
 import React from "react"
 import styled from 'styled-components'
-import { CIRCLE as CIRCLE_CONFIG } from '../geometry_helpers/shapes_config'
 import {
   getUnconnectedVertices,
   getConnectedVertices

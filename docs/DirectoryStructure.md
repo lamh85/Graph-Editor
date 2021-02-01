@@ -38,9 +38,13 @@ Within the source code
 # Example for helpers
 
 ```
-view_helpers
+component_helpers
   arrows
   edges
   vertices
+  dom
 data_helpers
+  graphing
+  trigonometry
+  strings
 ```
