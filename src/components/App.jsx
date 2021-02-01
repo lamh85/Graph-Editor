@@ -15,7 +15,7 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import { getVertexTangent } from '../geometry_helpers/get_vertex_tangent'
+import { getVertexTangent } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750

@@ -1,4 +1,4 @@
-import * as testedModule from './get_vertex_tangent'
+import * as testedModule from './app'
 
 describe('get_vertex_tangent.js', () => {
   describe('getRectangleTangent', () => {

@@ -1,4 +1,4 @@
-import { getDistance, getCoordinateDifference } from './get_distance'
+import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
 
 const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
