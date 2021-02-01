@@ -35,10 +35,12 @@ Within the source code
   * Edges
   * Arrows
 
-# Old ideas
+# Example for helpers
 
-## Rectangle tangent
-
-Finding the cartesian quadrant before finding the intercept:
-
-https://github.com/lamh85/Graph-Editor/blob/f178569bcd55b5f29043981cbd8a0c9e78672f83/src/geometry_helpers/get_vertex_tangent.js
+```
+view_helpers
+  arrows
+  edges
+  vertices
+data_helpers
+```
