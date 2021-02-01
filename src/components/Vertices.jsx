@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {
   getUnconnectedVertices,
   getConnectedVertices
-} from '../data_analyses/elements'
+} from '../component_helpers/vertices'
 
 const CircleInner = styled.circle`
   cursor: pointer;

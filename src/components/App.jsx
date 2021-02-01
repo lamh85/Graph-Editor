@@ -4,7 +4,6 @@ import { hot } from "react-hot-loader"
 
 import { DEFAULT_VERTICES, DEFAULT_ARROWS } from '../models/polygons'
 import { SEED as EDGES_SEED } from '../models/edge'
-import { doShareLineage } from '../dom_helpers/lineage'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { PositionWrapper } from './common/Wrappers.jsx'
@@ -15,7 +14,10 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import { getVertexTangent } from '../component_helpers/app'
+import {
+  getVertexTangent,
+  doShareLineage
+} from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 750
