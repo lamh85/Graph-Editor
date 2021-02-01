@@ -9,6 +9,10 @@ const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   } else {
     const slope = directionHeight / directionWidth
     const radiusSquared = vertex.radius ** 2
+    // Original Pythagorean theorem:
+      // r squared = x squared + y squared
+    // Use slope to reduce the number of variables:
+      // r squared = x squared + (slope * x) squared
     radiusWidth = Math.sqrt(radiusSquared / (1 + slope ** 2))
     radiusHeight = radiusWidth * slope
   }
