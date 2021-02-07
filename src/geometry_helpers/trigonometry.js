@@ -44,3 +44,25 @@ export const getAngle = ({
 
   return null
 }
+
+export const getSubTriangle = ({
+  fullHeight,
+  fullWidth,
+  subHeight,
+  subWidth,
+  subRadius
+}) => {
+  const slope = fullHeight / fullWidth
+
+  if (subHeight) {
+    return subHeight / slope
+  } else if (subWidth) {
+    return subWidth * slope
+  } else if (subRadius) {
+    const subRadiusSquared = subRadius ** 2
+    const width = Math.sqrt(subRadiusSquared / (1 + slope ** 2))
+    const height = width * slope
+
+    return { width, height }
+  }
+}
