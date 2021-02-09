@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react"
 import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
-import { DEFAULT_VERTICES, DEFAULT_ARROWS } from '../models/polygons'
+import { DEFAULT_ARROWS } from '../models/polygons'
+import { DEFAULT_VERTICES } from '../models/vertices'
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
