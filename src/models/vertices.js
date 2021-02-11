@@ -1,11 +1,27 @@
-export const DEFAULT_VERTICES = [
-  { id: 1, x: 40, y: 40, radius: 20 },
-  { id: 2, x: 200, y: 40, radius: 20 },
-  { id: 3, x: 200, y: 200, radius: 20 }
-]
+import { TYPES as VERTEX_SHAPES } from './vertex_shapes'
 
-// Maybe future plans: a strategy for each shape for finding the tangent point
-export const VERTEX_SHAPES = [
-  'triangle',
-  'rectangle'
+export const DEFAULT_VERTICES = [
+  { 
+    id: 1,
+    x: 40,
+    y: 40,
+    height: 100,
+    width: 100,
+    shape: VERTEX_SHAPES.rectangle
+  },
+  { 
+    id: 2,
+    x: 200,
+    y: 40,
+    height: 50,
+    width: 100,
+    shape: VERTEX_SHAPES.rectangle
+  },
+  { 
+    id: 3,
+    x: 200,
+    y: 200,
+    radius: 20,
+    shape: VERTEX_SHAPES.circle
+  }
 ]
