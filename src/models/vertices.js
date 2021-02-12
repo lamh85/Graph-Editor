@@ -1,4 +1,4 @@
-import { TYPES as VERTEX_SHAPES } from './vertex_shapes'
+import { TYPES as VERTEX_SHAPES } from './vertex_shapes.ts'
 
 export const DEFAULT_VERTICES = [
   { 

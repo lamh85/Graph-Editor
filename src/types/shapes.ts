@@ -1,12 +1,17 @@
-interface Shape {
+export interface Shape {
   type: 'circle' | 'rectangle'
 }
 
-interface Circle extends Shape {
+export interface Circle extends Shape {
   radius: number
 }
 
-interface Rectangle extends Shape {
+export interface Rectangle extends Shape {
   height: number,
   width: number
 }
+
+// module.export = {
+//   Circle,
+//   Rectangle
+// }

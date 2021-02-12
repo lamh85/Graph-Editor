@@ -1,18 +1,19 @@
-// import * as shapeTypes from '../types/shapes'
+import { Circle } from '../types/shapes'
+import { Circle, Rectangle } from '../types/shapes.ts'
 
 // Maybe future plans: a strategy for each shape for finding the tangent point
-export const TYPES = {
+export const NAMES = {
   circle: 'circle',
   rectangle: 'rectangle'
 }
 
 export const RECTANGLE_DEFAULT = {
-  type: TYPES.rectangle,
+  type: NAMES.rectangle,
   height: 100,
   width: 200
 }
 
-export const CIRCLE_DEFAULT = {
-  type: TYPES.circle,
+export const CIRCLE_DEFAULT: Circle = {
+  type: NAMES.circle,
   radius: 20
 }
