@@ -20,7 +20,25 @@ const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   return { radiusWidth, radiusHeight }
 }
 
-export const getVertexTangent = ({
+export const getShapeTangent = ({
+  originVertex,
+  destination
+}) => {
+  if (originVertex.shape === 'circle') {
+    return getCircleTangent({
+      vertexOrigin: originVertex,
+      vertexDestination: destination
+    })
+  } else {
+    return getRectangleTangent({
+      ...originVertex,
+      centre: originVertex,
+      externalPoint: destination
+    })
+  }
+}
+
+export const getCircleTangent = ({
   vertexOrigin,
   vertexDestination
 }) => {
@@ -42,28 +60,10 @@ export const getVertexTangent = ({
     directionWidth: verticesWidth
   })
 
-  const {
-    radiusWidth: destinationRadiusWidth,
-    radiusHeight: destinationRadiusHeight
-  } = getRadiusDimensions({
-    vertex: vertexDestination,
-    directionHeight: verticesHeight,
-    directionWidth: verticesWidth
-  })
-
-  const tangentOrigin = {
+  return {
     x: vertexOrigin.x + (xPixelDirection * originRadiusWidth),
-    y: vertexOrigin.y + (yPixelDirection * originRadiusHeight),
-    yPixelDirection
+    y: vertexOrigin.y + (yPixelDirection * originRadiusHeight)
   }
-
-  const tangentDestination = {
-    x: vertexDestination.x + (-1 * xPixelDirection * destinationRadiusWidth),
-    y: vertexDestination.y + (-1 * yPixelDirection * destinationRadiusHeight),
-    yPixelDirection: (-1 * yPixelDirection)
-  }
-
-  return { tangentOrigin, tangentDestination }
 }
 
 const getRectangleBoundaries = ({ centre, height, width }) => {

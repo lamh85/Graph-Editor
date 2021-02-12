@@ -16,7 +16,7 @@ import { ContextMenu } from './ContextMenu.jsx'
 import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
-  getVertexTangent,
+  getShapeTangent,
   doShareLineage
 } from '../component_helpers/app'
 
@@ -157,26 +157,28 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
   edges.forEach(edge => {
     if (!edge.end0?.vertexId || !edge.end1?.vertexId) return
 
-    const {
-      tangentOrigin,
-      tangentDestination
-    } = getVertexTangent({
-      vertexOrigin: findVertex(edge.end0.vertexId),
-      vertexDestination: findVertex(edge.end1.vertexId),
+    const end0Tangent = getShapeTangent({
+      originVertex: findVertex(edge.end0.vertexId),
+      destination: findVertex(edge.end1.vertexId)
     })
 
     tangents.push({
       edgeId: edge.id,
       endId: 0,
       vertexId: edge.end0.vertexId,
-      coordinates: tangentOrigin
+      coordinates: end0Tangent
+    })
+
+    const end1Tangent = getShapeTangent({
+      originVertex: findVertex(edge.end1.vertexId),
+      destination: findVertex(edge.end0.vertexId)
     })
 
     tangents.push({
       edgeId: edge.id,
       endId: 1,
       vertexId: edge.end1.vertexId,
-      coordinates: tangentDestination
+      coordinates: end1Tangent
     })
   })
 

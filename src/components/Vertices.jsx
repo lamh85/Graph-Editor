@@ -106,12 +106,46 @@ const handleMouseDown = ({
   setDragCursorOrigin({ x, y })
 }
 
-const Circle = ({
+const CircleGroup = ({
+  index,
   x,
   y,
   radius,
+  vertexId,
+  setResizedVertexId,
+  setDragCursorOrigin,
+  setDraggedVertxId
+}) => {
+  return (
+    <>
+      <CircleOuter
+        key={`outer-${index}`}
+        cx={x}
+        cy={y}
+        fill="black"
+        r={radius}
+        onMouseDown={event => handleMouseDown({
+          event,
+          id: vertexId,
+          setResizedVertexId,
+          setDragCursorOrigin
+        })}
+      />
+      <CircleInner
+        key={`inner-${index}`}
+        cx={x}
+        cy={y}
+        fill="red"
+        r={radius - 5}
+        onMouseDown={() => setDraggedVertxId(vertexId)}
+      />
+    </>
+  )
+}
+
+const Vertex = ({
+  vertex: { id, x, y, radius, height, width, shape },
   index,
-  id,
   setDraggedVertxId,
   setResizedVertexId,
   renderContextMenu,
@@ -135,31 +169,28 @@ const Circle = ({
         })
       }}
     >
-      <CircleOuter
-        key={`outer-${index}`}
-        cx={x}
-        cy={y}
-        fill="black"
-        r={radius}
-        onMouseDown={event => handleMouseDown({
-          event,
-          id,
-          setResizedVertexId,
-          setDragCursorOrigin
-        })}
-      />
-      <CircleInner
-        key={`inner-${index}`}
-        cx={x}
-        cy={y}
-        fill="red"
-        r={radius - 5}
-        onMouseDown={() => setDraggedVertxId(id)}
-      />
+      {shape === 'circle' && (
+        <CircleGroup
+          index={index}
+          x={x}
+          y={y}
+          radius={radius}
+          vertexId={id}
+          setResizedVertexId={setResizedVertexId}
+          setDragCursorOrigin={setDragCursorOrigin}
+          setDraggedVertxId={setDraggedVertxId}
+        />
+      )}
+      {shape === 'rectangle' && (
+        <rect width={width} height={height} x={x} y={y} fill="red" />
+      )}
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
     </g>
   )
 }
+
+{/* <rect width={width} height={height} /> */}
+
 
 export const Vertices = ({
   vertices,
@@ -173,11 +204,8 @@ export const Vertices = ({
 }) => {
   return vertices.map((vertex, index) => {
     return (
-      <Circle
-        id={vertex.id}
-        x={vertex.x}
-        y={vertex.y}
-        radius={vertex.radius}
+      <Vertex
+        vertex={vertex}
         index={index}
         setDraggedVertxId={setDraggedVertxId}
         setResizedVertexId={setResizedVertexId}
