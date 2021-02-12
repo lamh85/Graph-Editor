@@ -21,18 +21,22 @@ const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
 }
 
 export const getShapeTangent = ({
-  originVertex,
+  width,
+  height,
+  shape,
+  originCentre,
   destination
 }) => {
-  if (originVertex.shape === 'circle') {
+  if (shape === 'circle') {
     return getCircleTangent({
-      vertexOrigin: originVertex,
+      vertexOrigin: originCentre,
       vertexDestination: destination
     })
-  } else {
+  } else if (shape === 'rectangle') {
     return getRectangleTangent({
-      ...originVertex,
-      centre: originVertex,
+      width,
+      height,
+      centre: originCentre,
       externalPoint: destination
     })
   }
@@ -170,4 +174,11 @@ const getLineage = element => {
 export const doShareLineage = (youngest, ancestorTested) => {
   const lineage = getLineage(youngest)
   return lineage.includes(ancestorTested)
+}
+
+export const getRectangleCentre = ({ height, width, x, y }) => {
+  return {
+    x: x + width / 2,
+    y: y + height / 2
+  }
 }

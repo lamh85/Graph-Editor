@@ -17,7 +17,8 @@ import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
   getShapeTangent,
-  doShareLineage
+  doShareLineage,
+  getRectangleCentre
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -157,9 +158,23 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
   edges.forEach(edge => {
     if (!edge.end0?.vertexId || !edge.end1?.vertexId) return
 
+    const vertex0 = findVertex(edge.end0.vertexId)
+    const vertex1 = findVertex(edge.end1.vertexId)
+
+    let centre0 = vertex0
+    if (vertex0.shape === 'rectangle') {
+      centre0 = getRectangleCentre(vertex0)
+    }
+
+    let centre1 = vertex1
+    if (vertex1.shape === 'rectangle') {
+      centre1 = getRectangleCentre(vertex1)
+    }
+
     const end0Tangent = getShapeTangent({
-      originVertex: findVertex(edge.end0.vertexId),
-      destination: findVertex(edge.end1.vertexId)
+      ...vertex0,
+      originCentre: centre0,
+      destination: centre1
     })
 
     tangents.push({
@@ -170,8 +185,9 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     })
 
     const end1Tangent = getShapeTangent({
-      originVertex: findVertex(edge.end1.vertexId),
-      destination: findVertex(edge.end0.vertexId)
+      ...vertex1,
+      originCentre: centre1,
+      destination: centre0
     })
 
     tangents.push({
