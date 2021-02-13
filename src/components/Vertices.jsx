@@ -212,9 +212,6 @@ const Vertex = ({
   )
 }
 
-{/* <rect width={width} height={height} /> */}
-
-
 export const Vertices = ({
   vertices,
   edges,
