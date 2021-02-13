@@ -93,8 +93,8 @@ const handleMouseMove = ({
     updateVertex({
       id: draggedVertexId,
       propertySet: {
-        x: event.clientX,
-        y: event.clientY
+        centreX: event.clientX,
+        centreY: event.clientY
       }
     })
   }
@@ -133,7 +133,7 @@ const handleContextClick = ({
 }) => {
   event.preventDefault()
 
-  const coordinates = { x: event.clientX, y: event.clientY }
+  const coordinates = { centreX: event.clientX, centreY: event.clientY }
   const clickHandler = () => createVertex({ ...coordinates, radius: 20 })
   const items = [
     { display: 'Create vertex here', onClick: clickHandler }
@@ -161,20 +161,13 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     const vertex0 = findVertex(edge.end0.vertexId)
     const vertex1 = findVertex(edge.end1.vertexId)
 
-    let centre0 = vertex0
-    if (vertex0.shape === 'rectangle') {
-      centre0 = getRectangleCentre(vertex0)
-    }
-
-    let centre1 = vertex1
-    if (vertex1.shape === 'rectangle') {
-      centre1 = getRectangleCentre(vertex1)
-    }
+    // if (vertex0.id === 2) {
+    //   debugger
+    // }
 
     const end0Tangent = getShapeTangent({
-      ...vertex0,
-      originCentre: centre0,
-      destination: centre1
+      origin: vertex0,
+      destination: vertex1
     })
 
     tangents.push({
@@ -185,9 +178,9 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     })
 
     const end1Tangent = getShapeTangent({
-      ...vertex1,
-      originCentre: centre1,
-      destination: centre0
+      // ...vertex1,
+      origin: vertex1,
+      destination: vertex0
     })
 
     tangents.push({

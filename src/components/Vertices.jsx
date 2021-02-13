@@ -2,7 +2,9 @@ import React from "react"
 import styled from 'styled-components'
 import {
   getUnconnectedVertices,
-  getConnectedVertices
+  getConnectedVertices,
+  vertexCircleProps,
+  vertexRectangleProps
 } from '../component_helpers/vertices'
 
 const CircleInner = styled.circle`
@@ -107,11 +109,7 @@ const handleMouseDown = ({
 }
 
 const CircleGroup = ({
-  index,
-  x,
-  y,
-  radius,
-  vertexId,
+  vertex,
   setResizedVertexId,
   setDragCursorOrigin,
   setDraggedVertxId
@@ -119,55 +117,45 @@ const CircleGroup = ({
   return (
     <>
       <CircleOuter
-        key={`outer-${index}`}
-        cx={x}
-        cy={y}
+        {...vertexCircleProps(vertex)}
+        key={`outer-circle-${vertex.id}`}
         fill="black"
-        r={radius}
         onMouseDown={event => handleMouseDown({
           event,
-          id: vertexId,
+          id: vertex.id,
           setResizedVertexId,
           setDragCursorOrigin
         })}
       />
       <CircleInner
-        key={`inner-${index}`}
-        cx={x}
-        cy={y}
+        {...vertexCircleProps(vertex)}
+        key={`inner-circle-${vertex.id}`}
+        r={vertex.radius - 3}
         fill="red"
-        r={radius - 5}
-        onMouseDown={() => setDraggedVertxId(vertexId)}
+        onMouseDown={() => setDraggedVertxId(vertex.id)}
       />
     </>
   )
 }
 
-const Rectangle = ({
-  x,
-  y,
-  vertexId,
-  setResizedVertexId,
-  setDragCursorOrigin,
-  setDraggedVertxId,
-  height,
-  width
-}) => {
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill="red"
-      onMouseDown={() => setDraggedVertxId(vertexId)}
-    />
-  )
-}
+// const Rectangle = ({
+//   vertex,
+//   setResizedVertexId,
+//   setDragCursorOrigin,
+//   setDraggedVertxId
+// }) => {
+//   return (
+//     <rect
+//       {...vertexRectangleProps(vertex)}
+//       key={`rectangle-${vertex.id}`}
+//       fill="red"
+//       onMouseDown={() => setDraggedVertxId(vertex.id)}
+//     />
+//   )
+// }
 
 const Vertex = ({
-  vertex: { id, x, y, radius, height, width, shape },
-  index,
+  vertex,
   setDraggedVertxId,
   setResizedVertexId,
   renderContextMenu,
@@ -177,15 +165,8 @@ const Vertex = ({
   deleteEdge,
   setDragCursorOrigin
 }) => {
-  const commonProps = {
-    x,
-    y,
-    radius,
-    vertexId: id,
-    setResizedVertexId,
-    setDragCursorOrigin,
-    setDraggedVertxId
-  }
+  const commonProps = { setResizedVertexId, setDragCursorOrigin, setDraggedVertxId }
+  const { centreX, centreY } = vertex
 
   return (
     <g
@@ -201,13 +182,16 @@ const Vertex = ({
         })
       }}
     >
-      {shape === 'circle' && (
-        <CircleGroup {...commonProps} index={index} radius={radius} />
+      {vertex.shape === 'circle' && <CircleGroup vertex={vertex} {...commonProps} />}
+      {vertex.shape === 'rectangle' && (
+        <rect
+          {...vertexRectangleProps(vertex)}
+          key={`rectangle-${vertex.id}`}
+          fill="red"
+          onMouseDown={() => setDraggedVertxId(vertex.id)}
+        />
       )}
-      {shape === 'rectangle' && (
-        <Rectangle {...commonProps} width={width} height={height} fill="red" />
-      )}
-      <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
+      <text x={centreX} y={centreY} fontSize="15" fill="yellow">{vertex.id}</text>
     </g>
   )
 }
@@ -222,11 +206,10 @@ export const Vertices = ({
   renderContextMenu,
   setDragCursorOrigin
 }) => {
-  return vertices.map((vertex, index) => {
+  return vertices.map(vertex => {
     return (
       <Vertex
         vertex={vertex}
-        index={index}
         setDraggedVertxId={setDraggedVertxId}
         setResizedVertexId={setResizedVertexId}
         setDragCursorOrigin={setDragCursorOrigin}
