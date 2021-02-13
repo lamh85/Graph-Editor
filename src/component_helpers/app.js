@@ -1,14 +1,14 @@
 import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
 
-const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
+const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
 
   if (directionWidth === 0) {
     radiusWidth = 0
-    radiusHeight = vertex.radius
+    radiusHeight = circle.radius
   } else {
     const slope = directionHeight / directionWidth
-    const radiusSquared = vertex.radius ** 2
+    const radiusSquared = circle.radius ** 2
     // Original Pythagorean theorem:
       // r squared = x squared + y squared
     // Use slope to reduce the number of variables:
@@ -53,7 +53,10 @@ export const getCircleTangent = ({
     width: verticesWidth,
     xPixelDirection,
     yPixelDirection
-  } = getDistance({ origin: vertexOrigin, destination: vertexDestination })
+  } = getDistance({ origin: vertexOrigin, destination: vertexDestination }) // bug
+  // if (result === null) {
+  //   debugger
+  // }
 
   const {
     radiusWidth: originRadiusWidth,
@@ -65,8 +68,8 @@ export const getCircleTangent = ({
   })
 
   return {
-    x: vertexOrigin.x + (xPixelDirection * originRadiusWidth),
-    y: vertexOrigin.y + (yPixelDirection * originRadiusHeight)
+    x: vertexOrigin.centreX + (xPixelDirection * originRadiusWidth),
+    y: vertexOrigin.centreY + (yPixelDirection * originRadiusHeight)
   }
 }
 

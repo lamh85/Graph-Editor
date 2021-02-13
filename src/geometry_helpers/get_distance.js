@@ -9,8 +9,8 @@ export const getPixelDirection = ({ x1, x2, y1, y2 }) => {
 export const getDistance = ({ origin, destination }) => {
   if (!origin || !destination) return null
 
-  const { x: x1, y: y1 } = origin
-  const { x: x2, y: y2 } = destination
+  const { centreX: x1, centreY: y1 } = origin
+  const { centreX: x2, centreY: y2 } = destination
 
   const hasMissingCoordinate = [x1, y1, x2, y2].some(item => {
     return item === undefined || item === null
@@ -35,8 +35,8 @@ export const getDistance = ({ origin, destination }) => {
 export const getCoordinateDifference = ({ origin, destination }) => {
   if (!origin || !destination) return null
 
-  const { x: x1, y: y1 } = origin
-  const { x: x2, y: y2 } = destination
+  const { centreX: x1, centreY: y1 } = origin
+  const { centreX: x2, centreY: y2 } = destination
 
   return {
     x: x2 - x1,
