@@ -143,6 +143,28 @@ const CircleGroup = ({
   )
 }
 
+const Rectangle = ({
+  x,
+  y,
+  vertexId,
+  setResizedVertexId,
+  setDragCursorOrigin,
+  setDraggedVertxId,
+  height,
+  width
+}) => {
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill="red"
+      onMouseDown={() => setDraggedVertxId(vertexId)}
+    />
+  )
+}
+
 const Vertex = ({
   vertex: { id, x, y, radius, height, width, shape },
   index,
@@ -155,6 +177,16 @@ const Vertex = ({
   deleteEdge,
   setDragCursorOrigin
 }) => {
+  const commonProps = {
+    x,
+    y,
+    radius,
+    vertexId: id,
+    setResizedVertexId,
+    setDragCursorOrigin,
+    setDraggedVertxId
+  }
+
   return (
     <g
       onContextMenu={event => {
@@ -170,19 +202,10 @@ const Vertex = ({
       }}
     >
       {shape === 'circle' && (
-        <CircleGroup
-          index={index}
-          x={x}
-          y={y}
-          radius={radius}
-          vertexId={id}
-          setResizedVertexId={setResizedVertexId}
-          setDragCursorOrigin={setDragCursorOrigin}
-          setDraggedVertxId={setDraggedVertxId}
-        />
+        <CircleGroup {...commonProps} index={index} radius={radius} />
       )}
       {shape === 'rectangle' && (
-        <rect width={width} height={height} x={x} y={y} fill="red" />
+        <Rectangle {...commonProps} width={width} height={height} fill="red" />
       )}
       <text x={x} y={y} fontSize="15" fill="yellow">{id}</text>
     </g>
