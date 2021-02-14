@@ -79,6 +79,42 @@ const handleMouseup = ({ setDraggedVertxId, setResizedVertexId }) => {
   setResizedVertexId(null)
 }
 
+const handleResize = ({
+  event,
+  resizedVertexId,
+  findVertex,
+  updateVertex
+}) => {
+  if (!resizedVertexId) return
+
+  const vertex = findVertex(resizedVertexId)
+
+  const {
+    height: cursorFromVertexY,
+    width: cursorFromVertexX
+  } = getDistance({
+    origin: {
+      x: vertex.centreX,
+      y: vertex.centreY
+    },
+    destination: {
+      x: event.clientX,
+      y: event.clientY
+    }
+  })
+
+  const cursorFromVertexHyp = getHypotenuseLength({
+    adjacent: cursorFromVertexY,
+    opposite: cursorFromVertexX
+  })
+
+  updateVertex({
+    id: resizedVertexId,
+    property: 'radius',
+    value: cursorFromVertexHyp
+  })
+}
+
 const handleMouseMove = ({
   event,
   draggedVertexId,
@@ -103,34 +139,7 @@ const handleMouseMove = ({
     })
   }
 
-  if (resizedVertexId) {
-    const vertex = findVertex(resizedVertexId)
-
-    const {
-      height: cursorFromVertexY,
-      width: cursorFromVertexX
-    } = getDistance({
-      origin: {
-        x: vertex.centreX,
-        y: vertex.centreY
-      },
-      destination: {
-        x: event.clientX,
-        y: event.clientY
-      }
-    })
-
-    const cursorFromVertexHyp = getHypotenuseLength({
-      adjacent: cursorFromVertexY,
-      opposite: cursorFromVertexX
-    })
-
-    updateVertex({
-      id: resizedVertexId,
-      property: 'radius',
-      value: cursorFromVertexHyp
-    })
-  }
+  handleResize({ event, resizedVertexId, findVertex, updateVertex })
 }
 
 const handleContextClick = ({
