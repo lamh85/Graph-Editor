@@ -1,14 +1,14 @@
 import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
 
-const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
+const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
 
   if (directionWidth === 0) {
     radiusWidth = 0
-    radiusHeight = vertex.radius
+    radiusHeight = circle.radius
   } else {
     const slope = directionHeight / directionWidth
-    const radiusSquared = vertex.radius ** 2
+    const radiusSquared = circle.radius ** 2
     // Original Pythagorean theorem:
       // r squared = x squared + y squared
     // Use slope to reduce the number of variables:
@@ -20,7 +20,25 @@ const getRadiusDimensions = ({ vertex, directionHeight, directionWidth }) => {
   return { radiusWidth, radiusHeight }
 }
 
-export const getVertexTangent = ({
+export const getShapeTangent = ({
+  origin,
+  destination
+}) => {
+  if (origin.shape === 'circle') {
+    return getCircleTangent({
+      vertexOrigin: origin,
+      vertexDestination: destination
+    })
+  } else if (origin.shape === 'rectangle') {
+    return getRectangleTangent({
+      ...origin,
+      centre: origin,
+      externalPoint: destination
+    })
+  }
+}
+
+export const getCircleTangent = ({
   vertexOrigin,
   vertexDestination
 }) => {
@@ -31,49 +49,40 @@ export const getVertexTangent = ({
     width: verticesWidth,
     xPixelDirection,
     yPixelDirection
-  } = getDistance({ origin: vertexOrigin, destination: vertexDestination })
+  } = getDistance({
+    origin: {
+      x: vertexOrigin.centreX,
+      y: vertexOrigin.centreY
+    },
+    destination: {
+      x: vertexDestination.centreX,
+      y: vertexDestination.centreY
+    }
+  })
 
   const {
     radiusWidth: originRadiusWidth,
     radiusHeight: originRadiusHeight
   } = getRadiusDimensions({
-    vertex: vertexOrigin,
+    circle: vertexOrigin,
     directionHeight: verticesHeight,
     directionWidth: verticesWidth
   })
 
-  const {
-    radiusWidth: destinationRadiusWidth,
-    radiusHeight: destinationRadiusHeight
-  } = getRadiusDimensions({
-    vertex: vertexDestination,
-    directionHeight: verticesHeight,
-    directionWidth: verticesWidth
-  })
-
-  const tangentOrigin = {
-    x: vertexOrigin.x + (xPixelDirection * originRadiusWidth),
-    y: vertexOrigin.y + (yPixelDirection * originRadiusHeight),
-    yPixelDirection
+  return {
+    x: vertexOrigin.centreX + (xPixelDirection * originRadiusWidth),
+    y: vertexOrigin.centreY + (yPixelDirection * originRadiusHeight)
   }
-
-  const tangentDestination = {
-    x: vertexDestination.x + (-1 * xPixelDirection * destinationRadiusWidth),
-    y: vertexDestination.y + (-1 * yPixelDirection * destinationRadiusHeight),
-    yPixelDirection: (-1 * yPixelDirection)
-  }
-
-  return { tangentOrigin, tangentDestination }
 }
 
-const getRectangleBoundaries = ({ centre, height, width }) => {
+const getRectangleBoundaries = ({ centreX, centreY, height, width }) => {
   const halfHeight = height / 2
   const halfWidth = width / 2
 
-  const top = centre.y - halfHeight
-  const left = centre.x - halfWidth
-  const right = centre.x + halfWidth
-  const bottom = centre.y + halfHeight
+  const top = centreY - halfHeight
+  const left = centreX - halfWidth
+  const right = centreX + halfWidth
+  const bottom = centreY + halfHeight
 
   const topLeft = { x: left, y: top }
   const topRight = { x: right, y: top }
@@ -102,19 +111,19 @@ const getQuadrant4Tangent = ({ externalPoint, height, width }) => {
   }
 }
 
-export const getRectangleTangent = ({ width, height, centre, externalPoint }) => {
+export const getRectangleTangent = ({ width, height, centreX, centreY, externalPoint }) => {
   const externalDifference = getCoordinateDifference({
-    origin: centre,
+    origin: { centreX, centreY },
     destination: externalPoint
   })
 
   const boundaries = getRectangleBoundaries({
-    centre, height, width
+    centreX, centreY, height, width
   })
 
   if (externalDifference.x === 0) {
     return {
-      x: centre.x,
+      x: centreX,
       y: externalDifference.y > 0
         ? boundaries.bottom
         : boundaries.top
@@ -123,7 +132,8 @@ export const getRectangleTangent = ({ width, height, centre, externalPoint }) =>
     return {
       x: externalDifference.x > 0
         ? boundaries.right
-        : boundaries.left
+        : boundaries.left,
+      y: centreY
     }
   }
 
@@ -140,8 +150,8 @@ export const getRectangleTangent = ({ width, height, centre, externalPoint }) =>
   })
 
   const translatedTangent = {
-    x: quadrant4Tangent.x + centre.x,
-    y: quadrant4Tangent.y + centre.y
+    x: quadrant4Tangent.x + centreX,
+    y: quadrant4Tangent.y + centreY
   }
 
   return {
@@ -170,4 +180,11 @@ const getLineage = element => {
 export const doShareLineage = (youngest, ancestorTested) => {
   const lineage = getLineage(youngest)
   return lineage.includes(ancestorTested)
+}
+
+export const getRectangleCentre = ({ height, width, x, y }) => {
+  return {
+    x: x + width / 2,
+    y: y + height / 2
+  }
 }

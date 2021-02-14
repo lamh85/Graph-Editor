@@ -3,7 +3,11 @@ import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
 import { DEFAULT_ARROWS } from '../models/polygons'
-import { DEFAULT_VERTICES } from '../models/vertices'
+import {
+  DEFAULT_VERTICES,
+  DEFAULT_CIRCLE,
+  DEFAULT_RECTANGLE
+} from '../models/vertices'
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
@@ -16,8 +20,9 @@ import { ContextMenu } from './ContextMenu.jsx'
 import { getDistance } from "../geometry_helpers/get_distance"
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
-  getVertexTangent,
-  doShareLineage
+  getShapeTangent,
+  doShareLineage,
+  getRectangleCentre
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -92,8 +97,8 @@ const handleMouseMove = ({
     updateVertex({
       id: draggedVertexId,
       propertySet: {
-        x: event.clientX,
-        y: event.clientY
+        centreX: event.clientX,
+        centreY: event.clientY
       }
     })
   }
@@ -105,7 +110,10 @@ const handleMouseMove = ({
       height: cursorFromVertexY,
       width: cursorFromVertexX
     } = getDistance({
-      origin: vertex,
+      origin: {
+        x: vertex.centreX,
+        y: vertex.centreY
+      },
       destination: {
         x: event.clientX,
         y: event.clientY
@@ -131,14 +139,23 @@ const handleContextClick = ({
   createVertex
 }) => {
   event.preventDefault()
+  const { clientX, clientY } = event
 
-  const coordinates = { x: event.clientX, y: event.clientY }
-  const clickHandler = () => createVertex({ ...coordinates, radius: 20 })
+  const vertexCentre = { centreX: clientX, centreY: clientY }
+  const createCircle = () => createVertex({
+    ...DEFAULT_CIRCLE,
+    ...vertexCentre
+  })
+  const createRectangle = () => createVertex({
+    ...DEFAULT_RECTANGLE,
+    ...vertexCentre
+  })
   const items = [
-    { display: 'Create vertex here', onClick: clickHandler }
+    { display: 'Create circle here', onClick: createCircle },
+    { display: 'Create rectangle here', onClick: createRectangle }
   ]
 
-  renderContextMenu({ ...coordinates, items })
+  renderContextMenu({ x: clientX, y: clientY, items })
 }
 
 const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
@@ -157,26 +174,31 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
   edges.forEach(edge => {
     if (!edge.end0?.vertexId || !edge.end1?.vertexId) return
 
-    const {
-      tangentOrigin,
-      tangentDestination
-    } = getVertexTangent({
-      vertexOrigin: findVertex(edge.end0.vertexId),
-      vertexDestination: findVertex(edge.end1.vertexId),
+    const vertex0 = findVertex(edge.end0.vertexId)
+    const vertex1 = findVertex(edge.end1.vertexId)
+
+    const end0Tangent = getShapeTangent({
+      origin: vertex0,
+      destination: vertex1
     })
 
     tangents.push({
       edgeId: edge.id,
       endId: 0,
       vertexId: edge.end0.vertexId,
-      coordinates: tangentOrigin
+      coordinates: end0Tangent
+    })
+
+    const end1Tangent = getShapeTangent({
+      origin: vertex1,
+      destination: vertex0
     })
 
     tangents.push({
       edgeId: edge.id,
       endId: 1,
       vertexId: edge.end1.vertexId,
-      coordinates: tangentDestination
+      coordinates: end1Tangent
     })
   })
 

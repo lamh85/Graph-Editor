@@ -219,13 +219,13 @@ const Editor = ({
         <button onClick={() => setGridIncrement(gridSizeInput)}>
           Apply
         </button>
-        <h1>Vertices</h1>
+        <h1>Vertices (centre)</h1>
         {
           vertices.map((vertex, index) => {
             const { id } = vertex
             return (
               <Row key={index}>
-                <div>{id}:: X: {vertex.x}, Y: {vertex.y}</div>
+                <div>{id}:: X: {vertex.centreX}, Y: {vertex.centreY}</div>
                 <button onClick={() => deleteVertex('id', id)}>Delete</button>
               </Row>
             )

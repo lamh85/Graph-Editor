@@ -27,3 +27,18 @@ export const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
     return !connectedVertices.includes(id) && id !== vertexId
   })
 }
+
+export const vertexCircleProps = vertex => {
+  const { centreX, centreY, radius } = vertex
+
+  return { cx: centreX, cy: centreY, r: radius }
+}
+
+export const vertexRectangleProps = vertex => {
+  const { centreX, centreY, height, width } = vertex
+
+  const left = centreX - width / 2
+  const top = centreY - height / 2
+
+  return { x: left, y: top, height, width }
+}

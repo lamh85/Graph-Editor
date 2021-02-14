@@ -35,8 +35,8 @@ export const getDistance = ({ origin, destination }) => {
 export const getCoordinateDifference = ({ origin, destination }) => {
   if (!origin || !destination) return null
 
-  const { x: x1, y: y1 } = origin
-  const { x: x2, y: y2 } = destination
+  const { centreX: x1, centreY: y1 } = origin
+  const { centreX: x2, centreY: y2 } = destination
 
   return {
     x: x2 - x1,
