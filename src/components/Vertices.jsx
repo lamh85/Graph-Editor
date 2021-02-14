@@ -172,7 +172,7 @@ const Vertex = ({
     <g
       onContextMenu={event => {
         return handleVertexContextClick({
-          vertexId: id,
+          vertexId: vertex.id,
           vertices,
           edges,
           createEdge,

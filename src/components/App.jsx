@@ -3,7 +3,11 @@ import styled from 'styled-components'
 import { hot } from "react-hot-loader"
 
 import { DEFAULT_ARROWS } from '../models/polygons'
-import { DEFAULT_VERTICES } from '../models/vertices'
+import {
+  DEFAULT_VERTICES,
+  DEFAULT_CIRCLE,
+  DEFAULT_RECTANGLE
+} from '../models/vertices'
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
@@ -132,14 +136,23 @@ const handleContextClick = ({
   createVertex
 }) => {
   event.preventDefault()
+  const { clientX, clientY } = event
 
-  const coordinates = { centreX: event.clientX, centreY: event.clientY }
-  const clickHandler = () => createVertex({ ...coordinates, radius: 20 })
+  const vertexCentre = { centreX: clientX, centreY: clientY }
+  const createCircle = () => createVertex({
+    ...DEFAULT_CIRCLE,
+    ...vertexCentre
+  })
+  const createRectangle = () => createVertex({
+    ...DEFAULT_RECTANGLE,
+    ...vertexCentre
+  })
   const items = [
-    { display: 'Create vertex here', onClick: clickHandler }
+    { display: 'Create circle here', onClick: createCircle },
+    { display: 'Create rectangle here', onClick: createRectangle }
   ]
 
-  renderContextMenu({ ...coordinates, items })
+  renderContextMenu({ x: clientX, y: clientY, items })
 }
 
 const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
