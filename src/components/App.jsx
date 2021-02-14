@@ -135,11 +135,16 @@ const handleMouseMove = ({
   }
 
   if (draggedVertexId) {
+    const canvasDestination = cursorToCanvasCoordinates({
+      cursorX: event.clientX,
+      cursorY: event.clientY
+    })
+
     updateVertex({
       id: draggedVertexId,
       propertySet: {
-        centreX: event.clientX,
-        centreY: event.clientY
+        centreX: canvasDestination.x,
+        centreY: canvasDestination.y
       }
     })
   }
