@@ -188,5 +188,3 @@ export const getRectangleCentre = ({ height, width, x, y }) => {
     y: y + height / 2
   }
 }
-
-// test commit again again
