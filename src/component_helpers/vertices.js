@@ -31,7 +31,7 @@ export const getUnconnectedVertices = ({ vertexId, vertices, edges }) => {
 export const vertexCircleProps = vertex => {
   const { centreX, centreY, radius } = vertex
 
-  return { cx: centreX, cy: centreY, r: radius}
+  return { cx: centreX, cy: centreY, r: radius }
 }
 
 export const vertexRectangleProps = vertex => {
