@@ -198,6 +198,7 @@ export const Vertices = ({
     return (
       <Vertex
         vertex={vertex}
+        key={`vertex-g-${vertex.id}`}
         setDraggedVertxId={setDraggedVertxId}
         setResizedVertexId={setResizedVertexId}
         setDragCursorOrigin={setDragCursorOrigin}
