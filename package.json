@@ -8,7 +8,7 @@
   },
   "scripts": {
     "find-unused-exports": "find-unused-exports",
-    "start": "webpack serve --mode development",
+    "start": "webpack serve --mode development -d eval-source-map",
     "test": "jest"
   },
   "repository": {

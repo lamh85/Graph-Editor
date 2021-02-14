@@ -6,7 +6,7 @@ module.exports = {
     contentBase: './dist',
     hot: true
   },
-  devtool: "inline-source-map",
+  devtool: "eval-source-map",
   entry: './src/index.js',
   module: {
     rules: [
