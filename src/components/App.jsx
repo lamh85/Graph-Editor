@@ -177,28 +177,20 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     const vertex0 = findVertex(edge.end0.vertexId)
     const vertex1 = findVertex(edge.end1.vertexId)
 
-    const end0Tangent = getShapeTangent({
-      origin: vertex0,
-      destination: vertex1
-    })
+    const vertexPairs = [
+      { origin: vertex0, destination: vertex1 },
+      { origin: vertex1, destination: vertex0 }
+    ]
+    
+    vertexPairs.forEach((pair, index) => {
+      const tangent = getShapeTangent(pair)
 
-    tangents.push({
-      edgeId: edge.id,
-      endId: 0,
-      vertexId: edge.end0.vertexId,
-      coordinates: end0Tangent
-    })
-
-    const end1Tangent = getShapeTangent({
-      origin: vertex1,
-      destination: vertex0
-    })
-
-    tangents.push({
-      edgeId: edge.id,
-      endId: 1,
-      vertexId: edge.end1.vertexId,
-      coordinates: end1Tangent
+      tangents.push({
+        edgeId: edge.id,
+        endId: index,
+        vertexId: pair.origin.id,
+        coordinates: tangent
+      })
     })
   })
 
