@@ -22,7 +22,7 @@ import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
   getShapeTangent,
   doShareLineage,
-  getRectangleCentre
+  cursorToCanvasCoordinates,
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -89,6 +89,11 @@ const handleResize = ({
 
   const vertex = findVertex(resizedVertexId)
 
+  const canvasDestination = cursorToCanvasCoordinates({
+    cursorX: event.clientX,
+    cursorY: event.clientY
+  })
+
   const {
     height: cursorFromVertexY,
     width: cursorFromVertexX
@@ -98,8 +103,8 @@ const handleResize = ({
       y: vertex.centreY
     },
     destination: {
-      x: event.clientX,
-      y: event.clientY
+      x: canvasDestination.x,
+      y: canvasDestination.y
     }
   })
 
@@ -138,8 +143,13 @@ const handleMouseMove = ({
       }
     })
   }
-
-  handleResize({ event, resizedVertexId, findVertex, updateVertex })
+ 
+  handleResize({
+    event,
+    resizedVertexId,
+    findVertex,
+    updateVertex
+  })
 }
 
 const handleContextClick = ({
