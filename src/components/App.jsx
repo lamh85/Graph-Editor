@@ -110,7 +110,10 @@ const handleMouseMove = ({
       height: cursorFromVertexY,
       width: cursorFromVertexX
     } = getDistance({
-      origin: vertex,
+      origin: {
+        x: vertex.centreX,
+        y: vertex.centreY
+      },
       destination: {
         x: event.clientX,
         y: event.clientY
