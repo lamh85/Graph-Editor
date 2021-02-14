@@ -65,7 +65,7 @@ const renderEdge = ({ edge, index, tangents }) => {
   const averageY = (y1 + y2) / 2
 
   return (
-    <g>
+    <g key={`edge${edge.id}`}>
       <line {...lineProps} />
       <text x={averageX} y={averageY} fontSize="15" fill="black">Edge {edge.id}</text>
     </g>

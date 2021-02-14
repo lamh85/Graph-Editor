@@ -34,10 +34,9 @@ const handleEdgeChange = ({ event, endProperty, updateEdge, edgeId, editedEdge }
   })
 }
 
-const EdgeEndInput = ({ key, value, handleChange }) => {
+const EdgeEndInput = ({ value, handleChange }) => {
   return (
     <input
-      key={key}
       type="number"
       value={value}
       onChange={handleChange}
@@ -103,18 +102,14 @@ const handleArrowChange = (event, updateArrow) => {
 }
 
 const ArrowEdgeEndForm = ({
-  arrowId,
   arrowEdgeEndId,
   formEndId,
   inputProps
 }) => {
-  const keyPrefix = `${arrowId}-${arrowEdgeEndId}`
-
   return (
     <>
-      <div key={`${keyPrefix}-title`}>End {formEndId}</div>
+      <div>End {formEndId}</div>
       <input
-        key={`${keyPrefix}-input`}
         checked={parseInt(arrowEdgeEndId) === formEndId}
         value={formEndId}
         {...inputProps}
@@ -143,8 +138,8 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
           const radioProps = { ...inputProps, type: 'radio', 'data-property': 'endId' }
 
           return (
-            <>
-              <Row key={index}>
+            <React.Fragment key={`arrow-row-${id}`}>
+              <Row>
                 <div>ID: {id}</div>
                 <div>
                   Edge ID:
@@ -158,7 +153,7 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
                   [0, 1].map(formEndId => {
                     return (
                       <ArrowEdgeEndForm
-                        arrowId={id}
+                        key={`arrow${id}-end${formEndId}`}
                         arrowEdgeEndId={endId}
                         formEndId={formEndId}
                         inputProps={radioProps}
@@ -171,7 +166,7 @@ const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
                   Delete
                 </button>
               </Row>
-            </>
+            </React.Fragment>
           )
         })
       }
