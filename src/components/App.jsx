@@ -177,10 +177,6 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     const vertex0 = findVertex(edge.end0.vertexId)
     const vertex1 = findVertex(edge.end1.vertexId)
 
-    // if (vertex0.id === 2) {
-    //   debugger
-    // }
-
     const end0Tangent = getShapeTangent({
       origin: vertex0,
       destination: vertex1
@@ -194,7 +190,6 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
     })
 
     const end1Tangent = getShapeTangent({
-      // ...vertex1,
       origin: vertex1,
       destination: vertex0
     })

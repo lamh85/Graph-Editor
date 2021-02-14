@@ -17,6 +17,10 @@ const CircleOuter = styled.circle`
   }
 `
 
+const Rectangle = styled.rect`
+  cursor: pointer;
+`
+
 const handleConnectVertexClick = ({ vertex1Id, vertex2Id, createEdge }) => {
   const newEdge = {
     end0: {
@@ -138,22 +142,6 @@ const CircleGroup = ({
   )
 }
 
-// const Rectangle = ({
-//   vertex,
-//   setResizedVertexId,
-//   setDragCursorOrigin,
-//   setDraggedVertxId
-// }) => {
-//   return (
-//     <rect
-//       {...vertexRectangleProps(vertex)}
-//       key={`rectangle-${vertex.id}`}
-//       fill="red"
-//       onMouseDown={() => setDraggedVertxId(vertex.id)}
-//     />
-//   )
-// }
-
 const Vertex = ({
   vertex,
   setDraggedVertxId,
@@ -184,7 +172,7 @@ const Vertex = ({
     >
       {vertex.shape === 'circle' && <CircleGroup vertex={vertex} {...commonProps} />}
       {vertex.shape === 'rectangle' && (
-        <rect
+        <Rectangle
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"

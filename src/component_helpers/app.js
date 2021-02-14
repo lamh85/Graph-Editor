@@ -21,9 +21,6 @@ const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
 }
 
 export const getShapeTangent = ({
-  // width,
-  // height,
-  // shape,
   origin,
   destination
 }) => {
