@@ -135,7 +135,8 @@ export const getRectangleTangent = ({ width, height, centreX, centreY, externalP
     return {
       x: externalDifference.x > 0
         ? boundaries.right
-        : boundaries.left
+        : boundaries.left,
+      y: centreY
     }
   }
 
