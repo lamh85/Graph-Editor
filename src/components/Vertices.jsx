@@ -21,6 +21,11 @@ const Rectangle = styled.rect`
   cursor: pointer;
 `
 
+const SvgText = styled.text`
+  cursor: pointer;
+  user-select: none;
+`
+
 const handleConnectVertexClick = ({ vertex1Id, vertex2Id, createEdge }) => {
   const newEdge = {
     end0: {
@@ -173,7 +178,14 @@ const Vertex = ({
           onMouseDown={getMouseMoveHandler('move')}
         />
       )}
-      <text x={centreX} y={centreY} fontSize="15" fill="yellow">{vertex.id}</text>
+      <SvgText
+        x={centreX}
+        y={centreY}
+        fontSize="15"
+        fill="yellow"
+        onMouseDown={getMouseMoveHandler('move')}>
+        {vertex.id}
+      </SvgText>
     </g>
   )
 }
