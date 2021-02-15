@@ -6,7 +6,8 @@ import { DEFAULT_ARROWS } from '../models/polygons'
 import {
   DEFAULT_VERTICES,
   DEFAULT_CIRCLE,
-  DEFAULT_RECTANGLE
+  DEFAULT_RECTANGLE,
+  RADIUS_MINIMUM
 } from '../models/vertices'
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
@@ -200,7 +201,8 @@ const App = props => {
   } = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
     canvasHeight: SVG_HEIGHT,
-    updateVertex
+    updateVertex,
+    radiusMinimum: RADIUS_MINIMUM
   })
 
   const isMovingVertex =

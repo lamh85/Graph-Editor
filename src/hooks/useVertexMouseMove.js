@@ -55,7 +55,8 @@ const handleMoveVertex = ({
 const handleResizeVertex = ({
   mouseMovedVertex,
   event,
-  updateVertex
+  updateVertex,
+  radiusMinimum
 }) => {
   const canvasDestination = canvasCoordinatesConversion({
     cursorX: event.clientX,
@@ -81,17 +82,23 @@ const handleResizeVertex = ({
     opposite: cursorFromVertexX
   })
 
+  const radiusValidated =
+    cursorFromVertexHyp > radiusMinimum
+      ? cursorFromVertexHyp
+      : radiusMinimum
+
   updateVertex({
     id: mouseMovedVertex.id,
     property: 'radius',
-    value: cursorFromVertexHyp
+    value: radiusValidated
   })
 }
 
 export const useVertexMouseMove = ({
   canvasWidth,
   canvasHeight,
-  updateVertex
+  updateVertex,
+  radiusMinimum
 }) => {
   const [mouseMovedVertex, setMouseMovedVertex] = useState({})
   const [objective, setObjective] = useState('')
@@ -152,7 +159,8 @@ export const useVertexMouseMove = ({
       handleResizeVertex({
         mouseMovedVertex,
         event,
-        updateVertex
+        updateVertex,
+        radiusMinimum
       })
     }
   }}
