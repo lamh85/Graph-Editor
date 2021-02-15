@@ -29,13 +29,13 @@ const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
 
 const handleMoveVertex = ({
   event,
-  cursorOrigin,
+  canvasClickOrigin,
   mouseMovedVertex,
   updateVertex
 }) => {
-  const distanceFromCentre = {
-    x: cursorOrigin.x - mouseMovedVertex.centreX,
-    y: cursorOrigin.y - mouseMovedVertex.centreY
+  const clickHandleFromCentre = {
+    x: canvasClickOrigin.x - mouseMovedVertex.centreX,
+    y: canvasClickOrigin.y - mouseMovedVertex.centreY
   }
 
   const canvasDestination = canvasCoordinatesConversion({
@@ -46,8 +46,8 @@ const handleMoveVertex = ({
   updateVertex({
     id: mouseMovedVertex.id,
     propertySet: {
-      centreX: canvasDestination.x - distanceFromCentre.x,
-      centreY: canvasDestination.y - distanceFromCentre.y
+      centreX: canvasDestination.x - clickHandleFromCentre.x,
+      centreY: canvasDestination.y - clickHandleFromCentre.y
     }
   })
 }
@@ -95,7 +95,7 @@ export const useVertexMouseMove = ({
 }) => {
   const [mouseMovedVertex, setMouseMovedVertex] = useState({})
   const [objective, setObjective] = useState('')
-  const [cursorOrigin, setCursorOrigin] = useState({
+  const [canvasClickOrigin, setCanvasClickOrigin] = useState({
     x: null,
     y: null
   })
@@ -108,9 +108,14 @@ export const useVertexMouseMove = ({
     setMouseMovedVertex(vertex)
     setObjective(requestedObjective)
 
-    setCursorOrigin({
-      x: event.clientX,
-      y: event.clientY
+    const canvasCoordinates = canvasCoordinatesConversion({
+      cursorX: event.clientX,
+      cursorY: event.clientY
+    })
+
+    setCanvasClickOrigin({
+      x: canvasCoordinates.x,
+      y: canvasCoordinates.y
     })
   }
 
@@ -137,7 +142,7 @@ export const useVertexMouseMove = ({
     if (objective === 'move') {
       handleMoveVertex({
         event,
-        cursorOrigin,
+        canvasClickOrigin,
         mouseMovedVertex,
         updateVertex
       })

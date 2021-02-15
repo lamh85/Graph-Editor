@@ -24,7 +24,7 @@ import {
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
-const SVG_WIDTH = 750
+const SVG_WIDTH = 900
 
 const StyledSvg = styled.svg`
   background: lightgrey;
