@@ -126,6 +126,8 @@ const handleMouseMove = ({
   setDraggedVertxId,
   resizedVertexId,
   setResizedVertexId,
+  mouseDownOrigin,
+  mouseDownVertexOriginal,
   updateVertex,
   findVertex
 }) => {
@@ -135,6 +137,11 @@ const handleMouseMove = ({
   }
 
   if (draggedVertexId) {
+    const distanceFromCentre = {
+      x: mouseDownOrigin.x - mouseDownVertexOriginal.centreX,
+      y: mouseDownOrigin.y - mouseDownVertexOriginal.centreY
+    }
+
     const canvasDestination = cursorToCanvasCoordinates({
       cursorX: event.clientX,
       cursorY: event.clientY
@@ -143,8 +150,8 @@ const handleMouseMove = ({
     updateVertex({
       id: draggedVertexId,
       propertySet: {
-        centreX: canvasDestination.x,
-        centreY: canvasDestination.y
+        centreX: canvasDestination.x - distanceFromCentre.x,
+        centreY: canvasDestination.y - distanceFromCentre.y
       }
     })
   }
@@ -243,6 +250,7 @@ const App = props => {
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [resizedVertexId, setResizedVertexId] = useState(null)
   const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
+  const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
   const [gridIncrement, setGridIncrement] = useState(10)
   const [tangents, setTangents] = useState([])
 
@@ -295,6 +303,7 @@ const App = props => {
               resizedVertexId,
               setResizedVertexId,
               mouseDownOrigin,
+              mouseDownVertexOriginal,
               updateVertex,
               findVertex
             })
@@ -324,6 +333,7 @@ const App = props => {
             setDraggedVertxId={setDraggedVertxId}
             setResizedVertexId={setResizedVertexId}
             setMouseDownOrigin={setMouseDownOrigin}
+            setMouseDownVertexOriginal={setMouseDownVertexOriginal}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>
