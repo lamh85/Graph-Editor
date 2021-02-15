@@ -24,7 +24,7 @@ const canvasCoordinatesConversion = ({
 }
 
 const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
-  x > canvasWidth || y > canvasHeight
+  return x > canvasWidth || y > canvasHeight
 }
 
 const handleMoveVertex = ({
@@ -93,7 +93,6 @@ export const useVertexMouseMove = ({
   canvasHeight,
   updateVertex
 }) => {
-  const [movedVertex, setMovedVertex] = useState({})
   const [actionedVertex, setActionedVertex] = useState({})
   const [objective, setObjective] = useState('')
   const [cursorOrigin, setCursorOrigin] = useState({
@@ -117,9 +116,12 @@ export const useVertexMouseMove = ({
 
   const handleVertexMouseMove = event => {{
     if (!actionedVertex) return
-
     const { clientX, clientY } = event
-    const canvasCoordinates = ({ cursorX: clientX, cursorY: clientY })
+    const canvasCoordinates = canvasCoordinatesConversion({
+      cursorX: clientX,
+      cursorY: clientY
+    })
+
     const exceedBoundariesResult = doesExceedBoundaries({
       x: canvasCoordinates.x,
       y: canvasCoordinates.y,
@@ -128,14 +130,13 @@ export const useVertexMouseMove = ({
     })
 
     if (exceedBoundariesResult) {
-      setMovedVertex(null)
-      setResizedVertex(null)
+      setActionedVertex(null)
+      return
     }
 
     if (objective === 'move') {
       handleMoveVertex({
         event,
-        movedVertex,
         cursorOrigin,
         actionedVertex,
         updateVertex
