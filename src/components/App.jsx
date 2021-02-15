@@ -22,7 +22,7 @@ import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
   getShapeTangent,
   doShareLineage,
-  getRectangleCentre
+  cursorToCanvasCoordinates,
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -79,12 +79,55 @@ const handleMouseup = ({ setDraggedVertxId, setResizedVertexId }) => {
   setResizedVertexId(null)
 }
 
+const handleResize = ({
+  event,
+  resizedVertexId,
+  findVertex,
+  updateVertex
+}) => {
+  if (!resizedVertexId) return
+
+  const vertex = findVertex(resizedVertexId)
+
+  const canvasDestination = cursorToCanvasCoordinates({
+    cursorX: event.clientX,
+    cursorY: event.clientY
+  })
+
+  const {
+    height: cursorFromVertexY,
+    width: cursorFromVertexX
+  } = getDistance({
+    origin: {
+      x: vertex.centreX,
+      y: vertex.centreY
+    },
+    destination: {
+      x: canvasDestination.x,
+      y: canvasDestination.y
+    }
+  })
+
+  const cursorFromVertexHyp = getHypotenuseLength({
+    adjacent: cursorFromVertexY,
+    opposite: cursorFromVertexX
+  })
+
+  updateVertex({
+    id: resizedVertexId,
+    property: 'radius',
+    value: cursorFromVertexHyp
+  })
+}
+
 const handleMouseMove = ({
   event,
   draggedVertexId,
   setDraggedVertxId,
   resizedVertexId,
   setResizedVertexId,
+  mouseDownOrigin,
+  mouseDownVertexOriginal,
   updateVertex,
   findVertex
 }) => {
@@ -94,43 +137,31 @@ const handleMouseMove = ({
   }
 
   if (draggedVertexId) {
+    const distanceFromCentre = {
+      x: mouseDownOrigin.x - mouseDownVertexOriginal.centreX,
+      y: mouseDownOrigin.y - mouseDownVertexOriginal.centreY
+    }
+
+    const canvasDestination = cursorToCanvasCoordinates({
+      cursorX: event.clientX,
+      cursorY: event.clientY
+    })
+
     updateVertex({
       id: draggedVertexId,
       propertySet: {
-        centreX: event.clientX,
-        centreY: event.clientY
+        centreX: canvasDestination.x - distanceFromCentre.x,
+        centreY: canvasDestination.y - distanceFromCentre.y
       }
     })
   }
-
-  if (resizedVertexId) {
-    const vertex = findVertex(resizedVertexId)
-
-    const {
-      height: cursorFromVertexY,
-      width: cursorFromVertexX
-    } = getDistance({
-      origin: {
-        x: vertex.centreX,
-        y: vertex.centreY
-      },
-      destination: {
-        x: event.clientX,
-        y: event.clientY
-      }
-    })
-
-    const cursorFromVertexHyp = getHypotenuseLength({
-      adjacent: cursorFromVertexY,
-      opposite: cursorFromVertexX
-    })
-
-    updateVertex({
-      id: resizedVertexId,
-      property: 'radius',
-      value: cursorFromVertexHyp
-    })
-  }
+ 
+  handleResize({
+    event,
+    resizedVertexId,
+    findVertex,
+    updateVertex
+  })
 }
 
 const handleContextClick = ({
@@ -218,7 +249,8 @@ const App = props => {
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [resizedVertexId, setResizedVertexId] = useState(null)
-  const [dragCursorOrigin, setDragCursorOrigin] = useState({ x: null, y: null })
+  const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
+  const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
   const [gridIncrement, setGridIncrement] = useState(10)
   const [tangents, setTangents] = useState([])
 
@@ -270,7 +302,8 @@ const App = props => {
               setDraggedVertxId,
               resizedVertexId,
               setResizedVertexId,
-              dragCursorOrigin,
+              mouseDownOrigin,
+              mouseDownVertexOriginal,
               updateVertex,
               findVertex
             })
@@ -299,7 +332,8 @@ const App = props => {
             deleteEdge={deleteEdge}
             setDraggedVertxId={setDraggedVertxId}
             setResizedVertexId={setResizedVertexId}
-            setDragCursorOrigin={setDragCursorOrigin}
+            setMouseDownOrigin={setMouseDownOrigin}
+            setMouseDownVertexOriginal={setMouseDownVertexOriginal}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>
