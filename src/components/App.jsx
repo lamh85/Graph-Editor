@@ -11,6 +11,7 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
+import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -247,10 +248,10 @@ const App = props => {
   }, [])
 
   const contextMenuNode = useRef()
-  const [draggedVertexId, setDraggedVertxId] = useState(null)
-  const [resizedVertexId, setResizedVertexId] = useState(null)
-  const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
-  const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
+  // const [draggedVertexId, setDraggedVertxId] = useState(null)
+  // const [resizedVertexId, setResizedVertexId] = useState(null)
+  // const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
+  // const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
   const [gridIncrement, setGridIncrement] = useState(20)
   const [tangents, setTangents] = useState([])
 
@@ -289,6 +290,16 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
+  const {
+    handleVertexMouseDown,
+    handleVertexMouseMove,
+    handleVertexMouseUp
+  } = useVertexMouseMove({
+    canvasWidth: SVG_WIDTH,
+    canvasHeight: SVG_HEIGHT,
+    updateVertex
+  })
+
   return (
     <>
       <PositionWrapper>
@@ -296,19 +307,23 @@ const App = props => {
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
           onMouseMove={
-            event => handleMouseMove({
-              event,
-              draggedVertexId,
-              setDraggedVertxId,
-              resizedVertexId,
-              setResizedVertexId,
-              mouseDownOrigin,
-              mouseDownVertexOriginal,
-              updateVertex,
-              findVertex
-            })
+            handleVertexMouseMove
+            // event => handleMouseMove({
+              // event,
+              // draggedVertexId,
+              // setDraggedVertxId,
+              // resizedVertexId,
+              // setResizedVertexId,
+              // mouseDownOrigin,
+              // mouseDownVertexOriginal,
+              // updateVertex,
+              // findVertex
+            // })
           }
-          onMouseUp={() => handleMouseup({ setDraggedVertxId, setResizedVertexId })}
+          onMouseUp={
+            handleVertexMouseUp
+            // () => handleMouseup({ setDraggedVertxId, setResizedVertexId })
+          }
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
@@ -330,10 +345,11 @@ const App = props => {
             edges={edges}
             createEdge={createEdge}
             deleteEdge={deleteEdge}
-            setDraggedVertxId={setDraggedVertxId}
-            setResizedVertexId={setResizedVertexId}
-            setMouseDownOrigin={setMouseDownOrigin}
-            setMouseDownVertexOriginal={setMouseDownVertexOriginal}
+            handleVertexMouseDown={handleVertexMouseDown}
+            // setDraggedVertxId={setDraggedVertxId}
+            // setResizedVertexId={setResizedVertexId}
+            // setMouseDownOrigin={setMouseDownOrigin}
+            // setMouseDownVertexOriginal={setMouseDownVertexOriginal}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>

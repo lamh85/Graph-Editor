@@ -114,14 +114,22 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={mouseDownHandler('resize')}
+        onMouseDown={event => mouseDownHandler({
+          vertex,
+          event,
+          requestedObjective: 'resize'
+        })}
       />
       <CircleInner
         {...vertexCircleProps(vertex)}
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={mouseDownHandler('move')}
+        onMouseDown={event => mouseDownHandler({
+          vertex,
+          event,
+          requestedObjective: 'move'
+        })}
       />
     </>
   )
@@ -165,19 +173,20 @@ const Vertex = ({
   createEdge,
   deleteEdge,
   setMouseDownOrigin,
-  setMouseDownVertexOriginal
+  setMouseDownVertexOriginal,
+  handleVertexMouseDown
 }) => {
   const { centreX, centreY } = vertex
 
-  const mouseDownHandler = purpose => event => handleMouseDown({
-    event,
-    purpose,
-    vertex,
-    setDraggedVertxId,
-    setResizedVertexId,
-    setMouseDownOrigin,
-    setMouseDownVertexOriginal
-  })
+  // const mouseDownHandler = purpose => event => handleMouseDown({
+  //   event,
+  //   purpose,
+  //   vertex,
+  //   setDraggedVertxId,
+  //   setResizedVertexId,
+  //   setMouseDownOrigin,
+  //   setMouseDownVertexOriginal
+  // })
 
   return (
     <g
@@ -196,7 +205,7 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          mouseDownHandler={mouseDownHandler}
+          mouseDownHandler={handleVertexMouseDown}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -204,7 +213,14 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={mouseDownHandler('move')}
+          onMouseDown={
+            event => handleVertexMouseDown({
+              vertex,
+              event,
+              requestedObjective: 'move'
+            })
+            // mouseDownHandler('move')
+          }
         />
       )}
       <text x={centreX} y={centreY} fontSize="15" fill="yellow">{vertex.id}</text>
@@ -221,7 +237,8 @@ export const Vertices = ({
   setResizedVertexId,
   renderContextMenu,
   setMouseDownOrigin,
-  setMouseDownVertexOriginal
+  setMouseDownVertexOriginal,
+  handleVertexMouseDown
 }) => {
   return vertices.map(vertex => {
     return (
@@ -232,6 +249,7 @@ export const Vertices = ({
         setResizedVertexId={setResizedVertexId}
         setMouseDownOrigin={setMouseDownOrigin}
         setMouseDownVertexOriginal={setMouseDownVertexOriginal}
+        handleVertexMouseDown={handleVertexMouseDown}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
         edges={edges}
