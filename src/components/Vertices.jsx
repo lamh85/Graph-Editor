@@ -7,8 +7,13 @@ import {
   vertexRectangleProps
 } from '../component_helpers/vertices'
 
+const moveCursorStyle = isMovingVertex => {
+  const value = isMovingVertex ? 'move' : 'pointer'
+  return `cursor: ${value};`
+}
+
 const CircleInner = styled.circle`
-  cursor: pointer;
+  ${props => moveCursorStyle(props.isMovingVertex)}
 `
 
 const CircleOuter = styled.circle`
@@ -18,11 +23,11 @@ const CircleOuter = styled.circle`
 `
 
 const Rectangle = styled.rect`
-  cursor: pointer;
+  ${props => moveCursorStyle(props.isMovingVertex)}
 `
 
 const SvgText = styled.text`
-  cursor: pointer;
+  ${props => moveCursorStyle(props.isMovingVertex)}
   user-select: none;
 `
 
@@ -109,7 +114,8 @@ const handleVertexContextClick = ({
 const CircleGroup = ({
   vertex,
   resizeVertexHandler,
-  moveVertexHandler
+  moveVertexHandler,
+  isMovingVertex
 }) => {
   return (
     <>
@@ -125,6 +131,7 @@ const CircleGroup = ({
         r={vertex.radius - 3}
         fill="red"
         onMouseDown={moveVertexHandler}
+        isMovingVertex={isMovingVertex}
       />
     </>
   )
@@ -137,7 +144,8 @@ const Vertex = ({
   edges,
   createEdge,
   deleteEdge,
-  handleVertexMouseDown
+  handleVertexMouseDown,
+  isMovingVertex
 }) => {
   const { centreX, centreY } = vertex
 
@@ -168,6 +176,7 @@ const Vertex = ({
           vertex={vertex}
           moveVertexHandler={getMouseMoveHandler('move')}
           resizeVertexHandler={getMouseMoveHandler('resize')}
+          isMovingVertex={isMovingVertex}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -176,6 +185,7 @@ const Vertex = ({
           key={`rectangle-${vertex.id}`}
           fill="red"
           onMouseDown={getMouseMoveHandler('move')}
+          isMovingVertex={isMovingVertex}
         />
       )}
       <SvgText
@@ -183,7 +193,8 @@ const Vertex = ({
         y={centreY}
         fontSize="15"
         fill="yellow"
-        onMouseDown={getMouseMoveHandler('move')}>
+        onMouseDown={getMouseMoveHandler('move')}
+        isMovingVertex={isMovingVertex}>
         {vertex.id}
       </SvgText>
     </g>
@@ -196,7 +207,8 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   renderContextMenu,
-  handleVertexMouseDown
+  handleVertexMouseDown,
+  isMovingVertex
 }) => {
   return vertices.map(vertex => {
     return (
@@ -209,6 +221,7 @@ export const Vertices = ({
         edges={edges}
         createEdge={createEdge}
         deleteEdge={deleteEdge}
+        isMovingVertex={isMovingVertex}
       />
     )
   })

@@ -194,12 +194,18 @@ const App = props => {
   const {
     handleVertexMouseDown,
     handleVertexMouseMove,
-    handleVertexMouseUp
+    handleVertexMouseUp,
+    mouseMovedVertex,
+    objective: vertexMouseMoveObjective
   } = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
     canvasHeight: SVG_HEIGHT,
     updateVertex
   })
+
+  const isMovingVertex =
+    vertexMouseMoveObjective === 'move'
+    && mouseMovedVertex
 
   return (
     <>
@@ -231,6 +237,7 @@ const App = props => {
             createEdge={createEdge}
             deleteEdge={deleteEdge}
             handleVertexMouseDown={handleVertexMouseDown}
+            isMovingVertex={isMovingVertex}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>
