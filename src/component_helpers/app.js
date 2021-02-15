@@ -188,15 +188,3 @@ export const getRectangleCentre = ({ height, width, x, y }) => {
     y: y + height / 2
   }
 }
-
-export const cursorToCanvasCoordinates = ({
-  cursorX,
-  cursorY
-}) => {
-  const { scrollTop, scrollLeft } = document.querySelector('html')
-
-  return {
-    x: cursorX + scrollLeft,
-    y: cursorY + scrollTop
-  }
-}

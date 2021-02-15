@@ -6,9 +6,6 @@ import {
   vertexCircleProps,
   vertexRectangleProps
 } from '../component_helpers/vertices'
-import {
-  cursorToCanvasCoordinates,
-} from '../component_helpers/app'
 
 const CircleInner = styled.circle`
   cursor: pointer;
@@ -106,7 +103,8 @@ const handleVertexContextClick = ({
 
 const CircleGroup = ({
   vertex,
-  mouseDownHandler
+  resizeVertexHandler,
+  moveVertexHandler
 }) => {
   return (
     <>
@@ -114,79 +112,37 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={event => mouseDownHandler({
-          vertex,
-          event,
-          requestedObjective: 'resize'
-        })}
+        onMouseDown={resizeVertexHandler}
       />
       <CircleInner
         {...vertexCircleProps(vertex)}
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={event => mouseDownHandler({
-          vertex,
-          event,
-          requestedObjective: 'move'
-        })}
+        onMouseDown={moveVertexHandler}
       />
     </>
   )
 }
 
-const handleMouseDown = ({
-  event,
-  purpose,
-  vertex,
-  setDraggedVertxId,
-  setResizedVertexId,
-  setMouseDownOrigin,
-  setMouseDownVertexOriginal
-}) => {
-  const setIdState = {
-    move: setDraggedVertxId,
-    resize: setResizedVertexId
-  }[purpose]
-
-  setIdState(vertex.id)
-  setMouseDownVertexOriginal(vertex)
-
-  const canvasCoordinates = cursorToCanvasCoordinates({
-    cursorX: event.clientX,
-    cursorY: event.clientY
-  })
-
-  setMouseDownOrigin({
-    x: canvasCoordinates.x,
-    y: canvasCoordinates.y
-  })
-}
-
 const Vertex = ({
   vertex,
-  setDraggedVertxId,
-  setResizedVertexId,
   renderContextMenu,
   vertices,
   edges,
   createEdge,
   deleteEdge,
-  setMouseDownOrigin,
-  setMouseDownVertexOriginal,
   handleVertexMouseDown
 }) => {
   const { centreX, centreY } = vertex
 
-  // const mouseDownHandler = purpose => event => handleMouseDown({
-  //   event,
-  //   purpose,
-  //   vertex,
-  //   setDraggedVertxId,
-  //   setResizedVertexId,
-  //   setMouseDownOrigin,
-  //   setMouseDownVertexOriginal
-  // })
+  const getMouseMoveHandler =
+    objective =>
+    event => handleVertexMouseDown({
+      vertex,
+      event,
+      requestedObjective: objective
+    })
 
   return (
     <g
@@ -205,7 +161,8 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          mouseDownHandler={handleVertexMouseDown}
+          moveVertexHandler={getMouseMoveHandler('move')}
+          resizeVertexHandler={getMouseMoveHandler('resize')}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -213,14 +170,7 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={
-            event => handleVertexMouseDown({
-              vertex,
-              event,
-              requestedObjective: 'move'
-            })
-            // mouseDownHandler('move')
-          }
+          onMouseDown={getMouseMoveHandler('move')}
         />
       )}
       <text x={centreX} y={centreY} fontSize="15" fill="yellow">{vertex.id}</text>
@@ -233,11 +183,7 @@ export const Vertices = ({
   edges,
   createEdge,
   deleteEdge,
-  setDraggedVertxId,
-  setResizedVertexId,
   renderContextMenu,
-  setMouseDownOrigin,
-  setMouseDownVertexOriginal,
   handleVertexMouseDown
 }) => {
   return vertices.map(vertex => {
@@ -245,10 +191,6 @@ export const Vertices = ({
       <Vertex
         vertex={vertex}
         key={`vertex-g-${vertex.id}`}
-        setDraggedVertxId={setDraggedVertxId}
-        setResizedVertexId={setResizedVertexId}
-        setMouseDownOrigin={setMouseDownOrigin}
-        setMouseDownVertexOriginal={setMouseDownVertexOriginal}
         handleVertexMouseDown={handleVertexMouseDown}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
