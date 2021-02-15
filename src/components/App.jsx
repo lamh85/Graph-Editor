@@ -242,7 +242,7 @@ const App = props => {
   const contextMenuNode = useRef()
   const [draggedVertexId, setDraggedVertxId] = useState(null)
   const [resizedVertexId, setResizedVertexId] = useState(null)
-  const [dragCursorOrigin, setDragCursorOrigin] = useState({ x: null, y: null })
+  const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
   const [gridIncrement, setGridIncrement] = useState(10)
   const [tangents, setTangents] = useState([])
 
@@ -294,7 +294,7 @@ const App = props => {
               setDraggedVertxId,
               resizedVertexId,
               setResizedVertexId,
-              dragCursorOrigin,
+              mouseDownOrigin,
               updateVertex,
               findVertex
             })
@@ -323,7 +323,7 @@ const App = props => {
             deleteEdge={deleteEdge}
             setDraggedVertxId={setDraggedVertxId}
             setResizedVertexId={setResizedVertexId}
-            setDragCursorOrigin={setDragCursorOrigin}
+            setMouseDownOrigin={setMouseDownOrigin}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>
