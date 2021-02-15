@@ -11,18 +11,16 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
+import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
-import { getDistance } from "../geometry_helpers/get_distance"
-import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 import {
   getShapeTangent,
-  doShareLineage,
-  cursorToCanvasCoordinates,
+  doShareLineage
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -70,98 +68,6 @@ const renderEdge = ({ edge, index, tangents }) => {
       <text x={averageX} y={averageY} fontSize="15" fill="black">Edge {edge.id}</text>
     </g>
   )
-}
-
-const doesExceedBoundaries = ({ x, y }) => x > SVG_WIDTH || y > SVG_HEIGHT
-
-const handleMouseup = ({ setDraggedVertxId, setResizedVertexId }) => {
-  setDraggedVertxId(null)
-  setResizedVertexId(null)
-}
-
-const handleResize = ({
-  event,
-  resizedVertexId,
-  findVertex,
-  updateVertex
-}) => {
-  if (!resizedVertexId) return
-
-  const vertex = findVertex(resizedVertexId)
-
-  const canvasDestination = cursorToCanvasCoordinates({
-    cursorX: event.clientX,
-    cursorY: event.clientY
-  })
-
-  const {
-    height: cursorFromVertexY,
-    width: cursorFromVertexX
-  } = getDistance({
-    origin: {
-      x: vertex.centreX,
-      y: vertex.centreY
-    },
-    destination: {
-      x: canvasDestination.x,
-      y: canvasDestination.y
-    }
-  })
-
-  const cursorFromVertexHyp = getHypotenuseLength({
-    adjacent: cursorFromVertexY,
-    opposite: cursorFromVertexX
-  })
-
-  updateVertex({
-    id: resizedVertexId,
-    property: 'radius',
-    value: cursorFromVertexHyp
-  })
-}
-
-const handleMouseMove = ({
-  event,
-  draggedVertexId,
-  setDraggedVertxId,
-  resizedVertexId,
-  setResizedVertexId,
-  mouseDownOrigin,
-  mouseDownVertexOriginal,
-  updateVertex,
-  findVertex
-}) => {
-  if (doesExceedBoundaries({ x: event.clientX, y: event.clientY })) {
-    setDraggedVertxId(null)
-    setResizedVertexId(null)
-  }
-
-  if (draggedVertexId) {
-    const distanceFromCentre = {
-      x: mouseDownOrigin.x - mouseDownVertexOriginal.centreX,
-      y: mouseDownOrigin.y - mouseDownVertexOriginal.centreY
-    }
-
-    const canvasDestination = cursorToCanvasCoordinates({
-      cursorX: event.clientX,
-      cursorY: event.clientY
-    })
-
-    updateVertex({
-      id: draggedVertexId,
-      propertySet: {
-        centreX: canvasDestination.x - distanceFromCentre.x,
-        centreY: canvasDestination.y - distanceFromCentre.y
-      }
-    })
-  }
- 
-  handleResize({
-    event,
-    resizedVertexId,
-    findVertex,
-    updateVertex
-  })
 }
 
 const handleContextClick = ({
@@ -247,10 +153,6 @@ const App = props => {
   }, [])
 
   const contextMenuNode = useRef()
-  const [draggedVertexId, setDraggedVertxId] = useState(null)
-  const [resizedVertexId, setResizedVertexId] = useState(null)
-  const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
-  const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
   const [gridIncrement, setGridIncrement] = useState(20)
   const [tangents, setTangents] = useState([])
 
@@ -289,26 +191,24 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
+  const {
+    handleVertexMouseDown,
+    handleVertexMouseMove,
+    handleVertexMouseUp
+  } = useVertexMouseMove({
+    canvasWidth: SVG_WIDTH,
+    canvasHeight: SVG_HEIGHT,
+    updateVertex
+  })
+
   return (
     <>
       <PositionWrapper>
         <StyledSvg
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          onMouseMove={
-            event => handleMouseMove({
-              event,
-              draggedVertexId,
-              setDraggedVertxId,
-              resizedVertexId,
-              setResizedVertexId,
-              mouseDownOrigin,
-              mouseDownVertexOriginal,
-              updateVertex,
-              findVertex
-            })
-          }
-          onMouseUp={() => handleMouseup({ setDraggedVertxId, setResizedVertexId })}
+          onMouseMove={handleVertexMouseMove}
+          onMouseUp={handleVertexMouseUp}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
@@ -330,10 +230,7 @@ const App = props => {
             edges={edges}
             createEdge={createEdge}
             deleteEdge={deleteEdge}
-            setDraggedVertxId={setDraggedVertxId}
-            setResizedVertexId={setResizedVertexId}
-            setMouseDownOrigin={setMouseDownOrigin}
-            setMouseDownVertexOriginal={setMouseDownVertexOriginal}
+            handleVertexMouseDown={handleVertexMouseDown}
             renderContextMenu={renderContextMenu}
           />
         </StyledSvg>
