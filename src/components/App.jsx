@@ -153,7 +153,7 @@ const App = props => {
   }, [])
 
   const contextMenuNode = useRef()
-  const [gridIncrement, setGridIncrement] = useState(20)
+  const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
 
   const {
