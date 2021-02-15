@@ -251,7 +251,7 @@ const App = props => {
   const [resizedVertexId, setResizedVertexId] = useState(null)
   const [mouseDownOrigin, setMouseDownOrigin] = useState({ x: null, y: null })
   const [mouseDownVertexOriginal, setMouseDownVertexOriginal] = useState({})
-  const [gridIncrement, setGridIncrement] = useState(10)
+  const [gridIncrement, setGridIncrement] = useState(20)
   const [tangents, setTangents] = useState([])
 
   const {
