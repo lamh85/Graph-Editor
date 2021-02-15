@@ -45,9 +45,10 @@ export const ContextMenu = ({ nodeRef, coordX, coordY, items, closeMenu }) => {
       left={coordX}
       top={coordY}
     >
-      {items && items.map(item => {
+      {items && items.map((item, index) => {
         return (
           <MenuItem
+            key={`context-menu-item-${index}`}
             onClick={event => handleItemClick({
               event,
               clickAction: item.onClick,
