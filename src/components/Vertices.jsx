@@ -6,6 +6,9 @@ import {
   vertexCircleProps,
   vertexRectangleProps
 } from '../component_helpers/vertices'
+import {
+  cursorToCanvasCoordinates,
+} from '../component_helpers/app'
 
 const CircleInner = styled.circle`
   cursor: pointer;
@@ -141,9 +144,14 @@ const handleMouseDown = ({
   setIdState(vertex.id)
   setMouseDownVertexOriginal(vertex)
 
+  const canvasCoordinates = cursorToCanvasCoordinates({
+    cursorX: event.clientX,
+    cursorY: event.clientY
+  })
+
   setMouseDownOrigin({
-    x: event.clientX,
-    y: event.clientY
+    x: canvasCoordinates.x,
+    y: canvasCoordinates.y
   })
 }
 
