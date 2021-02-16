@@ -19,7 +19,7 @@ const CircleInner = styled.circle`
 
 const CircleOuter = styled.circle`
   &:hover {
-    cursor: ${props => props.cursorStyle};
+    cursor: ${props => props.resizeCursor};
   }
 `
 
@@ -116,9 +116,10 @@ const CircleGroup = ({
   vertex,
   resizeVertexHandler,
   moveVertexHandler,
-  isMovingVertex
+  isMovingVertex,
+  setDrawingsContainerCursorStyle
 }) => {
-  const [cursorStyle, setCursorStyle] = useState('default')
+  const [resizeCursor, setResizeCursor] = useState()
 
   return (
     <>
@@ -128,16 +129,17 @@ const CircleGroup = ({
         fill="black"
         onMouseDown={resizeVertexHandler}
         onMouseOver={event => {
-          const style = getResizeCircleCursor({
+          const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
             vertexCentreY: vertex.centreY,
             cursorX: event.clientX,
             cursorY: event.clientY
           })
 
-          setCursorStyle(style)
+          setDrawingsContainerCursorStyle(cursorStyle)
+          setResizeCursor(cursorStyle)
         }}
-        cursorStyle={cursorStyle}
+        resizeCursor={resizeCursor}
       />
       <CircleInner
         {...vertexCircleProps(vertex)}
@@ -159,7 +161,8 @@ const Vertex = ({
   createEdge,
   deleteEdge,
   handleVertexMouseDown,
-  isMovingVertex
+  isMovingVertex,
+  setDrawingsContainerCursorStyle
 }) => {
   const { centreX, centreY } = vertex
 
@@ -191,6 +194,7 @@ const Vertex = ({
           moveVertexHandler={getMouseMoveHandler('move')}
           resizeVertexHandler={getMouseMoveHandler('resize')}
           isMovingVertex={isMovingVertex}
+          setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -222,7 +226,8 @@ export const Vertices = ({
   deleteEdge,
   renderContextMenu,
   handleVertexMouseDown,
-  isMovingVertex
+  isMovingVertex,
+  setDrawingsContainerCursorStyle
 }) => {
   return vertices.map(vertex => {
     return (
@@ -236,6 +241,7 @@ export const Vertices = ({
         createEdge={createEdge}
         deleteEdge={deleteEdge}
         isMovingVertex={isMovingVertex}
+        setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
       />
     )
   })
