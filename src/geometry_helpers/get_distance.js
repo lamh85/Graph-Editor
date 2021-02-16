@@ -29,7 +29,22 @@ export const getDistance = ({ origin, destination }) => {
     arcDirection = -1
   }
 
-  return { height, width, xPixelDirection, yPixelDirection, arcAngle, arcDirection }
+  const quadrant = {
+    '1|-1': 1,
+    '-1|-1': 2,
+    '-1|1': 3,
+    '1|1': 4
+  }[xyDirections]
+
+  return {
+    height,
+    width,
+    xPixelDirection,
+    yPixelDirection,
+    arcAngle,
+    arcDirection,
+    quadrant
+  }
 }
 
 export const getCoordinateDifference = ({ origin, destination }) => {

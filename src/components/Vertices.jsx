@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from 'styled-components'
 import {
   getUnconnectedVertices,
   getConnectedVertices,
   vertexCircleProps,
-  vertexRectangleProps
+  vertexRectangleProps,
+  getResizeCircleCursor
 } from '../component_helpers/vertices'
 
 const moveCursorStyle = isMovingVertex => {
@@ -18,7 +19,7 @@ const CircleInner = styled.circle`
 
 const CircleOuter = styled.circle`
   &:hover {
-    cursor: col-resize;
+    cursor: ${props => props.cursorStyle};
   }
 `
 
@@ -117,6 +118,8 @@ const CircleGroup = ({
   moveVertexHandler,
   isMovingVertex
 }) => {
+  const [cursorStyle, setCursorStyle] = useState('default')
+
   return (
     <>
       <CircleOuter
@@ -124,6 +127,17 @@ const CircleGroup = ({
         key={`outer-circle-${vertex.id}`}
         fill="black"
         onMouseDown={resizeVertexHandler}
+        onMouseOver={event => {
+          const style = getResizeCircleCursor({
+            vertexCentreX: vertex.centreX,
+            vertexCentreY: vertex.centreY,
+            cursorX: event.clientX,
+            cursorY: event.clientY
+          })
+
+          setCursorStyle(style)
+        }}
+        cursorStyle={cursorStyle}
       />
       <CircleInner
         {...vertexCircleProps(vertex)}
