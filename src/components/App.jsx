@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { hot } from "react-hot-loader"
 
 import { DEFAULT_ARROWS } from '../models/polygons'
@@ -27,8 +27,16 @@ import {
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 900
 
-const StyledSvg = styled.svg`
+const DrawingsContainer = styled.svg`
   background: lightgrey;
+
+  ${props =>
+    props.resizeCursor
+    && props.isResizingVertex && css`
+      , * {
+        cursor: ${props.resizeCursor} !important;
+      }
+  `}
 `
 
 const renderEdge = ({ edge, index, tangents }) => {
@@ -135,6 +143,18 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
   setTangents(tangents)
 }
 
+const useDrawingsContainerCursorStyle = () => {
+  const [innerState, setInnerState] = useState('default')
+
+  const setState = state => {
+    if (!state) setInnerState('default')
+
+    setInnerState(state)
+  }
+
+  return { state: innerState, setState }
+}
+
 const App = props => {
   useEffect(() => {
     const mouseDownParams = [
@@ -205,14 +225,23 @@ const App = props => {
     radiusMinimum: RADIUS_MINIMUM
   })
 
+  const {
+    state: drawingsContainerCursorStyle,
+    setState: setDrawingsContainerCursorStyle
+  } = useDrawingsContainerCursorStyle()
+
   const isMovingVertex =
     vertexMouseMoveObjective === 'move'
+    && mouseMovedVertex
+
+  const isResizingVertex =
+    vertexMouseMoveObjective === 'resize'
     && mouseMovedVertex
 
   return (
     <>
       <PositionWrapper>
-        <StyledSvg
+        <DrawingsContainer
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
           onMouseMove={handleVertexMouseMove}
@@ -222,6 +251,8 @@ const App = props => {
             renderContextMenu,
             createVertex
           })}
+          resizeCursor={drawingsContainerCursorStyle}
+          isResizingVertex={isResizingVertex}
         >
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
@@ -241,8 +272,9 @@ const App = props => {
             handleVertexMouseDown={handleVertexMouseDown}
             isMovingVertex={isMovingVertex}
             renderContextMenu={renderContextMenu}
+            setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
           />
-        </StyledSvg>
+        </DrawingsContainer>
         {isRenderingContextMenu && (
           <ContextMenu
             nodeRef={contextMenuNode}

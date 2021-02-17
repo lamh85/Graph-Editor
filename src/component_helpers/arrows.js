@@ -1,10 +1,7 @@
 import { getDistance } from '../geometry_helpers/get_distance'
+import { radiansToDegrees } from '../geometry_helpers/general'
 
 const ARROW_SIDE_LENGTH = 20
-
-const radiansToDegrees = radians => {
-  return radians / Math.PI * 180
-}
 
 export const coordinatesToSvgPoints = (coordinates = []) => {
   if (coordinates.length === 0) return null
