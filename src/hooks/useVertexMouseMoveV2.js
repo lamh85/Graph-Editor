@@ -23,12 +23,8 @@ const useCanvasCoordinates = () => {
   }
 }
 
-export const useVertexMouseMove = ({
-  canvasWidth,
-  canvasHeight,
-  isMouseMoveValid = true
-}) => {
-  const [impactedVertex, setImpactedVertex] = useState({})
+const states = () => {
+  const [selectedVertex, setSelectedVertex] = useState({})
 
   const {
     coordinates: canvasClickOrigin,
@@ -45,13 +41,41 @@ export const useVertexMouseMove = ({
     y: null
   })
 
+  return {
+    selectedVertex,
+    setSelectedVertex,
+    canvasClickOrigin,
+    setCanvasClickOrigin,
+    canvasCoordinates,
+    setCanvasCoordinates,
+    moveDelta,
+    setMoveDelta
+  }
+}
+
+export const useVertexMouseMove = ({
+  canvasWidth,
+  canvasHeight,
+  isMouseMoveValid = true
+}) => {
+  const {
+    selectedVertex,
+    setSelectedVertex,
+    canvasClickOrigin,
+    setCanvasClickOrigin,
+    canvasCoordinates,
+    setCanvasCoordinates,
+    moveDelta,
+    setMoveDelta
+  } = states()
+
   const mouseDownListener = ({ event, vertex }) => {
-    setImpactedVertex(vertex)
+    setSelectedVertex(vertex)
     setCanvasClickOrigin(event)
   }
 
   const mouseMoveListener = event => {
-    if (!isMouseMoveValid || !impactedVertex) return
+    if (!isMouseMoveValid || !selectedVertex) return
 
     setCanvasCoordinates(event)
 
@@ -63,7 +87,7 @@ export const useVertexMouseMove = ({
     })
 
     if (exceedBoundariesResult) {
-      setImpactedVertex(null)
+      setSelectedVertex(null)
       return
     }
 
@@ -75,13 +99,13 @@ export const useVertexMouseMove = ({
     setMoveDelta(newMoveDelta)
   }
 
-  const mouseUpListener = () => setImpactedVertex(null)
+  const mouseUpListener = () => setSelectedVertex(null)
 
   return {
     mouseDownListener,
     mouseMoveListener,
     mouseUpListener,
-    mouseMovedVertex: impactedVertex,
+    selectedVertex,
     canvasClickOrigin,
     canvasCoordinates,
     moveDelta

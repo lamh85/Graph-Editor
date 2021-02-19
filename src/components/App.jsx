@@ -12,7 +12,7 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
-import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
+import { useVertexMouseMove } from '../hooks/useVertexMouseMoveV2'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -213,16 +213,21 @@ const App = props => {
   } = useArray(DEFAULT_ARROWS)
 
   const {
-    handleVertexMouseDown,
-    handleVertexMouseMove,
-    handleVertexMouseUp,
-    mouseMovedVertex,
-    objective: vertexMouseMoveObjective
+    mouseDownListener,
+    mouseMoveListener,
+    mouseUpListener,
+    selectedVertex,
+    canvasClickOrigin,
+    canvasCoordinates,
+    moveDelta
+    // handleVertexMouseDown,
+    // handleVertexMouseMove,
+    // handleVertexMouseUp,
+    // mouseMovedVertex,
+    // objective: vertexMouseMoveObjective
   } = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
-    canvasHeight: SVG_HEIGHT,
-    updateVertex,
-    radiusMinimum: RADIUS_MINIMUM
+    canvasHeight: SVG_HEIGHT
   })
 
   const {
@@ -230,13 +235,13 @@ const App = props => {
     setState: setDrawingsContainerCursorStyle
   } = useDrawingsContainerCursorStyle()
 
-  const isMovingVertex =
-    vertexMouseMoveObjective === 'move'
-    && mouseMovedVertex
+  // const isMovingVertex =
+  //   vertexMouseMoveObjective === 'move'
+  //   && mouseMovedVertex
 
-  const isResizingVertex =
-    vertexMouseMoveObjective === 'resize'
-    && mouseMovedVertex
+  // const isResizingVertex =
+  //   vertexMouseMoveObjective === 'resize'
+  //   && mouseMovedVertex
 
   return (
     <>
@@ -244,8 +249,8 @@ const App = props => {
         <DrawingsContainer
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          onMouseMove={handleVertexMouseMove}
-          onMouseUp={handleVertexMouseUp}
+          // onMouseMove={handleVertexMouseMove}
+          // onMouseUp={handleVertexMouseUp}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
@@ -269,7 +274,8 @@ const App = props => {
             edges={edges}
             createEdge={createEdge}
             deleteEdge={deleteEdge}
-            handleVertexMouseDown={handleVertexMouseDown}
+            // handleVertexMouseDown={handleVertexMouseDown}
+            mouseDownListener={}
             isMovingVertex={isMovingVertex}
             renderContextMenu={renderContextMenu}
             setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}

@@ -160,19 +160,19 @@ const Vertex = ({
   edges,
   createEdge,
   deleteEdge,
-  handleVertexMouseDown,
+  // handleVertexMouseDown,
   isMovingVertex,
   setDrawingsContainerCursorStyle
 }) => {
   const { centreX, centreY } = vertex
 
-  const getMouseMoveHandler =
-    objective =>
-    event => handleVertexMouseDown({
-      vertex,
-      event,
-      requestedObjective: objective
-    })
+  // const getMouseMoveHandler =
+  //   objective =>
+  //   event => handleVertexMouseDown({
+  //     vertex,
+  //     event,
+  //     requestedObjective: objective
+  //   })
 
   return (
     <g
@@ -191,8 +191,8 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          moveVertexHandler={getMouseMoveHandler('move')}
-          resizeVertexHandler={getMouseMoveHandler('resize')}
+          // moveVertexHandler={getMouseMoveHandler('move')}
+          // resizeVertexHandler={getMouseMoveHandler('resize')}
           isMovingVertex={isMovingVertex}
           setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
         />
@@ -202,7 +202,7 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={getMouseMoveHandler('move')}
+          // onMouseDown={getMouseMoveHandler('move')}
           isMovingVertex={isMovingVertex}
         />
       )}
@@ -211,7 +211,7 @@ const Vertex = ({
         y={centreY}
         fontSize="15"
         fill="yellow"
-        onMouseDown={getMouseMoveHandler('move')}
+        // onMouseDown={getMouseMoveHandler('move')}
         isMovingVertex={isMovingVertex}>
         {vertex.id}
       </SvgText>
@@ -225,7 +225,7 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   renderContextMenu,
-  handleVertexMouseDown,
+  // handleVertexMouseDown,
   isMovingVertex,
   setDrawingsContainerCursorStyle
 }) => {
@@ -234,7 +234,7 @@ export const Vertices = ({
       <Vertex
         vertex={vertex}
         key={`vertex-g-${vertex.id}`}
-        handleVertexMouseDown={handleVertexMouseDown}
+        // handleVertexMouseDown={handleVertexMouseDown}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
         edges={edges}
