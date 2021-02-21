@@ -13,6 +13,7 @@ import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
+import { useInterval } from '../hooks/useInterval'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -238,8 +239,22 @@ const App = props => {
     vertexMouseMoveObjective === 'resize'
     && mouseMovedVertex
 
+  const verticesRef = useRef(vertices)
+
+  useEffect(() => {
+    verticesRef.current = vertices
+  }, [vertices])
+
+  useInterval({
+    interval: 1000,
+    handleTick: value => console.log(value),
+    stateRef: verticesRef
+  })
+
   return (
     <>
+      {/* <button onClick={callSetInterval}>Start interval</button> */}
+      {/* <button onClick={callClearInterval}>Stop interval</button> */}
       <PositionWrapper>
         <DrawingsContainer
           width={SVG_WIDTH}

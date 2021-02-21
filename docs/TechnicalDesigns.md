@@ -84,3 +84,25 @@ Mouse move
 
 Mouse up
 * Create the shape
+
+# Custom hook that replaces setInterval
+
+## Problem
+
+`setInterval`'s callback function is stale. EG: this function will always call the initial state:
+```javascript
+
+const [counter, setCounter] = useState(0)
+
+setInterval(() => {
+  console.log(counter) // Will always print '0'
+}, 1000)
+
+<button onClick={setCounter(counter + 1)}>
+  Click me
+</button>
+```
+
+## Solution
+
+Adapt this with `useRef`: https://reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
