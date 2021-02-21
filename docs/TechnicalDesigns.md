@@ -105,4 +105,31 @@ setInterval(() => {
 
 ## Solution
 
-Adapt this with `useRef`: https://reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
+Use this as a template: https://reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often
+* Use that solution that involves `useRef`
+
+# Auto-saving: plan for each interval
+
+Given: an interval that checks the drawings state: vertices, edges, arrows, etc
+
+Problem:
+* if state didn't change, then don't save
+* if the previous request was still pending, then don't save
+  * To prevent race condition
+* if the state did change, then save
+
+## Flow
+
+Start the `setInterval`
+Set the intial value
+
+One interval lapses
+* `return` if pending request
+* `return` if there was no change in the state
+* else: save
+
+## States to manage
+
+Is pending request?
+Previous state of the payload.
+Current state of the payload.

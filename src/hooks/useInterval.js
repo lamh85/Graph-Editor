@@ -25,7 +25,6 @@ export const useInterval = ({
   }, [])
 
   const callClearInterval = () => {
-    console.log('stopping')
     clearInterval(intervalIdRef.current)
   }
 
