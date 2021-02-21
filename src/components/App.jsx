@@ -253,8 +253,6 @@ const App = props => {
 
   return (
     <>
-      {/* <button onClick={callSetInterval}>Start interval</button> */}
-      {/* <button onClick={callClearInterval}>Stop interval</button> */}
       <PositionWrapper>
         <DrawingsContainer
           width={SVG_WIDTH}
