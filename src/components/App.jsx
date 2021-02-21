@@ -203,7 +203,9 @@ const App = props => {
 
   useEffect(() => {
     updateTangents({ edges, findVertex, setTangents })
-  }, [vertices, edges])
+  }, [vertices, edges, arrows])
+
+  const [counter, setCounter] = useState(0)
 
   const {
     state: arrows,
@@ -240,6 +242,12 @@ const App = props => {
 
   return (
     <>
+      <button
+        onClick={
+          () => setCounter(counter + 1)}
+      >
+        COUNTER {counter}
+      </button>
       <PositionWrapper>
         <DrawingsContainer
           width={SVG_WIDTH}

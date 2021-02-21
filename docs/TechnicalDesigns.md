@@ -84,3 +84,43 @@ Mouse move
 
 Mouse up
 * Create the shape
+
+# Debounce Custom Hook
+
+## Flow
+
+Client (function's caller) specifies:
+* the interval time
+* the event handler
+* the event to listen to
+
+Event happens
+
+Initialize the interval with `setInterval`
+
+Same event happens again (maybe multiple times)
+* Did an interval already start?
+* If yes, do nothing
+* If no, then initialize an interval
+
+The interval time has now passed.
+* Run the event listener with the **updated** event/state
+* Clear the interval
+
+## Flow V2
+
+Client (function's caller) specifies:
+* the timeout time
+* the event handler
+* the event to listen to
+
+Interval starts
+
+Multiple instances of the same happens before the timeout ends
+* Push all instances to an array. Keep the array sorted from oldest event to newest event.
+* No action on them
+
+Interval ends
+* Run the event handler on the last instance of the event
+
+Repeat the same steps from "Interval starts"
