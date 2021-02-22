@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react"
 export const useInterval = ({
   interval,
   handleTick,
-  stateRef,
+  stateRef = { current: null },
   shouldSetIntervalOnStart = true
 }) => {
   const intervalId = undefined
