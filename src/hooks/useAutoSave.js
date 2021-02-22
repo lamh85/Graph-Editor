@@ -22,7 +22,8 @@ export const useAutoSave = ({
     {
       onSuccess: handleSuccess,
       onError: handleError,
-      select: parseResponse
+      select: parseResponse,
+      enabled: stateVersionId > 1
     }
   )
 
