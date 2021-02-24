@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
 import styled, { css } from 'styled-components'
-import { hot } from "react-hot-loader"
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { DEFAULT_ARROWS } from '../models/polygons'
 import {
@@ -13,7 +13,7 @@ import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
-import { useInterval } from '../hooks/useInterval'
+import { useAutoSave } from '../hooks/useAutoSave'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -156,7 +156,7 @@ const useDrawingsContainerCursorStyle = () => {
   return { state: innerState, setState }
 }
 
-const App = props => {
+const LowerOrderApp = props => {
   useEffect(() => {
     const mouseDownParams = [
       'mousedown',
@@ -245,14 +245,31 @@ const App = props => {
     verticesRef.current = vertices
   }, [vertices])
 
-  useInterval({
+  const {
+    callSetInterval,
+    callClearInterval
+  } = useAutoSave({
     interval: 1000,
-    handleTick: value => console.log(value),
-    stateRef: verticesRef
+    debouncedState: vertices,
+    queryFunction: payload => {
+      return new Promise((resolve, reject) => {
+        console.log('starting fake API call ---------')
+        try {
+          setTimeout(() => {
+            resolve({ receivedPayload: payload })
+          }, 500)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    handleSuccess: data => { console.log(data) }
   })
 
   return (
     <>
+      <button onClick={callSetInterval}>Start interval</button>
+      <button onClick={callClearInterval}>Stop interval</button>
       <PositionWrapper>
         <DrawingsContainer
           width={SVG_WIDTH}
@@ -313,6 +330,16 @@ const App = props => {
         updateArrow={updateArrow}
       />
     </>
+  )
+}
+
+const queryClient = new QueryClient()
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LowerOrderApp />
+    </QueryClientProvider>
   )
 }
 

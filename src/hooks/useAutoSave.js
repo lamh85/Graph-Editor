@@ -1,49 +1,74 @@
-import { useState, useEffect } from 'react-query'
-import { useQuery } from "react-query"
+import { useState, useEffect } from 'react'
+import { useMutation } from "react-query"
 
 import { useInterval } from './useInterval'
 
+const fakeApiCall = payload => {
+  return new Promise((resolve, reject) => {
+    console.log('starting fake API call ---------')
+    try {
+      setTimeout(() => {
+        resolve({ receivedPayload: payload })
+      }, 2000)
+    } catch(error) {
+      reject(error)
+    }
+  })
+}
+
 export const useAutoSave = ({
   interval,
-  observedState,
-  queryPath,
+  debouncedState,
+  queryFunction,
   handleSuccess,
-  handleError,
-  parseResponse
+  handleError
 }) => {
   const [stateVersionId, setStateVersionId] = useState(0)
-  const [idHandled, setIdHandled] = useState(0)
+  const [versionHandled, setVersionHandled] = useState(0)
+  const [lastTickVersion, setLastTickVersion] = useState(0)
 
-  const { isLoading: isRequestLoading } = useQuery(
-    idHandled,
-    () => {
-      fetch(queryPath, observedState)
-    }, // TODO: API function
+  const {
+    data,
+    error,
+    isError,
+    isIdle,
+    isLoading: isRequestLoading,
+    isSuccess,
+    mutate
+  } = useMutation(
+    queryFunction,
     {
       onSuccess: handleSuccess,
-      onError: handleError,
-      select: parseResponse,
-      enabled: stateVersionId > 1
+      onError: handleError
     }
   )
 
   useEffect(() => {
     setStateVersionId(stateVersionId + 1)
-  }, [observedState])
+  }, [debouncedState])
 
   const handleTick = () => {
-    const didProcessObserved = stateVersionId === idHandled
-    if (didProcessObserved || isRequestLoading) return
+    const snapshotVersion = stateVersionId
 
-    setIdHandled(stateVersionId)
+    setLastTickVersion(snapshotVersion)
+    // TODO: stop interval if state stopped changing
+      // conditions: no new state since last tick + last state was handled
+
+    const didRequestLatest = snapshotVersion === versionHandled
+    if (didRequestLatest || isRequestLoading) return
+
+    setVersionHandled(snapshotVersion)
+    mutate(debouncedState)
   }
 
-  const { callSetInterval } = useInterval({
+  const {
+    callSetInterval,
+    callClearInterval
+  } = useInterval({
     interval,
     handleTick,
-    stateRef,
     shouldSetIntervalOnStart: false
   })
 
-  return { callSetInterval }
+  return { callSetInterval, callClearInterval }
 }
