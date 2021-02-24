@@ -10,31 +10,30 @@ export const useInterval = ({
 
   const intervalIdRef = useRef()
 
-  const callSetInterval = () => {
-    intervalIdRef.current = setInterval(
-      () => handleTick(stateRef.current),
-      interval
-    )
+  useEffect(() => {
+    if (isIntervalSet) {
+      intervalIdRef.current = setInterval(
+        () => handleTick(stateRef.current),
+        interval
+      )
+    } else {
+      clearInterval(intervalIdRef.current)
+    }
 
-    setIsIntervalSet(true)
-  }
+    return () => clearInterval(intervalIdRef.current)
+  }, [isIntervalSet])
 
   useEffect(() => {
     if (!shouldSetIntervalOnStart) return
 
-    callSetInterval()
+    setIsIntervalSet(true)
 
     return () => clearInterval(intervalIdRef.current)
   }, [])
 
-  const callClearInterval = () => {
-    clearInterval(intervalIdRef.current)
-    setIsIntervalSet(false)
-  }
-
   return {
-    callSetInterval,
-    callClearInterval,
+    startInterval: () => setIsIntervalSet(true),
+    endInterval: () => setIsIntervalSet(false),
     isIntervalSet
   }
 }

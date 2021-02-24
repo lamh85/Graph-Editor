@@ -72,19 +72,14 @@ export const useAutoSave = ({
   }
 
   const {
-    callSetInterval,
-    callClearInterval,
-    isIntervalSet
+    startInterval: startAutoSave,
+    endInterval: endAutoSave,
+    isIntervalSet: didStartAutoSave
   } = useInterval({
     interval,
     handleTick,
     shouldSetIntervalOnStart: false
   })
 
-  const handleStartInterval = () => {
-    mutate(debouncedState)
-    callSetInterval()
-  }
-
-  return { handleStartInterval, callClearInterval, isIntervalSet }
+  return { startAutoSave, endAutoSave, didStartAutoSave }
 }
