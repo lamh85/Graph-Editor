@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 
 export const useInterval = ({
   interval,
@@ -6,14 +6,17 @@ export const useInterval = ({
   stateRef = { current: null },
   shouldSetIntervalOnStart = true
 }) => {
-  const intervalId = undefined
-  const intervalIdRef = useRef(intervalId)
+  const [isIntervalSet, setIsIntervalSet] = useState(false)
+
+  const intervalIdRef = useRef()
 
   const callSetInterval = () => {
     intervalIdRef.current = setInterval(
       () => handleTick(stateRef.current),
       interval
     )
+
+    setIsIntervalSet(true)
   }
 
   useEffect(() => {
@@ -26,7 +29,12 @@ export const useInterval = ({
 
   const callClearInterval = () => {
     clearInterval(intervalIdRef.current)
+    setIsIntervalSet(false)
   }
 
-  return { callSetInterval, callClearInterval }
+  return {
+    callSetInterval,
+    callClearInterval,
+    isIntervalSet
+  }
 }

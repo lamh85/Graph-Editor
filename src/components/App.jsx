@@ -246,8 +246,9 @@ const LowerOrderApp = props => {
   }, [vertices])
 
   const {
-    callSetInterval,
-    callClearInterval
+    handleStartInterval,
+    callClearInterval,
+    isIntervalSet
   } = useAutoSave({
     interval: 1000,
     debouncedState: vertices,
@@ -268,8 +269,9 @@ const LowerOrderApp = props => {
 
   return (
     <>
-      <button onClick={callSetInterval}>Start interval</button>
+      <button onClick={handleStartInterval}>Start interval</button>
       <button onClick={callClearInterval}>Stop interval</button>
+      <div>Is interval set: {JSON.stringify(isIntervalSet)}</div>
       <PositionWrapper>
         <DrawingsContainer
           width={SVG_WIDTH}
