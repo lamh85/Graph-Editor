@@ -22,7 +22,7 @@ export const useAutoSave = ({
   handleSuccess,
   handleError
 }) => {
-  const [stateVersionId, setStateVersionId] = useState(1)
+  const [stateVersionId, setStateVersionId] = useState(0)
   const [versionHandled, setVersionHandled] = useState(0)
 
   const {
