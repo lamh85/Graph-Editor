@@ -3,18 +3,6 @@ import { useMutation } from "react-query"
 
 import { useInterval } from './useInterval'
 
-const fakeApiCall = payload => {
-  return new Promise((resolve, reject) => {
-    try {
-      setTimeout(() => {
-        resolve({ receivedPayload: payload })
-      }, 2000)
-    } catch(error) {
-      reject(error)
-    }
-  })
-}
-
 export const useAutoSave = ({
   interval,
   debouncedState,
@@ -23,7 +11,7 @@ export const useAutoSave = ({
   handleError
 }) => {
   const [stateVersionId, setStateVersionId] = useState(0)
-  const [versionHandled, setVersionHandled] = useState(0)
+  const [versionFulfilled, setVersionFulfilled] = useState(0)
 
   const {
     data,
@@ -48,7 +36,7 @@ export const useAutoSave = ({
   const stateRef = useRef()
   stateRef.current = {
     stateVersionId,
-    versionHandled,
+    versionFulfilled,
     isRequestLoading,
     debouncedState
   }
@@ -63,10 +51,10 @@ export const useAutoSave = ({
 
     // TODO: stop interval if state stopped changing
       // conditions: no new state since last tick + last state was handled
-    const didRequestLatest = versionSnapshot === ref.versionHandled
+    const didRequestLatest = versionSnapshot === ref.versionFulfilled
     if (didRequestLatest || ref.isRequestLoading) return
 
-    setVersionHandled(versionSnapshot)
+    setVersionFulfilled(versionSnapshot)
     console.log('calling mutate -----')
     mutate(ref.debouncedState)
   }
