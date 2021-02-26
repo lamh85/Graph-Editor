@@ -212,20 +212,20 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
-  const {
-    mouseDownListener,
-    mouseMoveListener,
-    mouseUpListener,
-    selectedVertex,
-    canvasClickOrigin,
-    canvasCoordinates,
-    moveDelta
-    // handleVertexMouseDown,
-    // handleVertexMouseMove,
-    // handleVertexMouseUp,
-    // mouseMovedVertex,
-    // objective: vertexMouseMoveObjective
-  } = useVertexMouseMove({
+  // old props
+  // ---------
+  // handleVertexMouseDown,
+  // handleVertexMouseMove,
+  // handleVertexMouseUp,
+  // mouseMovedVertex,
+  // objective: vertexMouseMoveObjective
+
+  const moveVertexProps = useVertexMouseMove({
+    canvasWidth: SVG_WIDTH,
+    canvasHeight: SVG_HEIGHT
+  })
+
+  const resizeVertexProps = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
     canvasHeight: SVG_HEIGHT
   })
@@ -275,8 +275,10 @@ const App = props => {
             createEdge={createEdge}
             deleteEdge={deleteEdge}
             // handleVertexMouseDown={handleVertexMouseDown}
-            mouseDownListener={}
-            isMovingVertex={isMovingVertex}
+            // mouseDownListener={}
+            // isMovingVertex={isMovingVertex}
+            moveVertexProps={moveVertexProps}
+            resizeVertexProps={resizeVertexProps}
             renderContextMenu={renderContextMenu}
             setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
           />
