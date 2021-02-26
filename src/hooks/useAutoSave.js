@@ -22,9 +22,14 @@ export const useAutoSave = ({
     isSuccess,
     mutate
   } = useMutation(
-    queryFunction,
+    queryArgs => {
+      queryFunction(queryArgs)
+    },
     {
-      onSuccess: handleSuccess,
+      onSuccess: (data, queryArgs) => {
+        setVersionFulfilled(queryArgs.versionId)
+        handleSuccess(data)
+      },
       onError: handleError
     }
   )
@@ -37,8 +42,7 @@ export const useAutoSave = ({
   stateRef.current = {
     stateVersionId,
     versionFulfilled,
-    isRequestLoading,
-    debouncedState
+    isRequestLoading
   }
 
   // CAUTION: The states inside will become stale because the function
@@ -49,14 +53,10 @@ export const useAutoSave = ({
 
     const versionSnapshot = ref.stateVersionId
 
-    // TODO: stop interval if state stopped changing
-      // conditions: no new state since last tick + last state was handled
     const didRequestLatest = versionSnapshot === ref.versionFulfilled
     if (didRequestLatest || ref.isRequestLoading) return
 
-    setVersionFulfilled(versionSnapshot)
-    console.log('calling mutate -----')
-    mutate(ref.debouncedState)
+    mutate({ versionId: versionSnapshot })
   }
 
   const {

@@ -264,7 +264,8 @@ const LowerOrderApp = props => {
         }
       })
     },
-    handleSuccess: data => { console.log(data) }
+    handleSuccess: () => {}
+    // data => { console.log(data) }
   })
 
   return (
