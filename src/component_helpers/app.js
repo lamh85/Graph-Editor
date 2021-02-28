@@ -188,3 +188,21 @@ export const getRectangleCentre = ({ height, width, x, y }) => {
     y: y + height / 2
   }
 }
+
+export const useEffectMoveVertex = ({
+  moveVertexService,
+  updateVertex
+}) => {
+  const { canvasClickOrigin, moveDelta, selectedVertex } = moveVertexService
+  if (!selectedVertex || !moveDelta) return
+
+  const newCentre = {
+    centreX: selectedVertex.centreX + moveDelta.x,
+    centreY: selectedVertex.centreY + moveDelta.y
+  }
+
+  updateVertex({
+    id: selectedVertex.id,
+    propertySet: newCentre
+  })
+}

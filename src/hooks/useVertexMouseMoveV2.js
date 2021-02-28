@@ -8,12 +8,18 @@ const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
 const useCanvasCoordinates = () => {
   const [state, setState] = useState()
 
-  const setCoordinates = event => {
+  const setCoordinates = (event, shouldDebug) => {
+    if (!event) return
     const canvasCoordinates = canvasCoordinatesConversion({
       cursorX: event.clientX,
       cursorY: event.clientY
     })
 
+    // console.log('setting canvas coordinates --------')
+    // console.log(canvasCoordinates)
+    // if (shouldDebug) {
+    //   debugger
+    // }
     setState(canvasCoordinates)
   }
 
@@ -24,7 +30,7 @@ const useCanvasCoordinates = () => {
 }
 
 const states = () => {
-  const [selectedVertex, setSelectedVertex] = useState({})
+  const [selectedVertex, setSelectedVertex] = useState(null)
 
   const {
     coordinates: canvasClickOrigin,
@@ -36,7 +42,7 @@ const states = () => {
     setCoordinates: setCanvasCoordinates
   } = useCanvasCoordinates()
 
-  const [moveDelta, setMoveDelta] = usetState({
+  const [moveDelta, setMoveDelta] = useState({
     x: null,
     y: null
   })
@@ -77,7 +83,8 @@ export const useVertexMouseMove = ({
   const mouseMoveListener = event => {
     if (!isMouseMoveValid || !selectedVertex) return
 
-    setCanvasCoordinates(event)
+    setCanvasCoordinates(event, true)
+    // console.log(canvasCoordinates)
 
     const exceedBoundariesResult = doesExceedBoundaries({
       x: canvasCoordinates.x,
@@ -87,6 +94,7 @@ export const useVertexMouseMove = ({
     })
 
     if (exceedBoundariesResult) {
+      // TODO: abstract out a function that sets all states to initial
       setSelectedVertex(null)
       return
     }
@@ -95,11 +103,17 @@ export const useVertexMouseMove = ({
       x: canvasCoordinates.x - canvasClickOrigin.x,
       y: canvasCoordinates.y - canvasClickOrigin.y
     }
-
+    // TODO: move this responsibility to the caller
+    // because it depends on canvasCoordinates to be defined.
+    // canvasCoordinates can be undefined when the state is not set yet.
     setMoveDelta(newMoveDelta)
   }
 
-  const mouseUpListener = () => setSelectedVertex(null)
+  const mouseUpListener = () => {
+    setSelectedVertex(null)
+    setMoveDelta(null)
+    setCanvasClickOrigin(null)
+  }
 
   return {
     mouseDownListener,

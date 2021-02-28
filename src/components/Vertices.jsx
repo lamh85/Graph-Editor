@@ -114,8 +114,8 @@ const handleVertexContextClick = ({
 
 const CircleGroup = ({
   vertex,
-  resizeVertexHandler,
-  moveVertexHandler,
+  onMouseDownResize,
+  onMouseDownMove,
   isMovingVertex,
   setDrawingsContainerCursorStyle
 }) => {
@@ -127,7 +127,7 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={resizeVertexHandler}
+        onMouseDown={onMouseDownResize}
         onMouseOver={event => {
           const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
@@ -146,7 +146,7 @@ const CircleGroup = ({
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={moveVertexHandler}
+        onMouseDown={onMouseDownMove}
         isMovingVertex={isMovingVertex}
       />
     </>
@@ -160,19 +160,17 @@ const Vertex = ({
   edges,
   createEdge,
   deleteEdge,
-  // handleVertexMouseDown,
-  isMovingVertex,
+  moveVertexService,
+  resizeVertexService,
   setDrawingsContainerCursorStyle
 }) => {
   const { centreX, centreY } = vertex
 
-  // const getMouseMoveHandler =
-  //   objective =>
-  //   event => handleVertexMouseDown({
-  //     vertex,
-  //     event,
-  //     requestedObjective: objective
-  //   })
+  const isMovingVertex = !!moveVertexService.selectedVertex
+  const onMouseDownMove = event => moveVertexService.mouseDownListener({
+    event,
+    vertex
+  })
 
   return (
     <g
@@ -191,8 +189,11 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          // moveVertexHandler={getMouseMoveHandler('move')}
-          // resizeVertexHandler={getMouseMoveHandler('resize')}
+          onMouseDownResize={event => resizeVertexService.mouseDownListener({
+            event,
+            vertex
+          })}
+          onMouseDownMove={onMouseDownMove}
           isMovingVertex={isMovingVertex}
           setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
         />
@@ -202,7 +203,7 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          // onMouseDown={getMouseMoveHandler('move')}
+          onMouseDown={onMouseDownMove}
           isMovingVertex={isMovingVertex}
         />
       )}
@@ -211,7 +212,6 @@ const Vertex = ({
         y={centreY}
         fontSize="15"
         fill="yellow"
-        // onMouseDown={getMouseMoveHandler('move')}
         isMovingVertex={isMovingVertex}>
         {vertex.id}
       </SvgText>
@@ -226,7 +226,9 @@ export const Vertices = ({
   deleteEdge,
   renderContextMenu,
   // handleVertexMouseDown,
-  isMovingVertex,
+  // isMovingVertex,
+  moveVertexService,
+  resizeVertexService,
   setDrawingsContainerCursorStyle
 }) => {
   return vertices.map(vertex => {
@@ -240,7 +242,9 @@ export const Vertices = ({
         edges={edges}
         createEdge={createEdge}
         deleteEdge={deleteEdge}
-        isMovingVertex={isMovingVertex}
+        // isMovingVertex={isMovingVertex}
+        moveVertexService={moveVertexService}
+        resizeVertexService={resizeVertexService}
         setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
       />
     )

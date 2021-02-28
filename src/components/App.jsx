@@ -21,7 +21,8 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
-  doShareLineage
+  doShareLineage,
+  useEffectMoveVertex
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -220,12 +221,12 @@ const App = props => {
   // mouseMovedVertex,
   // objective: vertexMouseMoveObjective
 
-  const moveVertexProps = useVertexMouseMove({
+  const moveVertexService = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
     canvasHeight: SVG_HEIGHT
   })
 
-  const resizeVertexProps = useVertexMouseMove({
+  const resizeVertexService = useVertexMouseMove({
     canvasWidth: SVG_WIDTH,
     canvasHeight: SVG_HEIGHT
   })
@@ -234,6 +235,13 @@ const App = props => {
     state: drawingsContainerCursorStyle,
     setState: setDrawingsContainerCursorStyle
   } = useDrawingsContainerCursorStyle()
+
+  useEffect(() => {
+    useEffectMoveVertex({
+      moveVertexService,
+      updateVertex
+    })
+  }, [moveVertexService.canvasCoordinates])
 
   // const isMovingVertex =
   //   vertexMouseMoveObjective === 'move'
@@ -249,15 +257,21 @@ const App = props => {
         <DrawingsContainer
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          // onMouseMove={handleVertexMouseMove}
-          // onMouseUp={handleVertexMouseUp}
+          onMouseMove={event => {
+            moveVertexService.mouseMoveListener(event)
+            resizeVertexService.mouseMoveListener(event)
+          }}
+          onMouseUp={() => {
+            moveVertexService.mouseUpListener()
+            resizeVertexService.mouseUpListener()
+          }}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
             createVertex
           })}
           resizeCursor={drawingsContainerCursorStyle}
-          isResizingVertex={isResizingVertex}
+          // isResizingVertex={isResizingVertex}
         >
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
@@ -277,8 +291,8 @@ const App = props => {
             // handleVertexMouseDown={handleVertexMouseDown}
             // mouseDownListener={}
             // isMovingVertex={isMovingVertex}
-            moveVertexProps={moveVertexProps}
-            resizeVertexProps={resizeVertexProps}
+            moveVertexService={moveVertexService}
+            resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
             setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
           />
