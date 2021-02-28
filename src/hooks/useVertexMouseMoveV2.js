@@ -1,11 +1,6 @@
 import { useState } from "react"
 import { canvasCoordinatesConversion } from '../helpers/dom'
 
-// TODO: use doShareLineage
-const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
-  return x > canvasWidth || y > canvasHeight
-}
-
 // const DEFAULT_STATE_VALUES = {
 
 // }
@@ -20,11 +15,6 @@ const useCanvasCoordinates = () => {
       cursorY: event.clientY
     })
 
-    // console.log('setting canvas coordinates --------')
-    // console.log(canvasCoordinates)
-    // if (shouldDebug) {
-    //   debugger
-    // }
     setState(canvasCoordinates)
   }
 
@@ -57,11 +47,7 @@ const states = () => {
   }
 }
 
-export const useVertexMouseMove = ({
-  canvasWidth,
-  canvasHeight,
-  isMouseMoveValid = true
-}) => {
+export const useVertexMouseMove = () => {
   const {
     selectedVertex,
     setSelectedVertex,
@@ -77,23 +63,9 @@ export const useVertexMouseMove = ({
   }
 
   const mouseMoveListener = event => {
-    if (!isMouseMoveValid || !selectedVertex) return
+    if (!selectedVertex) return
 
     setCanvasCoordinates(event, true)
-    // console.log(canvasCoordinates)
-
-    const exceedBoundariesResult = doesExceedBoundaries({
-      x: canvasCoordinates.x,
-      y: canvasCoordinates.y,
-      canvasWidth,
-      canvasHeight
-    })
-
-    if (exceedBoundariesResult) {
-      // TODO: abstract out a function that sets all states to initial
-      setSelectedVertex(null)
-      return
-    }
   }
 
   const mouseUpListener = () => {

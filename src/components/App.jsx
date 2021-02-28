@@ -221,15 +221,9 @@ const App = props => {
   // mouseMovedVertex,
   // objective: vertexMouseMoveObjective
 
-  const moveVertexService = useVertexMouseMove({
-    canvasWidth: SVG_WIDTH,
-    canvasHeight: SVG_HEIGHT
-  })
+  const moveVertexService = useVertexMouseMove()
 
-  const resizeVertexService = useVertexMouseMove({
-    canvasWidth: SVG_WIDTH,
-    canvasHeight: SVG_HEIGHT
-  })
+  const resizeVertexService = useVertexMouseMove()
 
   const {
     state: drawingsContainerCursorStyle,
