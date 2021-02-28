@@ -22,7 +22,8 @@ import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
   doShareLineage,
-  useEffectMoveVertex
+  useEffectMoveVertex,
+  useEffectResizeVertex
 } from '../component_helpers/app'
 
 const SVG_HEIGHT = 500
@@ -236,6 +237,13 @@ const App = props => {
       updateVertex
     })
   }, [moveVertexService.canvasCoordinates])
+
+  useEffect(() => {
+    useEffectResizeVertex({
+      resizeVertexService,
+      updateVertex
+    })
+  }, [resizeVertexService.canvasCoordinates])
 
   // const isMovingVertex =
   //   vertexMouseMoveObjective === 'move'

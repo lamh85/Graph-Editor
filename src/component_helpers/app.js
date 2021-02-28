@@ -1,4 +1,5 @@
 import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
+import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 
 const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
@@ -214,5 +215,37 @@ export const useEffectMoveVertex = ({
   updateVertex({
     id: selectedVertex.id,
     propertySet: newCentre
+  })
+}
+
+export const useEffectResizeVertex = ({
+  resizeVertexService,
+  updateVertex
+}) => {
+  const {
+    selectedVertex,
+    canvasCoordinates
+  } = resizeVertexService
+
+  if (!selectedVertex || !canvasCoordinates) return
+
+  const raidusTriangle = getDistance({
+    origin: {
+      x: selectedVertex.centreX,
+      y: selectedVertex.centreY
+    },
+    destination: canvasCoordinates
+  })
+
+  const newRadius = getHypotenuseLength({
+    adjacent: raidusTriangle.height,
+    opposite: raidusTriangle.width
+  })
+
+  updateVertex({
+    id: selectedVertex.id,
+    propertySet: {
+      radius: newRadius
+    }
   })
 }
