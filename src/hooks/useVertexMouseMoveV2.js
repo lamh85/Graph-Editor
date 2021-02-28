@@ -1,9 +1,11 @@
 import { useState } from "react"
 import { canvasCoordinatesConversion } from '../helpers/dom'
 
-// const DEFAULT_STATE_VALUES = {
-
-// }
+const DEFAULT_STATE_VALUES = {
+  selectedVertex: null,
+  canvasClickOrigin: null,
+  canvasCoordinates: null,
+}
 
 const useCanvasCoordinates = () => {
   const [state, setState] = useState()
@@ -25,17 +27,20 @@ const useCanvasCoordinates = () => {
 }
 
 const states = () => {
-  const [selectedVertex, setSelectedVertex] = useState(null)
+  const [
+    selectedVertex,
+    setSelectedVertex
+  ] = useState(DEFAULT_STATE_VALUES.selectedVertex)
 
   const {
     coordinates: canvasClickOrigin,
     setCoordinates: setCanvasClickOrigin
-  } = useCanvasCoordinates()
+  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasClickOrigin)
 
   const {
     coordinates: canvasCoordinates,
     setCoordinates: setCanvasCoordinates
-  } = useCanvasCoordinates()
+  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasCoordinates)
 
   return {
     selectedVertex,
@@ -69,8 +74,10 @@ export const useVertexMouseMove = () => {
   }
 
   const mouseUpListener = () => {
-    setSelectedVertex(null)
-    setCanvasClickOrigin(null)
+    const defaults = DEFAULT_STATE_VALUES
+    setSelectedVertex(defaults.selectedVertex)
+    setCanvasClickOrigin(defaults.canvasClickOrigin)
+    setCanvasCoordinates(defaults.canvasCoordinates)
   }
 
   return {
