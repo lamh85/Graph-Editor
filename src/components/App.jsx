@@ -249,10 +249,6 @@ const App = props => {
   //   vertexMouseMoveObjective === 'move'
   //   && mouseMovedVertex
 
-  // const isResizingVertex =
-  //   vertexMouseMoveObjective === 'resize'
-  //   && mouseMovedVertex
-
   return (
     <>
       <PositionWrapper>
@@ -273,7 +269,7 @@ const App = props => {
             createVertex
           })}
           resizeCursor={drawingsContainerCursorStyle}
-          // isResizingVertex={isResizingVertex}
+          isResizingVertex={!!resizeVertexService.selectedVertex}
         >
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
