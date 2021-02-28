@@ -1,5 +1,6 @@
 import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
+import { RADIUS_MINIMUM } from '../models/vertices'
 
 const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
@@ -241,6 +242,8 @@ export const useEffectResizeVertex = ({
     adjacent: raidusTriangle.height,
     opposite: raidusTriangle.width
   })
+
+  if (!newRadius || newRadius < RADIUS_MINIMUM) return
 
   updateVertex({
     id: selectedVertex.id,
