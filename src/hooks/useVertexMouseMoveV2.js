@@ -5,6 +5,10 @@ const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
   return x > canvasWidth || y > canvasHeight
 }
 
+// const DEFAULT_STATE_VALUES = {
+
+// }
+
 const useCanvasCoordinates = () => {
   const [state, setState] = useState()
 
@@ -42,20 +46,13 @@ const states = () => {
     setCoordinates: setCanvasCoordinates
   } = useCanvasCoordinates()
 
-  const [moveDelta, setMoveDelta] = useState({
-    x: null,
-    y: null
-  })
-
   return {
     selectedVertex,
     setSelectedVertex,
     canvasClickOrigin,
     setCanvasClickOrigin,
     canvasCoordinates,
-    setCanvasCoordinates,
-    moveDelta,
-    setMoveDelta
+    setCanvasCoordinates
   }
 }
 
@@ -70,9 +67,7 @@ export const useVertexMouseMove = ({
     canvasClickOrigin,
     setCanvasClickOrigin,
     canvasCoordinates,
-    setCanvasCoordinates,
-    moveDelta,
-    setMoveDelta
+    setCanvasCoordinates
   } = states()
 
   const mouseDownListener = ({ event, vertex }) => {
@@ -98,20 +93,10 @@ export const useVertexMouseMove = ({
       setSelectedVertex(null)
       return
     }
-
-    const newMoveDelta = {
-      x: canvasCoordinates.x - canvasClickOrigin.x,
-      y: canvasCoordinates.y - canvasClickOrigin.y
-    }
-    // TODO: move this responsibility to the caller
-    // because it depends on canvasCoordinates to be defined.
-    // canvasCoordinates can be undefined when the state is not set yet.
-    setMoveDelta(newMoveDelta)
   }
 
   const mouseUpListener = () => {
     setSelectedVertex(null)
-    setMoveDelta(null)
     setCanvasClickOrigin(null)
   }
 
@@ -121,7 +106,6 @@ export const useVertexMouseMove = ({
     mouseUpListener,
     selectedVertex,
     canvasClickOrigin,
-    canvasCoordinates,
-    moveDelta
+    canvasCoordinates
   }
 }

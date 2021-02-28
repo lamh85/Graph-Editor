@@ -193,12 +193,11 @@ export const useEffectMoveVertex = ({
   moveVertexService,
   updateVertex
 }) => {
-  const { canvasClickOrigin, moveDelta, selectedVertex } = moveVertexService
-  if (!selectedVertex || !moveDelta) return
+  const { canvasClickOrigin, selectedVertex } = moveVertexService
+  if (!selectedVertex) return
 
   const newCentre = {
-    centreX: selectedVertex.centreX + moveDelta.x,
-    centreY: selectedVertex.centreY + moveDelta.y
+    // TODO: FIND THIS
   }
 
   updateVertex({
