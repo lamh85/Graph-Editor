@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { canvasCoordinatesConversion } from '../helpers/dom'
 
+// TODO: use doShareLineage
 const doesExceedBoundaries = ({ x, y, canvasWidth, canvasHeight }) => {
   return x > canvasWidth || y > canvasHeight
 }
