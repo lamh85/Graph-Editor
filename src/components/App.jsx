@@ -21,10 +21,10 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
-  doShareLineage,
   useEffectMoveVertex,
   useEffectResizeVertex
 } from '../component_helpers/app'
+import { doShareAncestry } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const SVG_HEIGHT = 500
@@ -108,7 +108,7 @@ const handleContextClick = ({
 }
 
 const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
-  if (doShareLineage(event.target, contextMenuNode.current)) {
+  if (doShareAncestry(event.target, contextMenuNode.current)) {
     return
   }
 
@@ -215,9 +215,11 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
-  const moveVertexService = useVertexMouseMove()
+  const canvasRef = useRef()
 
-  const resizeVertexService = useVertexMouseMove()
+  const moveVertexService = useVertexMouseMove(canvasRef)
+
+  const resizeVertexService = useVertexMouseMove(canvasRef)
 
   const {
     state: drawingsContainerCursorStyle,
@@ -255,19 +257,21 @@ const App = props => {
   }, [resizeVertexService.canvasCoordinates])
 
   return (
-    <>
+    <div
+      onMouseUp={() => {
+        moveVertexService.mouseUpListener()
+        resizeVertexService.mouseUpListener()
+      }}
+      onMouseMove={event => {
+        moveVertexService.mouseMoveListener(event)
+        resizeVertexService.mouseMoveListener(event)
+      }}
+    >
       <PositionWrapper>
         <DrawingsContainer
+          ref={canvasRef}
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          onMouseMove={event => {
-            moveVertexService.mouseMoveListener(event)
-            resizeVertexService.mouseMoveListener(event)
-          }}
-          onMouseUp={() => {
-            moveVertexService.mouseUpListener()
-            resizeVertexService.mouseUpListener()
-          }}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
@@ -320,7 +324,7 @@ const App = props => {
         deleteArrow={deleteArrow}
         updateArrow={updateArrow}
       />
-    </>
+    </div>
   )
 }
 

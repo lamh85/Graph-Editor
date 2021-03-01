@@ -1,5 +1,8 @@
 import { useState } from "react"
-import { canvasCoordinatesConversion } from '../helpers/dom'
+import {
+  canvasCoordinatesConversion,
+  doShareAncestry
+} from '../helpers/dom'
 
 const DEFAULT_STATE_VALUES = {
   selectedVertex: null,
@@ -52,7 +55,7 @@ const states = () => {
   }
 }
 
-export const useVertexMouseMove = () => {
+export const useVertexMouseMove = canvasRef => {
   const {
     selectedVertex,
     setSelectedVertex,
@@ -62,6 +65,13 @@ export const useVertexMouseMove = () => {
     setCanvasCoordinates
   } = states()
 
+  const resetStates = () => {
+    const defaults = DEFAULT_STATE_VALUES
+    setSelectedVertex(defaults.selectedVertex)
+    setCanvasClickOrigin(defaults.canvasClickOrigin)
+    setCanvasCoordinates(defaults.canvasCoordinates)
+  }
+
   const mouseDownListener = ({ event, vertex }) => {
     setSelectedVertex(vertex)
     setCanvasClickOrigin(event)
@@ -70,15 +80,15 @@ export const useVertexMouseMove = () => {
   const mouseMoveListener = event => {
     if (!selectedVertex) return
 
+    if (!doShareAncestry(event.target, canvasRef.current)) {
+      resetStates()
+      return
+    }
+
     setCanvasCoordinates(event, true)
   }
 
-  const mouseUpListener = () => {
-    const defaults = DEFAULT_STATE_VALUES
-    setSelectedVertex(defaults.selectedVertex)
-    setCanvasClickOrigin(defaults.canvasClickOrigin)
-    setCanvasCoordinates(defaults.canvasCoordinates)
-  }
+  const mouseUpListener = () => resetStates()
 
   return {
     mouseDownListener,
