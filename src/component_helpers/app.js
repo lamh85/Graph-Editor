@@ -1,4 +1,6 @@
 import { getDistance, getCoordinateDifference } from '../geometry_helpers/get_distance'
+import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
+import { RADIUS_MINIMUM } from '../models/vertices'
 
 const getRadiusDimensions = ({ circle, directionHeight, directionWidth }) => {
   let radiusWidth, radiusHeight
@@ -164,27 +166,71 @@ export const getRectangleTangent = ({ width, height, centreX, centreY, externalP
   }
 }
 
-const getLineage = element => {
-  const lineage = []
-  let cursor = element
-
-  while (lineage.slice(-1)[0] !== null) {
-    const newCursor = cursor.parentElement
-    lineage.push(newCursor)
-    cursor = newCursor
-  }
-
-  return lineage
-}
-
-export const doShareLineage = (youngest, ancestorTested) => {
-  const lineage = getLineage(youngest)
-  return lineage.includes(ancestorTested)
-}
-
 export const getRectangleCentre = ({ height, width, x, y }) => {
   return {
     x: x + width / 2,
     y: y + height / 2
   }
+}
+
+export const useEffectMoveVertex = ({
+  moveVertexService,
+  updateVertex
+}) => {
+  const {
+    canvasClickOrigin,
+    canvasCoordinates,
+    selectedVertex
+  } = moveVertexService
+
+  if (!selectedVertex) return
+
+  const moveDelta = {
+    x: canvasCoordinates.x - canvasClickOrigin.x,
+    y: canvasCoordinates.y - canvasClickOrigin.y
+  }
+
+  const newCentre = {
+    centreX: selectedVertex.centreX + moveDelta.x,
+    centreY: selectedVertex.centreY + moveDelta.y
+  }
+
+  updateVertex({
+    id: selectedVertex.id,
+    propertySet: newCentre
+  })
+}
+
+export const useEffectResizeVertex = ({
+  resizeVertexService,
+  updateVertex
+}) => {
+  const {
+    selectedVertex,
+    canvasCoordinates
+  } = resizeVertexService
+
+  if (!selectedVertex || !canvasCoordinates) return
+
+  const raidusTriangle = getDistance({
+    origin: {
+      x: selectedVertex.centreX,
+      y: selectedVertex.centreY
+    },
+    destination: canvasCoordinates
+  })
+
+  const newRadius = getHypotenuseLength({
+    adjacent: raidusTriangle.height,
+    opposite: raidusTriangle.width
+  })
+
+  if (!newRadius || newRadius < RADIUS_MINIMUM) return
+
+  updateVertex({
+    id: selectedVertex.id,
+    propertySet: {
+      radius: newRadius
+    }
+  })
 }

@@ -4,9 +4,9 @@ import {
   getUnconnectedVertices,
   getConnectedVertices,
   vertexCircleProps,
-  vertexRectangleProps,
-  getResizeCircleCursor
+  vertexRectangleProps
 } from '../component_helpers/vertices'
+import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const moveCursorStyle = isMovingVertex => {
   const value = isMovingVertex ? 'move' : 'pointer'
@@ -114,10 +114,10 @@ const handleVertexContextClick = ({
 
 const CircleGroup = ({
   vertex,
-  resizeVertexHandler,
-  moveVertexHandler,
-  isMovingVertex,
-  setDrawingsContainerCursorStyle
+  resizeVertexService,
+  onMouseDownResize,
+  onMouseDownMove,
+  isMovingVertex
 }) => {
   const [resizeCursor, setResizeCursor] = useState()
 
@@ -127,16 +127,16 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={resizeVertexHandler}
+        onMouseDown={onMouseDownResize}
         onMouseOver={event => {
+          if (!!resizeVertexService.selectedVertex) return
+
           const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
             vertexCentreY: vertex.centreY,
             cursorX: event.clientX,
             cursorY: event.clientY
           })
-
-          setDrawingsContainerCursorStyle(cursorStyle)
           setResizeCursor(cursorStyle)
         }}
         resizeCursor={resizeCursor}
@@ -146,7 +146,7 @@ const CircleGroup = ({
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={moveVertexHandler}
+        onMouseDown={onMouseDownMove}
         isMovingVertex={isMovingVertex}
       />
     </>
@@ -160,19 +160,16 @@ const Vertex = ({
   edges,
   createEdge,
   deleteEdge,
-  handleVertexMouseDown,
-  isMovingVertex,
-  setDrawingsContainerCursorStyle
+  moveVertexService,
+  resizeVertexService
 }) => {
   const { centreX, centreY } = vertex
 
-  const getMouseMoveHandler =
-    objective =>
-    event => handleVertexMouseDown({
-      vertex,
-      event,
-      requestedObjective: objective
-    })
+  const isMovingVertex = !!moveVertexService.selectedVertex
+  const onMouseDownMove = event => moveVertexService.mouseDownListener({
+    event,
+    vertex
+  })
 
   return (
     <g
@@ -191,10 +188,13 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          moveVertexHandler={getMouseMoveHandler('move')}
-          resizeVertexHandler={getMouseMoveHandler('resize')}
+          onMouseDownResize={event => resizeVertexService.mouseDownListener({
+            event,
+            vertex
+          })}
+          resizeVertexService={resizeVertexService}
+          onMouseDownMove={onMouseDownMove}
           isMovingVertex={isMovingVertex}
-          setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -202,7 +202,7 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={getMouseMoveHandler('move')}
+          onMouseDown={onMouseDownMove}
           isMovingVertex={isMovingVertex}
         />
       )}
@@ -211,7 +211,6 @@ const Vertex = ({
         y={centreY}
         fontSize="15"
         fill="yellow"
-        onMouseDown={getMouseMoveHandler('move')}
         isMovingVertex={isMovingVertex}>
         {vertex.id}
       </SvgText>
@@ -225,23 +224,21 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   renderContextMenu,
-  handleVertexMouseDown,
-  isMovingVertex,
-  setDrawingsContainerCursorStyle
+  moveVertexService,
+  resizeVertexService
 }) => {
   return vertices.map(vertex => {
     return (
       <Vertex
         vertex={vertex}
         key={`vertex-g-${vertex.id}`}
-        handleVertexMouseDown={handleVertexMouseDown}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
         edges={edges}
         createEdge={createEdge}
         deleteEdge={deleteEdge}
-        isMovingVertex={isMovingVertex}
-        setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
+        moveVertexService={moveVertexService}
+        resizeVertexService={resizeVertexService}
       />
     )
   })

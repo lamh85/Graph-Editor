@@ -12,7 +12,7 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
-import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
+import { useVertexMouseMove } from '../hooks/useVertexMouseMovejs'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -21,8 +21,11 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
-  doShareLineage
+  useEffectMoveVertex,
+  useEffectResizeVertex
 } from '../component_helpers/app'
+import { doShareAncestry } from '../helpers/dom'
+import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 900
@@ -105,7 +108,7 @@ const handleContextClick = ({
 }
 
 const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
-  if (doShareLineage(event.target, contextMenuNode.current)) {
+  if (doShareAncestry(event.target, contextMenuNode.current)) {
     return
   }
 
@@ -212,47 +215,70 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
-  const {
-    handleVertexMouseDown,
-    handleVertexMouseMove,
-    handleVertexMouseUp,
-    mouseMovedVertex,
-    objective: vertexMouseMoveObjective
-  } = useVertexMouseMove({
-    canvasWidth: SVG_WIDTH,
-    canvasHeight: SVG_HEIGHT,
-    updateVertex,
-    radiusMinimum: RADIUS_MINIMUM
-  })
+  const canvasRef = useRef()
+
+  const moveVertexService = useVertexMouseMove(canvasRef)
+
+  const resizeVertexService = useVertexMouseMove(canvasRef)
 
   const {
     state: drawingsContainerCursorStyle,
     setState: setDrawingsContainerCursorStyle
   } = useDrawingsContainerCursorStyle()
 
-  const isMovingVertex =
-    vertexMouseMoveObjective === 'move'
-    && mouseMovedVertex
+  useEffect(() => {
+    useEffectMoveVertex({
+      moveVertexService,
+      updateVertex
+    })
+  }, [moveVertexService.canvasCoordinates])
 
-  const isResizingVertex =
-    vertexMouseMoveObjective === 'resize'
-    && mouseMovedVertex
+  useEffect(() => {
+    useEffectResizeVertex({
+      resizeVertexService,
+      updateVertex
+    })
+
+    const {
+      selectedVertex,
+      canvasCoordinates
+    } = resizeVertexService
+
+    if (selectedVertex) {
+      const cursorStyle = getResizeCircleCursor({
+        vertexCentreX: selectedVertex.centreX,
+        vertexCentreY: selectedVertex.centreY,
+        cursorX: canvasCoordinates.x,
+        cursorY: canvasCoordinates.y
+      })
+
+      setDrawingsContainerCursorStyle(cursorStyle)
+    }
+  }, [resizeVertexService.canvasCoordinates])
 
   return (
-    <>
+    <div
+      onMouseUp={() => {
+        moveVertexService.mouseUpListener()
+        resizeVertexService.mouseUpListener()
+      }}
+      onMouseMove={event => {
+        moveVertexService.mouseMoveListener(event)
+        resizeVertexService.mouseMoveListener(event)
+      }}
+    >
       <PositionWrapper>
         <DrawingsContainer
+          ref={canvasRef}
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          onMouseMove={handleVertexMouseMove}
-          onMouseUp={handleVertexMouseUp}
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
             createVertex
           })}
           resizeCursor={drawingsContainerCursorStyle}
-          isResizingVertex={isResizingVertex}
+          isResizingVertex={!!resizeVertexService.selectedVertex}
         >
           <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
           {
@@ -269,10 +295,9 @@ const App = props => {
             edges={edges}
             createEdge={createEdge}
             deleteEdge={deleteEdge}
-            handleVertexMouseDown={handleVertexMouseDown}
-            isMovingVertex={isMovingVertex}
+            moveVertexService={moveVertexService}
+            resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
-            setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
           />
         </DrawingsContainer>
         {isRenderingContextMenu && (
@@ -299,7 +324,7 @@ const App = props => {
         deleteArrow={deleteArrow}
         updateArrow={updateArrow}
       />
-    </>
+    </div>
   )
 }
 
