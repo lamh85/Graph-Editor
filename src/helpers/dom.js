@@ -19,7 +19,7 @@ export const canvasCoordinatesConversion = ({
   }
 }
 
-const getLineage = element => {
+const getAncestry = element => {
   const lineage = [element]
   let cursor = element
 
@@ -33,6 +33,6 @@ const getLineage = element => {
 }
 
 export const doShareAncestry = (youngest, ancestorTested) => {
-  const lineage = getLineage(youngest)
+  const lineage = getAncestry(youngest)
   return lineage.includes(ancestorTested)
 }
