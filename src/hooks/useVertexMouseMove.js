@@ -6,18 +6,21 @@ import {
 
 const DEFAULT_STATE_VALUES = {
   selectedVertex: null,
-  canvasClickOrigin: null,
-  canvasCoordinates: null,
+  canvasClickOrigin: { x: null, y: null },
+  canvasCoordinates: { x: null, y: null },
 }
 
-const useCanvasCoordinates = () => {
-  const [state, setState] = useState()
+// getBoundingClientRect().x <-- add this
+
+const useCanvasCoordinates = (initialState, canvasRef) => {
+  const [state, setState] = useState(initialState)
 
   const setCoordinates = event => {
     if (!event) return
     const canvasCoordinates = canvasCoordinatesConversion({
       cursorX: event.clientX,
-      cursorY: event.clientY
+      cursorY: event.clientY,
+      canvasRef
     })
 
     setState(canvasCoordinates)
@@ -29,7 +32,7 @@ const useCanvasCoordinates = () => {
   }
 }
 
-const states = () => {
+const states = canvasRef => {
   const [
     selectedVertex,
     setSelectedVertex
@@ -38,12 +41,18 @@ const states = () => {
   const {
     coordinates: canvasClickOrigin,
     setCoordinates: setCanvasClickOrigin
-  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasClickOrigin)
+  } = useCanvasCoordinates(
+    DEFAULT_STATE_VALUES.canvasClickOrigin,
+    canvasRef
+  )
 
   const {
     coordinates: canvasCoordinates,
     setCoordinates: setCanvasCoordinates
-  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasCoordinates)
+  } = useCanvasCoordinates(
+    DEFAULT_STATE_VALUES.canvasCoordinates,
+    canvasRef
+  )
 
   return {
     selectedVertex,
@@ -55,7 +64,7 @@ const states = () => {
   }
 }
 
-export const useVertexMouseMove = canvasRef => {
+export const useVertexMouseMove = (canvasRef) => {
   const {
     selectedVertex,
     setSelectedVertex,
@@ -63,7 +72,7 @@ export const useVertexMouseMove = canvasRef => {
     setCanvasClickOrigin,
     canvasCoordinates,
     setCanvasCoordinates
-  } = states()
+  } = states(canvasRef)
 
   const resetStates = () => {
     const defaults = DEFAULT_STATE_VALUES
@@ -85,7 +94,7 @@ export const useVertexMouseMove = canvasRef => {
       return
     }
 
-    setCanvasCoordinates(event, true)
+    setCanvasCoordinates(event)
   }
 
   const mouseUpListener = () => resetStates()
