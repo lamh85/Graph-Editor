@@ -10,7 +10,7 @@ const DEFAULT_STATE_VALUES = {
 const useCanvasCoordinates = () => {
   const [state, setState] = useState()
 
-  const setCoordinates = (event, shouldDebug) => {
+  const setCoordinates = event => {
     if (!event) return
     const canvasCoordinates = canvasCoordinatesConversion({
       cursorX: event.clientX,
