@@ -224,8 +224,6 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   renderContextMenu,
-  // handleVertexMouseDown,
-  // isMovingVertex,
   moveVertexService,
   resizeVertexService
 }) => {
@@ -234,13 +232,11 @@ export const Vertices = ({
       <Vertex
         vertex={vertex}
         key={`vertex-g-${vertex.id}`}
-        // handleVertexMouseDown={handleVertexMouseDown}
         renderContextMenu={renderContextMenu}
         vertices={vertices}
         edges={edges}
         createEdge={createEdge}
         deleteEdge={deleteEdge}
-        // isMovingVertex={isMovingVertex}
         moveVertexService={moveVertexService}
         resizeVertexService={resizeVertexService}
       />

@@ -215,14 +215,6 @@ const App = props => {
     updateItem: updateArrow
   } = useArray(DEFAULT_ARROWS)
 
-  // old props
-  // ---------
-  // handleVertexMouseDown,
-  // handleVertexMouseMove,
-  // handleVertexMouseUp,
-  // mouseMovedVertex,
-  // objective: vertexMouseMoveObjective
-
   const moveVertexService = useVertexMouseMove()
 
   const resizeVertexService = useVertexMouseMove()
@@ -262,10 +254,6 @@ const App = props => {
     }
   }, [resizeVertexService.canvasCoordinates])
 
-  // const isMovingVertex =
-  //   vertexMouseMoveObjective === 'move'
-  //   && mouseMovedVertex
-
   return (
     <>
       <PositionWrapper>
@@ -303,9 +291,6 @@ const App = props => {
             edges={edges}
             createEdge={createEdge}
             deleteEdge={deleteEdge}
-            // handleVertexMouseDown={handleVertexMouseDown}
-            // mouseDownListener={}
-            // isMovingVertex={isMovingVertex}
             moveVertexService={moveVertexService}
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
