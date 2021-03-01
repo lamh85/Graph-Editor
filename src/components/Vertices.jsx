@@ -4,9 +4,9 @@ import {
   getUnconnectedVertices,
   getConnectedVertices,
   vertexCircleProps,
-  vertexRectangleProps,
-  getResizeCircleCursor
+  vertexRectangleProps
 } from '../component_helpers/vertices'
+import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const moveCursorStyle = isMovingVertex => {
   const value = isMovingVertex ? 'move' : 'pointer'
@@ -114,10 +114,10 @@ const handleVertexContextClick = ({
 
 const CircleGroup = ({
   vertex,
+  resizeVertexService,
   onMouseDownResize,
   onMouseDownMove,
-  isMovingVertex,
-  setDrawingsContainerCursorStyle
+  isMovingVertex
 }) => {
   const [resizeCursor, setResizeCursor] = useState()
 
@@ -129,14 +129,14 @@ const CircleGroup = ({
         fill="black"
         onMouseDown={onMouseDownResize}
         onMouseOver={event => {
+          if (!!resizeVertexService.selectedVertex) return
+
           const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
             vertexCentreY: vertex.centreY,
             cursorX: event.clientX,
             cursorY: event.clientY
           })
-
-          setDrawingsContainerCursorStyle(cursorStyle)
           setResizeCursor(cursorStyle)
         }}
         resizeCursor={resizeCursor}
@@ -161,8 +161,7 @@ const Vertex = ({
   createEdge,
   deleteEdge,
   moveVertexService,
-  resizeVertexService,
-  setDrawingsContainerCursorStyle
+  resizeVertexService
 }) => {
   const { centreX, centreY } = vertex
 
@@ -193,9 +192,9 @@ const Vertex = ({
             event,
             vertex
           })}
+          resizeVertexService={resizeVertexService}
           onMouseDownMove={onMouseDownMove}
           isMovingVertex={isMovingVertex}
-          setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -228,8 +227,7 @@ export const Vertices = ({
   // handleVertexMouseDown,
   // isMovingVertex,
   moveVertexService,
-  resizeVertexService,
-  setDrawingsContainerCursorStyle
+  resizeVertexService
 }) => {
   return vertices.map(vertex => {
     return (
@@ -245,7 +243,6 @@ export const Vertices = ({
         // isMovingVertex={isMovingVertex}
         moveVertexService={moveVertexService}
         resizeVertexService={resizeVertexService}
-        setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
       />
     )
   })

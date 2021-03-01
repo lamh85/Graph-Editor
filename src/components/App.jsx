@@ -25,6 +25,7 @@ import {
   useEffectMoveVertex,
   useEffectResizeVertex
 } from '../component_helpers/app'
+import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 900
@@ -243,6 +244,22 @@ const App = props => {
       resizeVertexService,
       updateVertex
     })
+
+    const {
+      selectedVertex,
+      canvasCoordinates
+    } = resizeVertexService
+
+    if (selectedVertex) {
+      const cursorStyle = getResizeCircleCursor({
+        vertexCentreX: selectedVertex.centreX,
+        vertexCentreY: selectedVertex.centreY,
+        cursorX: canvasCoordinates.x,
+        cursorY: canvasCoordinates.y
+      })
+
+      setDrawingsContainerCursorStyle(cursorStyle)
+    }
   }, [resizeVertexService.canvasCoordinates])
 
   // const isMovingVertex =
@@ -292,7 +309,6 @@ const App = props => {
             moveVertexService={moveVertexService}
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
-            setDrawingsContainerCursorStyle={setDrawingsContainerCursorStyle}
           />
         </DrawingsContainer>
         {isRenderingContextMenu && (
