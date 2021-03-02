@@ -10,8 +10,6 @@ const DEFAULT_STATE_VALUES = {
   canvasCoordinates: { x: null, y: null },
 }
 
-// getBoundingClientRect().x <-- add this
-
 const useCanvasCoordinates = (initialState, canvasRef) => {
   const [state, setState] = useState(initialState)
 

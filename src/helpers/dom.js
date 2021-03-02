@@ -14,8 +14,8 @@ export const canvasCoordinatesConversion = ({
 
   if (cursorX && cursorY) {
     return {
-      x: cursorX + scrollLeft - canvasFromPage.x,
-      y: cursorY + scrollTop - canvasFromPage.y
+      x: cursorX + scrollLeft,
+      y: cursorY + scrollTop
     }
   } else if (canvasX && canvasY) {
     return {
