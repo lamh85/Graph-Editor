@@ -348,9 +348,6 @@ const App = props => {
           />
         )}
       </PositionWrapper>
-      <div>
-        {JSON.stringify(vertexDragCreator)}
-      </div>
       <Editor
         gridIncrement={gridIncrement}
         setGridIncrement={setGridIncrement}

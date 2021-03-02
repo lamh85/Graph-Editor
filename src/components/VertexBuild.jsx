@@ -22,12 +22,6 @@ export const VertexBuild = ({
   const height = Math.abs(canvasCoordinates.y - canvasClickOrigin.y)
   const width = Math.abs(canvasCoordinates.x - canvasClickOrigin.x)
 
-  // return (
-  //   <div>
-  //     {JSON.stringify(vertexDragCreator)}
-  //   </div>
-  // )
-
   return (
     <rect
       x={left}
