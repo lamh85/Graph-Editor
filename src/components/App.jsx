@@ -115,13 +115,16 @@ const handleContextClick = ({
 
   const items = [
     { display: 'Create circle here', onClick: createCircle },
-    { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle },
-    { display: 'Create rectangle MANUALLY', onClick: enableVertexDragCreator }
+    { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle }
   ]
 
   if (isDragCreateVertexMode) {
     items.push({
       display: 'CANCEL rectangle creator', onClick: disableVertexDragCreator
+    })
+  } else {
+    items.push({
+      display: 'Create rectangle MANUALLY', onClick: enableVertexDragCreator
     })
   }
 
