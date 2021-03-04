@@ -105,14 +105,8 @@ export const useVertexMouseMove = (canvasRef) => {
       !canvasCoordinates?.y
     ) return
 
-    const left = canvasClickOrigin.x < canvasCoordinates.x
-      ? canvasClickOrigin.x
-      : canvasCoordinates.x
-
-    const top = canvasClickOrigin.y < canvasCoordinates.y
-      ? canvasClickOrigin.y
-      : canvasCoordinates.y
-
+    const left = Math.min(canvasClickOrigin.x, canvasCoordinates.x)
+    const top = Math.min(canvasClickOrigin.y, canvasCoordinates.y)
     const height = Math.abs(canvasCoordinates.y - canvasClickOrigin.y)
     const width = Math.abs(canvasCoordinates.x - canvasClickOrigin.x)
 
