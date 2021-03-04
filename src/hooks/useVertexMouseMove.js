@@ -6,18 +6,19 @@ import {
 
 const DEFAULT_STATE_VALUES = {
   selectedVertex: null,
-  canvasClickOrigin: null,
-  canvasCoordinates: null,
+  canvasClickOrigin: { x: null, y: null },
+  canvasCoordinates: { x: null, y: null },
 }
 
-const useCanvasCoordinates = () => {
-  const [state, setState] = useState()
+const useCanvasCoordinates = (initialState, canvasRef) => {
+  const [state, setState] = useState(initialState)
 
   const setCoordinates = event => {
     if (!event) return
     const canvasCoordinates = canvasCoordinatesConversion({
       cursorX: event.clientX,
-      cursorY: event.clientY
+      cursorY: event.clientY,
+      canvasRef
     })
 
     setState(canvasCoordinates)
@@ -29,7 +30,7 @@ const useCanvasCoordinates = () => {
   }
 }
 
-const states = () => {
+const states = canvasRef => {
   const [
     selectedVertex,
     setSelectedVertex
@@ -38,12 +39,18 @@ const states = () => {
   const {
     coordinates: canvasClickOrigin,
     setCoordinates: setCanvasClickOrigin
-  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasClickOrigin)
+  } = useCanvasCoordinates(
+    DEFAULT_STATE_VALUES.canvasClickOrigin,
+    canvasRef
+  )
 
   const {
     coordinates: canvasCoordinates,
     setCoordinates: setCanvasCoordinates
-  } = useCanvasCoordinates(DEFAULT_STATE_VALUES.canvasCoordinates)
+  } = useCanvasCoordinates(
+    DEFAULT_STATE_VALUES.canvasCoordinates,
+    canvasRef
+  )
 
   return {
     selectedVertex,
@@ -55,7 +62,7 @@ const states = () => {
   }
 }
 
-export const useVertexMouseMove = canvasRef => {
+export const useVertexMouseMove = (canvasRef) => {
   const {
     selectedVertex,
     setSelectedVertex,
@@ -63,7 +70,7 @@ export const useVertexMouseMove = canvasRef => {
     setCanvasClickOrigin,
     canvasCoordinates,
     setCanvasCoordinates
-  } = states()
+  } = states(canvasRef)
 
   const resetStates = () => {
     const defaults = DEFAULT_STATE_VALUES
@@ -85,10 +92,26 @@ export const useVertexMouseMove = canvasRef => {
       return
     }
 
-    setCanvasCoordinates(event, true)
+    setCanvasCoordinates(event)
   }
 
   const mouseUpListener = () => resetStates()
+
+  const rectangleProps = () => {
+    if (
+      !canvasClickOrigin?.x ||
+      !canvasClickOrigin?.y ||
+      !canvasCoordinates?.x ||
+      !canvasCoordinates?.y
+    ) return
+
+    const left = Math.min(canvasClickOrigin.x, canvasCoordinates.x)
+    const top = Math.min(canvasClickOrigin.y, canvasCoordinates.y)
+    const height = Math.abs(canvasCoordinates.y - canvasClickOrigin.y)
+    const width = Math.abs(canvasCoordinates.x - canvasClickOrigin.x)
+
+    return { left, top, height, width }
+  }
 
   return {
     mouseDownListener,
@@ -96,6 +119,7 @@ export const useVertexMouseMove = canvasRef => {
     mouseUpListener,
     selectedVertex,
     canvasClickOrigin,
-    canvasCoordinates
+    canvasCoordinates,
+    rectangleProps: rectangleProps()
   }
 }

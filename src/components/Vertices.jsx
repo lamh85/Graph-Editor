@@ -29,7 +29,6 @@ const Rectangle = styled.rect`
 
 const SvgText = styled.text`
   ${props => moveCursorStyle(props.isMovingVertex)}
-  user-select: none;
 `
 
 const handleConnectVertexClick = ({ vertex1Id, vertex2Id, createEdge }) => {

@@ -12,17 +12,19 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
-import { useVertexMouseMove } from '../hooks/useVertexMouseMovejs'
+import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
+import { VertexBuild } from './VertexBuild.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
   useEffectMoveVertex,
-  useEffectResizeVertex
+  useEffectResizeVertex,
+  createRectangleWithDrag
 } from '../component_helpers/app'
 import { doShareAncestry } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
@@ -31,7 +33,15 @@ const SVG_HEIGHT = 500
 const SVG_WIDTH = 900
 
 const DrawingsContainer = styled.svg`
+  , * {
+    user-select: none;
+  }
+
   background: lightgrey;
+
+  ${props => props.isDragCreateVertexMode && css`
+    cursor: crosshair;
+  `}
 
   ${props =>
     props.resizeCursor
@@ -85,7 +95,9 @@ const renderEdge = ({ edge, index, tangents }) => {
 const handleContextClick = ({
   event,
   renderContextMenu,
-  createVertex
+  createVertex,
+  setIsDragCreateVertexMode,
+  isDragCreateVertexMode
 }) => {
   event.preventDefault()
   const { clientX, clientY } = event
@@ -99,10 +111,23 @@ const handleContextClick = ({
     ...DEFAULT_RECTANGLE,
     ...vertexCentre
   })
+  const enableVertexDragCreator = () => setIsDragCreateVertexMode(true)
+  const disableVertexDragCreator = () => setIsDragCreateVertexMode(false)
+
   const items = [
     { display: 'Create circle here', onClick: createCircle },
-    { display: 'Create rectangle here', onClick: createRectangle }
+    { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle }
   ]
+
+  if (isDragCreateVertexMode) {
+    items.push({
+      display: 'CANCEL rectangle creator', onClick: disableVertexDragCreator
+    })
+  } else {
+    items.push({
+      display: 'Create rectangle MANUALLY', onClick: enableVertexDragCreator
+    })
+  }
 
   renderContextMenu({ x: clientX, y: clientY, items })
 }
@@ -179,6 +204,7 @@ const App = props => {
   const contextMenuNode = useRef()
   const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
+  const [isDragCreateVertexMode, setIsDragCreateVertexMode] = useState(false)
 
   const {
     render: renderContextMenu,
@@ -221,6 +247,8 @@ const App = props => {
 
   const resizeVertexService = useVertexMouseMove(canvasRef)
 
+  const vertexDragCreator = useVertexMouseMove(canvasRef)
+
   const {
     state: drawingsContainerCursorStyle,
     setState: setDrawingsContainerCursorStyle
@@ -259,12 +287,21 @@ const App = props => {
   return (
     <div
       onMouseUp={() => {
+        if (vertexDragCreator.selectedVertex) {
+          createRectangleWithDrag({
+            rectangleProps: vertexDragCreator.rectangleProps,
+            createVertex
+          })
+        }
+
         moveVertexService.mouseUpListener()
         resizeVertexService.mouseUpListener()
+        vertexDragCreator.mouseUpListener()
       }}
       onMouseMove={event => {
         moveVertexService.mouseMoveListener(event)
         resizeVertexService.mouseMoveListener(event)
+        vertexDragCreator.mouseMoveListener(event)
       }}
     >
       <PositionWrapper>
@@ -275,8 +312,19 @@ const App = props => {
           onContextMenu={event => handleContextClick({
             event,
             renderContextMenu,
-            createVertex
+            createVertex,
+            setIsDragCreateVertexMode,
+            isDragCreateVertexMode
           })}
+          onMouseDown={event => {
+            if (!isDragCreateVertexMode) return
+
+            vertexDragCreator.mouseDownListener({
+              event,
+              vertex: 'TEMPORARY_RECTANGLE'
+            })
+          }}
+          isDragCreateVertexMode={isDragCreateVertexMode}
           resizeCursor={drawingsContainerCursorStyle}
           isResizingVertex={!!resizeVertexService.selectedVertex}
         >
@@ -298,6 +346,9 @@ const App = props => {
             moveVertexService={moveVertexService}
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
+          />
+          <VertexBuild
+            rectangleProps={vertexDragCreator.rectangleProps}
           />
         </DrawingsContainer>
         {isRenderingContextMenu && (

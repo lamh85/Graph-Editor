@@ -2,9 +2,15 @@ export const canvasCoordinatesConversion = ({
   cursorX,
   cursorY,
   canvasX,
-  canvasY
+  canvasY,
+  canvasRef
 }) => {
   const { scrollTop, scrollLeft } = document.querySelector('html')
+
+  let canvasFromPage = { x: 0, y: 0 }
+  if (canvasRef?.current) {
+    canvasFromPage = canvasRef.current.getBoundingClientRect()
+  }
 
   if (cursorX && cursorY) {
     return {
