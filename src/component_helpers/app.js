@@ -234,3 +234,23 @@ export const useEffectResizeVertex = ({
     }
   })
 }
+
+export const createRectangleWithDrag = ({
+  rectangleProps,
+  createVertex
+}) => {
+  if (!rectangleProps) return null
+
+  const { top, left, width, height } = rectangleProps
+
+  const centreX = left + width / 2
+  const centreY = top + height / 2
+
+  createVertex({
+    centreX,
+    centreY,
+    height,
+    width,
+    shape: 'rectangle'
+  })
+}

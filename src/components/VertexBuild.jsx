@@ -1,33 +1,16 @@
 import React from "react"
 
 export const VertexBuild = ({
-  vertexDragCreator
+  rectangleProps
 }) => {
-  const {
-    selectedVertex,
-    canvasClickOrigin,
-    canvasCoordinates
-  } = vertexDragCreator
-
-  if (!selectedVertex|| !canvasClickOrigin || !canvasCoordinates) return null
-
-  const left = canvasClickOrigin.x < canvasCoordinates.x
-    ? canvasClickOrigin.x
-    : canvasCoordinates.x
-
-  const top = canvasClickOrigin.y < canvasCoordinates.y
-    ? canvasClickOrigin.y
-    : canvasCoordinates.y
-
-  const height = Math.abs(canvasCoordinates.y - canvasClickOrigin.y)
-  const width = Math.abs(canvasCoordinates.x - canvasClickOrigin.x)
+  if (!rectangleProps) return null
 
   return (
     <rect
-      x={left}
-      y={top}
-      height={height}
-      width={width}
+      x={rectangleProps.left}
+      y={rectangleProps.top}
+      height={rectangleProps.height}
+      width={rectangleProps.width}
       fill="blue"
     />
   )

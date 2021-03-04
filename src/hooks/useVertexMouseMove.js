@@ -97,12 +97,35 @@ export const useVertexMouseMove = (canvasRef) => {
 
   const mouseUpListener = () => resetStates()
 
+  const rectangleProps = () => {
+    if (
+      !canvasClickOrigin?.x ||
+      !canvasClickOrigin?.y ||
+      !canvasCoordinates?.x ||
+      !canvasCoordinates?.y
+    ) return
+
+    const left = canvasClickOrigin.x < canvasCoordinates.x
+      ? canvasClickOrigin.x
+      : canvasCoordinates.x
+
+    const top = canvasClickOrigin.y < canvasCoordinates.y
+      ? canvasClickOrigin.y
+      : canvasCoordinates.y
+
+    const height = Math.abs(canvasCoordinates.y - canvasClickOrigin.y)
+    const width = Math.abs(canvasCoordinates.x - canvasClickOrigin.x)
+
+    return { left, top, height, width }
+  }
+
   return {
     mouseDownListener,
     mouseMoveListener,
     mouseUpListener,
     selectedVertex,
     canvasClickOrigin,
-    canvasCoordinates
+    canvasCoordinates,
+    rectangleProps: rectangleProps()
   }
 }

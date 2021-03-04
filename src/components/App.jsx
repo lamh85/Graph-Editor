@@ -23,7 +23,8 @@ import { ContextMenu } from './ContextMenu.jsx'
 import {
   getShapeTangent,
   useEffectMoveVertex,
-  useEffectResizeVertex
+  useEffectResizeVertex,
+  createRectangleWithDrag
 } from '../component_helpers/app'
 import { doShareAncestry } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
@@ -286,6 +287,13 @@ const App = props => {
   return (
     <div
       onMouseUp={() => {
+        if (vertexDragCreator.selectedVertex) {
+          createRectangleWithDrag({
+            rectangleProps: vertexDragCreator.rectangleProps,
+            createVertex
+          })
+        }
+
         moveVertexService.mouseUpListener()
         resizeVertexService.mouseUpListener()
         vertexDragCreator.mouseUpListener()
@@ -339,7 +347,9 @@ const App = props => {
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
           />
-          <VertexBuild vertexDragCreator={vertexDragCreator} />
+          <VertexBuild
+            rectangleProps={vertexDragCreator.rectangleProps}
+          />
         </DrawingsContainer>
         {isRenderingContextMenu && (
           <ContextMenu
