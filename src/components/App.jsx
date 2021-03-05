@@ -247,7 +247,9 @@ const App = props => {
 
   const resizeVertexService = useVertexMouseMove(canvasRef)
 
-  const vertexDragCreator = useVertexMouseMove(canvasRef)
+  const manualRectCreator = useVertexMouseMove(canvasRef)
+
+  const manualCircleCreator = useVertexMouseMove(canvasRef)
 
   const {
     state: drawingsContainerCursorStyle,
@@ -287,21 +289,22 @@ const App = props => {
   return (
     <div
       onMouseUp={() => {
-        if (vertexDragCreator.selectedVertex) {
+        if (manualRectCreator.selectedVertex) {
           createRectangleWithDrag({
-            rectangleProps: vertexDragCreator.rectangleProps,
+            rectangleProps: manualRectCreator.rectangleProps,
             createVertex
           })
         }
 
         moveVertexService.mouseUpListener()
         resizeVertexService.mouseUpListener()
-        vertexDragCreator.mouseUpListener()
+        manualRectCreator.mouseUpListener()
       }}
       onMouseMove={event => {
         moveVertexService.mouseMoveListener(event)
         resizeVertexService.mouseMoveListener(event)
-        vertexDragCreator.mouseMoveListener(event)
+        manualRectCreator.mouseMoveListener(event)
+        manualCircleCreator.mouseMoveListener(event)
       }}
     >
       <PositionWrapper>
@@ -319,9 +322,14 @@ const App = props => {
           onMouseDown={event => {
             if (!isDragCreateVertexMode) return
 
-            vertexDragCreator.mouseDownListener({
+            manualRectCreator.mouseDownListener({
               event,
               vertex: 'TEMPORARY_RECTANGLE'
+            })
+
+            manualCircleCreator.mouseDownListener({
+              event,
+              vertex: 'TEMPORARY_CIRCLE'
             })
           }}
           isDragCreateVertexMode={isDragCreateVertexMode}
@@ -348,7 +356,8 @@ const App = props => {
             renderContextMenu={renderContextMenu}
           />
           <VertexBuild
-            rectangleProps={vertexDragCreator.rectangleProps}
+            rectangleProps={manualRectCreator.rectangleProps}
+            manualCircleCreator={manualCircleCreator}
           />
         </DrawingsContainer>
         {isRenderingContextMenu && (
