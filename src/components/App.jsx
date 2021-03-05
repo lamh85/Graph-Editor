@@ -16,7 +16,8 @@ import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
-import { VertexBuild } from './VertexBuild.jsx'
+import { RectangleBuild } from './RectangleBuild.jsx'
+import { CircleBuild } from './CircleBuild.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
@@ -39,7 +40,9 @@ const DrawingsContainer = styled.svg`
 
   background: lightgrey;
 
-  ${props => props.isDragCreateVertexMode && css`
+  ${props =>
+    (props.isDrawRectangleMode || props.isDrawCircleMode)
+    && css`
     cursor: crosshair;
   `}
 
@@ -96,8 +99,10 @@ const handleContextClick = ({
   event,
   renderContextMenu,
   createVertex,
-  setIsDragCreateVertexMode,
-  isDragCreateVertexMode
+  setIsDrawRectangleMode,
+  isDrawRectangleMode,
+  isDrawCircleMode,
+  setIsDrawCircleMode
 }) => {
   event.preventDefault()
   const { clientX, clientY } = event
@@ -111,21 +116,33 @@ const handleContextClick = ({
     ...DEFAULT_RECTANGLE,
     ...vertexCentre
   })
-  const enableVertexDragCreator = () => setIsDragCreateVertexMode(true)
-  const disableVertexDragCreator = () => setIsDragCreateVertexMode(false)
 
   const items = [
-    { display: 'Create circle here', onClick: createCircle },
+    { display: 'Create circle AUTOMATICALLY', onClick: createCircle },
     { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle }
   ]
 
-  if (isDragCreateVertexMode) {
+  if (isDrawRectangleMode) {
     items.push({
-      display: 'CANCEL rectangle creator', onClick: disableVertexDragCreator
+      display: 'CANCEL rectangle creator',
+      onClick: () => setIsDrawRectangleMode(false)
     })
   } else {
     items.push({
-      display: 'Create rectangle MANUALLY', onClick: enableVertexDragCreator
+      display: 'Create rectangle MANUALLY',
+      onClick: () => setIsDrawRectangleMode(true)
+    })
+  }
+
+  if (isDrawCircleMode) {
+    items.push({
+      display: 'CANCEL circle creator',
+      onClick: () => setIsDrawCircleMode(false)
+    })
+  } else {
+    items.push({
+      display: 'Create circle MANUALLY',
+      onClick: () => setIsDrawCircleMode(true)
     })
   }
 
@@ -204,7 +221,8 @@ const App = props => {
   const contextMenuNode = useRef()
   const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
-  const [isDragCreateVertexMode, setIsDragCreateVertexMode] = useState(false)
+  const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
+  const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
 
   const {
     render: renderContextMenu,
@@ -316,23 +334,29 @@ const App = props => {
             event,
             renderContextMenu,
             createVertex,
-            setIsDragCreateVertexMode,
-            isDragCreateVertexMode
+            setIsDrawRectangleMode,
+            isDrawRectangleMode,
+            isDrawCircleMode,
+            setIsDrawCircleMode
           })}
           onMouseDown={event => {
-            if (!isDragCreateVertexMode) return
+            if (isDrawRectangleMode) {
+              manualRectCreator.mouseDownListener({
+                event,
+                vertex: 'TEMPORARY_RECTANGLE'
+              })
+            }
 
-            manualRectCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_RECTANGLE'
-            })
-
-            manualCircleCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_CIRCLE'
-            })
+            if (isDrawCircleMode) {
+              manualCircleCreator.mouseDownListener({
+                event,
+                vertex: 'TEMPORARY_CIRCLE'
+              })
+            }
           }}
-          isDragCreateVertexMode={isDragCreateVertexMode}
+
+          isDrawRectangleMode={isDrawRectangleMode}
+          isDrawCircleMode={isDrawCircleMode}
           resizeCursor={drawingsContainerCursorStyle}
           isResizingVertex={!!resizeVertexService.selectedVertex}
         >
@@ -355,8 +379,10 @@ const App = props => {
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
           />
-          <VertexBuild
+          <RectangleBuild
             rectangleProps={manualRectCreator.rectangleProps}
+          />
+          <CircleBuild
             manualCircleCreator={manualCircleCreator}
           />
         </DrawingsContainer>
