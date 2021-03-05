@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import {
   getUnconnectedVertices,
   getConnectedVertices,
-  vertexCircleProps,
   vertexRectangleProps
 } from '../component_helpers/vertices'
+import { vertexCircleProps } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
 
 const moveCursorStyle = isMovingVertex => {

@@ -1,7 +1,7 @@
 import React from "react"
 
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import { vertexCircleProps } from '../component_helpers/vertices'
+import { vertexCircleProps } from '../helpers/dom'
 
 export const CircleBuild = ({
   manualCircleCreator
