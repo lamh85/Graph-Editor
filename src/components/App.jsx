@@ -314,6 +314,12 @@ const App = props => {
           })
         }
 
+        if (manualCircleCreator.selectedVertex) {
+          // createCircleWithDrag({
+
+          // })
+        }
+
         moveVertexService.mouseUpListener()
         resizeVertexService.mouseUpListener()
         manualRectCreator.mouseUpListener()

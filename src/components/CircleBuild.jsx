@@ -6,17 +6,23 @@ import { vertexCircleProps } from '../helpers/dom'
 export const CircleBuild = ({
   manualCircleCreator
 }) => {
-  if (manualCircleCreator.selectedVertex !== 'TEMPORARY_CIRCLE') return null
+  const {
+    selectedVertex,
+    canvasClickOrigin,
+    canvasCoordinates
+  } = manualCircleCreator
+
+  if (selectedVertex !== 'TEMPORARY_CIRCLE') return null
 
   const {
     x: x1,
     y: y1
-  } = manualCircleCreator.canvasClickOrigin || {}
+  } = canvasClickOrigin || {}
 
   const {
     x: x2,
     y: y2
-  } = manualCircleCreator.canvasCoordinates || {}
+  } = canvasCoordinates || {}
 
   if (!x1 || !y1 || !x2 || !y2) return null
 
