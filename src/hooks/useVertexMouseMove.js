@@ -63,7 +63,10 @@ const states = canvasRef => {
   }
 }
 
-export const useVertexMouseMove = (canvasRef) => {
+export const useVertexMouseMove = ({
+  canvasRef,
+  isEnabled = true
+}) => {
   const {
     selectedVertex,
     setSelectedVertex,
@@ -81,6 +84,7 @@ export const useVertexMouseMove = (canvasRef) => {
   }
 
   const mouseDownListener = ({ event, vertex }) => {
+    if (!isEnabled) return
     setSelectedVertex(vertex)
     setCanvasClickOrigin(event)
   }
