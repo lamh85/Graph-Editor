@@ -25,7 +25,8 @@ import {
   getShapeTangent,
   useEffectMoveVertex,
   useEffectResizeVertex,
-  createRectangleWithDrag
+  createRectangleWithDrag,
+  createCircleWithDrag
 } from '../component_helpers/app'
 import { doShareAncestry } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
@@ -315,14 +316,16 @@ const App = props => {
         }
 
         if (manualCircleCreator.selectedVertex) {
-          // createCircleWithDrag({
-
-          // })
+          createCircleWithDrag({
+            circleProps: manualCircleCreator.circleProps,
+            createVertex
+          })
         }
 
         moveVertexService.mouseUpListener()
         resizeVertexService.mouseUpListener()
         manualRectCreator.mouseUpListener()
+        manualCircleCreator.mouseUpListener()
       }}
       onMouseMove={event => {
         moveVertexService.mouseMoveListener(event)
@@ -389,7 +392,7 @@ const App = props => {
             rectangleProps={manualRectCreator.rectangleProps}
           />
           <CircleBuild
-            manualCircleCreator={manualCircleCreator}
+            circleProps={manualCircleCreator.circleProps}
           />
         </DrawingsContainer>
         {isRenderingContextMenu && (

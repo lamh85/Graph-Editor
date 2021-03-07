@@ -3,6 +3,7 @@ import {
   canvasCoordinatesConversion,
   doShareAncestry
 } from '../helpers/dom'
+import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 
 const DEFAULT_STATE_VALUES = {
   selectedVertex: null,
@@ -97,13 +98,14 @@ export const useVertexMouseMove = (canvasRef) => {
 
   const mouseUpListener = () => resetStates()
 
+  const hasCoordinates = 
+    canvasClickOrigin?.x &&
+    canvasClickOrigin?.y &&
+    canvasCoordinates?.x &&
+    canvasCoordinates?.y
+
   const rectangleProps = () => {
-    if (
-      !canvasClickOrigin?.x ||
-      !canvasClickOrigin?.y ||
-      !canvasCoordinates?.x ||
-      !canvasCoordinates?.y
-    ) return
+    if (!hasCoordinates) return
 
     const left = Math.min(canvasClickOrigin.x, canvasCoordinates.x)
     const top = Math.min(canvasClickOrigin.y, canvasCoordinates.y)
@@ -113,6 +115,41 @@ export const useVertexMouseMove = (canvasRef) => {
     return { left, top, height, width }
   }
 
+  const circleProps = () => {
+    if (!hasCoordinates) return
+
+    const {
+      x: x1,
+      y: y1
+    } = canvasClickOrigin || {}
+
+    const {
+      x: x2,
+      y: y2
+    } = canvasCoordinates || {}
+
+    if (!x1 || !y1 || !x2 || !y2) return null
+
+    const centreX = (x1 + x2) / 2
+    const centreY = (y1 + y2) / 2
+
+    const radius = getHypotenuseLength({
+      adjacent: centreX - x1,
+      opposite: centreY - y1
+    })
+
+    if (!radius) return null
+
+    return {
+      centreX,
+      centreY,
+      radius,
+      cx: centreX,
+      cy: centreY,
+      r: radius
+    }
+  }
+
   return {
     mouseDownListener,
     mouseMoveListener,
@@ -120,6 +157,7 @@ export const useVertexMouseMove = (canvasRef) => {
     selectedVertex,
     canvasClickOrigin,
     canvasCoordinates,
-    rectangleProps: rectangleProps()
+    rectangleProps: rectangleProps(),
+    circleProps: circleProps()
   }
 }
