@@ -102,7 +102,7 @@ export const useVertexMouseMove = ({
 
   const mouseUpListener = () => resetStates()
 
-  const hasCoordinates = 
+  const hasCoordinates =
     canvasClickOrigin?.x &&
     canvasClickOrigin?.y &&
     canvasCoordinates?.x &&
