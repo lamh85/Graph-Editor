@@ -262,14 +262,16 @@ const App = props => {
 
   const canvasRef = useRef()
 
+  const areVerticesMouseEditable = !isDrawRectangleMode && !isDrawCircleMode
+
   const moveVertexService = useVertexMouseMove({
     canvasRef,
-    isEnabled: !isDrawRectangleMode && !isDrawCircleMode
+    isEnabled: areVerticesMouseEditable
   })
 
   const resizeVertexService = useVertexMouseMove({
     canvasRef,
-    isEnabled: !isDrawRectangleMode && !isDrawCircleMode
+    isEnabled: areVerticesMouseEditable
   })
 
   const manualRectCreator = useVertexMouseMove({
@@ -371,7 +373,6 @@ const App = props => {
               vertex: 'TEMPORARY_CIRCLE'
             })
           }}
-
           isDrawRectangleMode={isDrawRectangleMode}
           isDrawCircleMode={isDrawCircleMode}
           resizeCursor={drawingsContainerCursorStyle}
@@ -395,6 +396,7 @@ const App = props => {
             moveVertexService={moveVertexService}
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
+            areVerticesMouseEditable={areVerticesMouseEditable}
           />
           <RectangleBuild
             rectangleProps={manualRectCreator.rectangleProps}
