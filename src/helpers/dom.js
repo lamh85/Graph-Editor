@@ -42,3 +42,9 @@ export const doShareAncestry = (youngest, ancestorTested) => {
   const lineage = getAncestry(youngest)
   return lineage.includes(ancestorTested)
 }
+
+export const vertexCircleProps = vertex => {
+  const { centreX, centreY, radius } = vertex
+
+  return { cx: centreX, cy: centreY, r: radius }
+}

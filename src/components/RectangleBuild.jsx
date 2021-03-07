@@ -1,6 +1,6 @@
 import React from "react"
 
-export const VertexBuild = ({
+export const RectangleBuild = ({
   rectangleProps
 }) => {
   if (!rectangleProps) return null

@@ -254,3 +254,17 @@ export const createRectangleWithDrag = ({
     shape: 'rectangle'
   })
 }
+
+export const createCircleWithDrag = ({
+  circleProps,
+  createVertex
+}) => {
+  if (!circleProps) return null
+
+  if (circleProps.radius < RADIUS_MINIMUM) return
+
+  createVertex({
+    ...circleProps,
+    shape: 'circle'
+  })
+}
