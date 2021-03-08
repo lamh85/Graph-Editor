@@ -22,6 +22,7 @@ import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { Toolbar } from './Toolbar.jsx'
+import { Paintbrush } from './Paintbrush.jsx'
 import {
   getShapeTangent,
   useEffectMoveVertex,
@@ -354,6 +355,13 @@ const App = props => {
     }
   }, [resizeVertexService.canvasCoordinates])
 
+  let paintbrushShape = null
+  if (isPlaceCircleMode) {
+    paintbrushShape = 'circle'
+  } else if (isPlaceRectMode) {
+    paintbrushShape = 'rectangle'
+  }
+
   return (
     <div
       onMouseUp={() => {
@@ -439,6 +447,11 @@ const App = props => {
             />
             <CircleBuild
               circleProps={manualCircleCreator.circleProps}
+            />
+            <Paintbrush
+              x={4}
+              y={4}
+              shape={paintbrushShape}
             />
           </DrawingsContainer>
           {isRenderingContextMenu && (
