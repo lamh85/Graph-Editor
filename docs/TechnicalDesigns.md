@@ -84,3 +84,9 @@ Mouse move
 
 Mouse up
 * Create the shape
+
+# Coordinating different mouse tools
+
+Only one tool can be active at a time.
+
+EG: if paintbrush mode is enabled, then shape-drawing mode is disabled
