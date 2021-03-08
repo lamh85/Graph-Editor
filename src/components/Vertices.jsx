@@ -8,23 +8,35 @@ import {
 import { vertexCircleProps } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
 
-const moveCursorStyle = isMovingVertex => {
-  const value = isMovingVertex ? 'move' : 'pointer'
+const moveCursorStyle = props => {
+  const {
+    areVerticesMouseEditable,
+    isMovingVertex
+  } = props
+
+  if (!areVerticesMouseEditable) return ''
+
+  let value = 'pointer'
+  if (isMovingVertex) value = 'move'
+
   return `cursor: ${value};`
 }
 
 const CircleInner = styled.circle`
-  ${props => moveCursorStyle(props.isMovingVertex)}
+  ${props => moveCursorStyle(props)}
 `
 
 const CircleOuter = styled.circle`
-  &:hover {
-    cursor: ${props => props.resizeCursor};
-  }
+  ${props =>
+    props.resizeCursor
+    && props.areVerticesMouseEditable
+    && `
+    cursor: ${props.resizeCursor};
+  `}
 `
 
 const Rectangle = styled.rect`
-  ${props => moveCursorStyle(props.isMovingVertex)}
+  ${props => moveCursorStyle(props)}
 `
 
 const SvgText = styled.text`
@@ -116,7 +128,8 @@ const CircleGroup = ({
   resizeVertexService,
   onMouseDownResize,
   onMouseDownMove,
-  isMovingVertex
+  isMovingVertex,
+  areVerticesMouseEditable
 }) => {
   const [resizeCursor, setResizeCursor] = useState()
 
@@ -139,6 +152,7 @@ const CircleGroup = ({
           setResizeCursor(cursorStyle)
         }}
         resizeCursor={resizeCursor}
+        areVerticesMouseEditable={areVerticesMouseEditable}
       />
       <CircleInner
         {...vertexCircleProps(vertex)}
@@ -147,6 +161,7 @@ const CircleGroup = ({
         fill="red"
         onMouseDown={onMouseDownMove}
         isMovingVertex={isMovingVertex}
+        areVerticesMouseEditable={areVerticesMouseEditable}
       />
     </>
   )
@@ -160,7 +175,8 @@ const Vertex = ({
   createEdge,
   deleteEdge,
   moveVertexService,
-  resizeVertexService
+  resizeVertexService,
+  areVerticesMouseEditable
 }) => {
   const { centreX, centreY } = vertex
 
@@ -194,6 +210,7 @@ const Vertex = ({
           resizeVertexService={resizeVertexService}
           onMouseDownMove={onMouseDownMove}
           isMovingVertex={isMovingVertex}
+          areVerticesMouseEditable={areVerticesMouseEditable}
         />
       )}
       {vertex.shape === 'rectangle' && (
@@ -203,6 +220,7 @@ const Vertex = ({
           fill="red"
           onMouseDown={onMouseDownMove}
           isMovingVertex={isMovingVertex}
+          areVerticesMouseEditable={areVerticesMouseEditable}
         />
       )}
       <SvgText
@@ -224,7 +242,8 @@ export const Vertices = ({
   deleteEdge,
   renderContextMenu,
   moveVertexService,
-  resizeVertexService
+  resizeVertexService,
+  areVerticesMouseEditable
 }) => {
   return vertices.map(vertex => {
     return (
@@ -238,6 +257,7 @@ export const Vertices = ({
         deleteEdge={deleteEdge}
         moveVertexService={moveVertexService}
         resizeVertexService={resizeVertexService}
+        areVerticesMouseEditable={areVerticesMouseEditable}
       />
     )
   })

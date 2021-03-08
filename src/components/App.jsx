@@ -262,14 +262,28 @@ const App = props => {
 
   const canvasRef = useRef()
 
-  const moveVertexService = useVertexMouseMove(canvasRef)
+  const areVerticesMouseEditable = !isDrawRectangleMode && !isDrawCircleMode
 
-  const resizeVertexService = useVertexMouseMove(canvasRef)
+  const moveVertexService = useVertexMouseMove({
+    canvasRef,
+    isEnabled: areVerticesMouseEditable
+  })
 
-  const manualRectCreator = useVertexMouseMove(canvasRef)
+  const resizeVertexService = useVertexMouseMove({
+    canvasRef,
+    isEnabled: areVerticesMouseEditable
+  })
 
-  const manualCircleCreator = useVertexMouseMove(canvasRef)
+  const manualRectCreator = useVertexMouseMove({
+    canvasRef,
+    isEnabled: isDrawRectangleMode
+  })
 
+  const manualCircleCreator = useVertexMouseMove({
+    canvasRef,
+    isEnabled: isDrawCircleMode
+  })
+ 
   const {
     state: drawingsContainerCursorStyle,
     setState: setDrawingsContainerCursorStyle
@@ -349,21 +363,16 @@ const App = props => {
             setIsDrawCircleMode
           })}
           onMouseDown={event => {
-            if (isDrawRectangleMode) {
-              manualRectCreator.mouseDownListener({
-                event,
-                vertex: 'TEMPORARY_RECTANGLE'
-              })
-            }
+            manualRectCreator.mouseDownListener({
+              event,
+              vertex: 'TEMPORARY_RECTANGLE'
+            })
 
-            if (isDrawCircleMode) {
-              manualCircleCreator.mouseDownListener({
-                event,
-                vertex: 'TEMPORARY_CIRCLE'
-              })
-            }
+            manualCircleCreator.mouseDownListener({
+              event,
+              vertex: 'TEMPORARY_CIRCLE'
+            })
           }}
-
           isDrawRectangleMode={isDrawRectangleMode}
           isDrawCircleMode={isDrawCircleMode}
           resizeCursor={drawingsContainerCursorStyle}
@@ -387,6 +396,7 @@ const App = props => {
             moveVertexService={moveVertexService}
             resizeVertexService={resizeVertexService}
             renderContextMenu={renderContextMenu}
+            areVerticesMouseEditable={areVerticesMouseEditable}
           />
           <RectangleBuild
             rectangleProps={manualRectCreator.rectangleProps}

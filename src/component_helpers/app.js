@@ -183,7 +183,11 @@ export const useEffectMoveVertex = ({
     selectedVertex
   } = moveVertexService
 
-  if (!selectedVertex) return
+  if (
+    !canvasClickOrigin
+    || !canvasCoordinates
+    || !selectedVertex
+  ) return
 
   const moveDelta = {
     x: canvasCoordinates.x - canvasClickOrigin.x,
