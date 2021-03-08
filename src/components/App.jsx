@@ -96,6 +96,49 @@ const renderEdge = ({ edge, index, tangents }) => {
   )
 }
 
+const buildCommonContextOptions = ({
+  isDrawRectangleMode,
+  setIsDrawRectangleMode,
+  isDrawCircleMode,
+  setIsDrawCircleMode
+}) => {
+  const disableDrawingMode = () => {
+    setIsDrawRectangleMode(false)
+    setIsDrawCircleMode(false)
+  }
+
+  const options = []
+
+  if (isDrawRectangleMode || isDrawCircleMode) {
+    options.push({
+      display: 'CANCEL drawing shapes',
+      onClick: disableDrawingMode
+    })
+  }
+
+  if (!isDrawRectangleMode) {
+    options.push({
+      display: 'START drawing rectangles',
+      onClick: () => {
+        disableDrawingMode()
+        setIsDrawRectangleMode(true)
+      }
+    })
+  }
+
+  if (!isDrawCircleMode) {
+    options.push({
+      display: 'START drawing circles',
+      onClick: () => {
+        disableDrawingMode()
+        setIsDrawCircleMode(true)
+      }
+    })
+  }
+
+  return options
+}
+
 const handleContextClick = ({
   event,
   renderContextMenu,
@@ -106,9 +149,17 @@ const handleContextClick = ({
   setIsDrawCircleMode
 }) => {
   event.preventDefault()
-  const { clientX, clientY } = event
 
+  const commonOptions = buildCommonContextOptions({
+    isDrawRectangleMode,
+    setIsDrawRectangleMode,
+    isDrawCircleMode,
+    setIsDrawCircleMode
+  })
+
+  const { clientX, clientY } = event
   const vertexCentre = { centreX: clientX, centreY: clientY }
+
   const createCircle = () => createVertex({
     ...DEFAULT_CIRCLE,
     ...vertexCentre
@@ -119,33 +170,10 @@ const handleContextClick = ({
   })
 
   const items = [
-    { display: 'Create circle AUTOMATICALLY', onClick: createCircle },
-    { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle }
+    { display: 'Place circle HERE', onClick: createCircle },
+    { display: 'Place rectangle HERE', onClick: createRectangle },
+    ...commonOptions
   ]
-
-  if (isDrawRectangleMode) {
-    items.push({
-      display: 'CANCEL rectangle creator',
-      onClick: () => setIsDrawRectangleMode(false)
-    })
-  } else {
-    items.push({
-      display: 'Create rectangle MANUALLY',
-      onClick: () => setIsDrawRectangleMode(true)
-    })
-  }
-
-  if (isDrawCircleMode) {
-    items.push({
-      display: 'CANCEL circle creator',
-      onClick: () => setIsDrawCircleMode(false)
-    })
-  } else {
-    items.push({
-      display: 'Create circle MANUALLY',
-      onClick: () => setIsDrawCircleMode(true)
-    })
-  }
 
   renderContextMenu({ x: clientX, y: clientY, items })
 }
