@@ -21,6 +21,7 @@ import { CircleBuild } from './CircleBuild.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
+import { Toolbar } from './Toolbar.jsx'
 import {
   getShapeTangent,
   useEffectMoveVertex,
@@ -54,6 +55,10 @@ const DrawingsContainer = styled.svg`
         cursor: ${props.resizeCursor} !important;
       }
   `}
+`
+
+const DrawingsRow = styled.div`
+  display: flex;
 `
 
 const renderEdge = ({ edge, index, tangents }) => {
@@ -252,6 +257,8 @@ const App = props => {
   const [tangents, setTangents] = useState([])
   const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
   const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
+  const [isPlaceCircleMode, setIsPlaceCircleMode] = useState(false)
+  const [isPlaceRectMode, setIsPlaceRectMode] = useState(false)
 
   const {
     render: renderContextMenu,
@@ -376,73 +383,85 @@ const App = props => {
         manualCircleCreator.mouseMoveListener(event)
       }}
     >
-      <PositionWrapper>
-        <DrawingsContainer
-          ref={canvasRef}
-          width={SVG_WIDTH}
-          height={SVG_HEIGHT}
-          onContextMenu={event => handleContextClick({
-            event,
-            renderContextMenu,
-            createVertex,
-            setIsDrawRectangleMode,
+      <DrawingsRow>
+        <PositionWrapper>
+          <DrawingsContainer
+            ref={canvasRef}
+            width={SVG_WIDTH}
+            height={SVG_HEIGHT}
+            onContextMenu={event => handleContextClick({
+              event,
+              renderContextMenu,
+              createVertex,
+              setIsDrawRectangleMode,
+              isDrawRectangleMode,
+              isDrawCircleMode,
+              setIsDrawCircleMode
+            })}
+            onMouseDown={event => {
+              manualRectCreator.mouseDownListener({
+                event,
+                vertex: 'TEMPORARY_RECTANGLE'
+              })
+
+              manualCircleCreator.mouseDownListener({
+                event,
+                vertex: 'TEMPORARY_CIRCLE'
+              })
+            }}
+            isDrawRectangleMode={isDrawRectangleMode}
+            isDrawCircleMode={isDrawCircleMode}
+            resizeCursor={drawingsContainerCursorStyle}
+            isResizingVertex={!!resizeVertexService.selectedVertex}
+          >
+            <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
+            {
+              edges.map((edge, index) => {
+                return renderEdge({ edge, index, tangents })
+              })
+            }
+            <Arrows
+              arrows={arrows}
+              tangents={tangents}
+            />
+            <Vertices
+              vertices={vertices}
+              edges={edges}
+              createEdge={createEdge}
+              deleteEdge={deleteEdge}
+              moveVertexService={moveVertexService}
+              resizeVertexService={resizeVertexService}
+              renderContextMenu={renderContextMenu}
+              areVerticesMouseEditable={areVerticesMouseEditable}
+            />
+            <RectangleBuild
+              rectangleProps={manualRectCreator.rectangleProps}
+            />
+            <CircleBuild
+              circleProps={manualCircleCreator.circleProps}
+            />
+          </DrawingsContainer>
+          {isRenderingContextMenu && (
+            <ContextMenu
+              nodeRef={contextMenuNode}
+              coordX={contextMenuCoordinates.x}
+              coordY={contextMenuCoordinates.y}
+              closeMenu={unRenderContextMenu}
+              items={contextMenuItems}
+            />
+          )}
+        </PositionWrapper>
+        <Toolbar
+          extraOptions={buildCommonContextOptions({
             isDrawRectangleMode,
+            setIsDrawRectangleMode,
             isDrawCircleMode,
             setIsDrawCircleMode
           })}
-          onMouseDown={event => {
-            manualRectCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_RECTANGLE'
-            })
-
-            manualCircleCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_CIRCLE'
-            })
-          }}
-          isDrawRectangleMode={isDrawRectangleMode}
-          isDrawCircleMode={isDrawCircleMode}
-          resizeCursor={drawingsContainerCursorStyle}
-          isResizingVertex={!!resizeVertexService.selectedVertex}
-        >
-          <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
-          {
-            edges.map((edge, index) => {
-              return renderEdge({ edge, index, tangents })
-            })
-          }
-          <Arrows
-            arrows={arrows}
-            tangents={tangents}
-          />
-          <Vertices
-            vertices={vertices}
-            edges={edges}
-            createEdge={createEdge}
-            deleteEdge={deleteEdge}
-            moveVertexService={moveVertexService}
-            resizeVertexService={resizeVertexService}
-            renderContextMenu={renderContextMenu}
-            areVerticesMouseEditable={areVerticesMouseEditable}
-          />
-          <RectangleBuild
-            rectangleProps={manualRectCreator.rectangleProps}
-          />
-          <CircleBuild
-            circleProps={manualCircleCreator.circleProps}
-          />
-        </DrawingsContainer>
-        {isRenderingContextMenu && (
-          <ContextMenu
-            nodeRef={contextMenuNode}
-            coordX={contextMenuCoordinates.x}
-            coordY={contextMenuCoordinates.y}
-            closeMenu={unRenderContextMenu}
-            items={contextMenuItems}
-          />
-        )}
-      </PositionWrapper>
+          setIsPlaceCircleMode={setIsPlaceCircleMode}
+          setIsPlaceRectMode={setIsPlaceRectMode}
+        />
+      </DrawingsRow>
       <Editor
         gridIncrement={gridIncrement}
         setGridIncrement={setGridIncrement}
