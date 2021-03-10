@@ -3,21 +3,19 @@ import { MenuItem } from './common/MenuItem.jsx'
 
 export const Toolbar = ({
   extraOptions,
-  setIsPlaceCircleMode,
-  setIsPlaceRectMode
+  setPaintbrushShape
 }) => {
   return (
     <>
       <MenuItem onClick={() => {
-        setIsPlaceCircleMode(false)
-        setIsPlaceRectMode(false)
+        setPaintbrushShape(null)
       }}>
         Default mode
       </MenuItem>
-      <MenuItem onClick={() => setIsPlaceCircleMode(true)}>
+      <MenuItem onClick={() => setPaintbrushShape('circle')}>
         Place a circle
       </MenuItem>
-      <MenuItem onClick={() => setIsPlaceRectMode(true)}>
+      <MenuItem onClick={() => setPaintbrushShape('rectangle')}>
         Place a rectangle
       </MenuItem>
 

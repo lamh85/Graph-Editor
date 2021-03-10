@@ -90,3 +90,24 @@ Mouse up
 Only one tool can be active at a time.
 
 EG: if paintbrush mode is enabled, then shape-drawing mode is disabled
+
+## Comparing flows:
+
+Resize
+* mouse down -> select the vertex
+* mouse move -> update the vertex and render
+* mouse up -> de-select the vertex
+
+Move
+* mouse down -> select the vertex
+* mouse move -> update the vertex and render
+* mouse up -> de-select the vertex
+
+Draw a vertex
+* mouse down -> sets one x-y pair
+* mouse move -> update the second x-y pair, render a tentative vertex
+* mouse up -> create vertex
+
+Place a vertex
+* mouse move -> render a tentative vertex
+* mouse down -> create a vertex

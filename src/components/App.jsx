@@ -258,8 +258,7 @@ const App = props => {
   const [tangents, setTangents] = useState([])
   const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
   const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
-  const [isPlaceCircleMode, setIsPlaceCircleMode] = useState(false)
-  const [isPlaceRectMode, setIsPlaceRectMode] = useState(false)
+  const [paintbrushShape, setPaintbrushShape] = useState(null)
 
   const {
     render: renderContextMenu,
@@ -298,7 +297,10 @@ const App = props => {
 
   const canvasRef = useRef()
 
-  const areVerticesMouseEditable = !isDrawRectangleMode && !isDrawCircleMode
+  const areVerticesMouseEditable =
+    !isDrawRectangleMode
+    && !isDrawCircleMode
+    && !paintbrushShape
 
   const moveVertexService = useVertexMouseMove({
     canvasRef,
@@ -354,13 +356,6 @@ const App = props => {
       setDrawingsContainerCursorStyle(cursorStyle)
     }
   }, [resizeVertexService.canvasCoordinates])
-
-  let paintbrushShape = null
-  if (isPlaceCircleMode) {
-    paintbrushShape = 'circle'
-  } else if (isPlaceRectMode) {
-    paintbrushShape = 'rectangle'
-  }
 
   return (
     <div
@@ -471,8 +466,7 @@ const App = props => {
             isDrawCircleMode,
             setIsDrawCircleMode
           })}
-          setIsPlaceCircleMode={setIsPlaceCircleMode}
-          setIsPlaceRectMode={setIsPlaceRectMode}
+          setPaintbrushShape={setPaintbrushShape}
         />
       </DrawingsRow>
       <Editor

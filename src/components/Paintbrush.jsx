@@ -1,5 +1,8 @@
 import React from 'react'
-import { RADIUS_MINIMUM } from '../models/vertices'
+import {
+  RADIUS_MINIMUM,
+  DEFAULT_RECTANGLE
+} from '../models/vertices'
 
 export const Paintbrush = ({
   shape,
