@@ -259,6 +259,10 @@ const App = props => {
   const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
   const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
   const [paintbrushShape, setPaintbrushShape] = useState(null)
+  const [drawingsCoordinates, setDrawingsCoordinates] = useState({
+    x: null,
+    y: null
+  })
 
   const {
     render: renderContextMenu,
@@ -416,6 +420,7 @@ const App = props => {
             isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={!!resizeVertexService.selectedVertex}
+            onMouseMove={event => console.log(canvasRef.current?.getBoundingClientRect().y)}
           >
             <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
             {

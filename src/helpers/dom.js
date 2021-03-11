@@ -25,7 +25,7 @@ export const canvasCoordinatesConversion = ({
   }
 }
 
-const getAncestry = element => {
+export const getAncestry = element => {
   const lineage = [element]
   let cursor = element
 
