@@ -94,20 +94,54 @@ EG: if paintbrush mode is enabled, then shape-drawing mode is disabled
 ## Comparing flows:
 
 Resize
-* mouse down -> select the vertex
+* mouse down: vertex's outline -> select the vertex
 * mouse move -> update the vertex and render
 * mouse up -> de-select the vertex
 
 Move
-* mouse down -> select the vertex
+* mouse down: vertex -> select the vertex
 * mouse move -> update the vertex and render
 * mouse up -> de-select the vertex
 
 Draw a vertex
-* mouse down -> sets one x-y pair
+* mouse down: empty space -> sets one x-y pair
 * mouse move -> update the second x-y pair, render a tentative vertex
 * mouse up -> create vertex
 
 Place a vertex
 * mouse move -> render a tentative vertex
-* mouse down -> create a vertex
+* mouse down: anywhere -> create a vertex
+
+## Flow consolidated
+
+Mouse down
+* set state: origin coordinates
+* set state: vertex, IF exists
+* set state: tool selected
+* create a vertex if in paintbrush mode
+
+Mouse move
+* set state: coordinates
+
+Mouse up
+* update vertex OR create vertex
+
+## Interaction between different tools
+
+No tools are enabled
+
+User selects Tool A
+
+App enables Tool A
+
+User selects Tool B
+
+App disables Tool A
+
+App enables Tool B
+
+## Possible design patterns
+
+Strategy: https://refactoring.guru/design-patterns/strategy/ruby/example#example-0
+
+Template: https://refactoring.guru/design-patterns/template-method/ruby/example#example-0
