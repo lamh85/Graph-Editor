@@ -112,36 +112,52 @@ Place a vertex
 * mouse move -> render a tentative vertex
 * mouse down: anywhere -> create a vertex
 
-## Flow consolidated
+## Flow consolidated by mouse events
 
 Mouse down
-* set state: origin coordinates
-* set state: vertex, IF exists
+* set state: origin coordinates (already provided when initializing the custom hook)
+* set state: vertex, IF resizing or moving location
 * set state: tool selected
-* create a vertex if in paintbrush mode
+* set state: paintbrush shape
+* Create a vertex IF paintrbrush mode
 
 Mouse move
-* set state: coordinates
+* the client is responsible for tracking the current coordinates
+* set state: the build of the vertex IF paintbrush mode
+* update vertex IF resizing or moving location
 
 Mouse up
-* update vertex OR create vertex
+* create IF drag-to-create
 
 ## Interaction between different tools
 
-No tools are enabled
+Flow pattern 1
+* User choose paintbrush
+* User attempts to resize a vertex
+* App does nothing because it is still in paintbrush mode
+* Use cliciks a button to disable paintrbrush mode
+* Now user can resize a vertex
 
-User selects Tool A
-
-App enables Tool A
-
-User selects Tool B
-
-App disables Tool A
-
-App enables Tool B
+Flow pattern 2
+* User mouse-down on a vertex to start moving it
+* While mouse-moving the vertex, no other modes can be enabled because mouse-moving prevents clicking. All other tools require clicking on a vertex or clicking a menu item.
 
 ## Possible design patterns
 
-Strategy: https://refactoring.guru/design-patterns/strategy/ruby/example#example-0
-
 Template: https://refactoring.guru/design-patterns/template-method/ruby/example#example-0
+* Super class defines the high-level logical flow
+* Subclasses define the modules of that flow
+
+Strategy: https://refactoring.guru/design-patterns/strategy/ruby/example#example-0
+* The subclasses control the flow
+* The super class defines some of the details for all different strategies.
+* EG: Navigation app. A strategy is a mean of transportation. But all strategies must have a starting point, end point, same API stardards for retrieving map data, etc.
+
+MVC:
+* "Controller" = request handler
+* "Model" = states, and logic for CRUD state
+
+## Random thoughts
+
+A state for keeping the payload of the tool.
+* Why? A tool can be for either editing or creating. Designing the tool as a payload is more flexible than constraining it to a vertex ID, etc. This will push the datatype definition of the payload to the creator/updater function.

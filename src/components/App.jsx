@@ -13,6 +13,7 @@ import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
+import { useDrawingTools } from '../hooks/useDrawingTools'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -259,10 +260,15 @@ const App = props => {
   const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
   const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
   const [paintbrushShape, setPaintbrushShape] = useState(null)
-  const [drawingsCoordinates, setDrawingsCoordinates] = useState({
-    x: null,
-    y: null
-  })
+  // const [drawingsCoordinates, setDrawingsCoordinates] = useState({
+  //   x: null,
+  //   y: null
+  // })
+
+  const {
+    setCurrentCoordinates,
+    currentCoordinates
+  } = useDrawingTools({})
 
   const {
     render: renderContextMenu,
@@ -427,11 +433,9 @@ const App = props => {
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={!!resizeVertexService.selectedVertex}
             onMouseMove={event => {
-              if (!paintbrushShape) return
-
               const node = canvasRef.current
 
-              setDrawingsCoordinates({
+              setCurrentCoordinates({
                 x: event.clientX - (node?.getBoundingClientRect().x || 0),
                 y: event.clientY - (node?.getBoundingClientRect().y || 0)
               })
@@ -464,8 +468,8 @@ const App = props => {
               circleProps={manualCircleCreator.circleProps}
             />
             <Paintbrush
-              x={drawingsCoordinates.x}
-              y={drawingsCoordinates.y}
+              x={currentCoordinates.x}
+              y={currentCoordinates.y}
               shape={isPaintbrushEnabled && paintbrushShape}
             />
           </DrawingsContainer>

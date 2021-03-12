@@ -7,21 +7,21 @@ const TOOL_NAMES = {
   DRAW: 'DRAW'
 }
 
-export const useDrawingTools = ({
-  currentCoordinates,
-  updateVertex,
-  createVertex
-}) => {
-  const [drawingTool, setDrawingTool] = useState(null)
+export const useDrawingTools = () => {
+  const [tool, setTool] = useState(null)
   const [selectedVertex, setSelectedVertex] = useState(null)
   const [clickCoordinates, setClickCoordinates] = useState({
     x: null,
     y: null
   })
   const [vertexBuildShape, setVertexBuildShape] = useState(null)
+  const [currentCoordinates, setCurrentCoordinates] = useState({
+    x: null,
+    y: null
+  })
 
   const startMouseDragTool = ({ toolType, vertex }) => {
-    setDrawingTool(toolType)
+    setTool(toolType)
     setSelectedVertex(vertex)
 
     setClickCoordinates(currentCoordinates)
@@ -36,11 +36,11 @@ export const useDrawingTools = ({
   }
 
   const mouseUpListener = () => {
-    if (drawingTool === TOOL_NAMES.MOVE) {
+    if (tool === TOOL_NAMES.MOVE) {
       // update with new centre
-    } else if (drawingTool === TOOL_NAMES.RESIZE) {
+    } else if (tool === TOOL_NAMES.RESIZE) {
       // update with new radius
-    } else if (drawingTool === TOOL_NAMES.DRAW) {
+    } else if (tool === TOOL_NAMES.DRAW) {
       // create vertex
     }
   }
@@ -52,12 +52,7 @@ export const useDrawingTools = ({
   }
 
   return {
-    TOOL_NAMES,
-    drawingTool,
-    vertexBuildShape,
-    startMoveTool,
-    startResizeTool,
-    startDrawTool,
-    mouseUpListener
+    currentCoordinates,
+    setCurrentCoordinates
   }
 }
