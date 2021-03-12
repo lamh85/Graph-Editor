@@ -361,6 +361,12 @@ const App = props => {
     }
   }, [resizeVertexService.canvasCoordinates])
 
+  const isPaintbrushEnabled = 
+    !moveVertexService.selectedVertex
+    && !resizeVertexService.selectedVertex
+    && !manualRectCreator.selectedVertex
+    && !manualCircleCreator.selectedVertex
+
   return (
     <div
       onMouseUp={() => {
@@ -420,7 +426,16 @@ const App = props => {
             isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={!!resizeVertexService.selectedVertex}
-            onMouseMove={event => console.log(canvasRef.current?.getBoundingClientRect().y)}
+            onMouseMove={event => {
+              if (!paintbrushShape) return
+
+              const node = canvasRef.current
+
+              setDrawingsCoordinates({
+                x: event.clientX - (node?.getBoundingClientRect().x || 0),
+                y: event.clientY - (node?.getBoundingClientRect().y || 0)
+              })
+            }}
           >
             <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
             {
@@ -449,9 +464,9 @@ const App = props => {
               circleProps={manualCircleCreator.circleProps}
             />
             <Paintbrush
-              x={4}
-              y={4}
-              shape={paintbrushShape}
+              x={drawingsCoordinates.x}
+              y={drawingsCoordinates.y}
+              shape={isPaintbrushEnabled && paintbrushShape}
             />
           </DrawingsContainer>
           {isRenderingContextMenu && (
