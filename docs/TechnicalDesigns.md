@@ -122,7 +122,6 @@ Mouse down
 * Create a vertex IF paintrbrush mode
 
 Mouse move
-* the client is responsible for tracking the current coordinates
 * set state: the build of the vertex IF paintbrush mode
 * update vertex IF resizing or moving location
 
@@ -156,6 +155,10 @@ Strategy: https://refactoring.guru/design-patterns/strategy/ruby/example#example
 MVC:
 * "Controller" = request handler
 * "Model" = states, and logic for CRUD state
+
+Chain of listeners
+* custom hook listens to the components
+* the create/update services listen to the hook (more applicable to mousemove event)
 
 ## Random thoughts
 
