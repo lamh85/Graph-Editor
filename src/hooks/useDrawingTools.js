@@ -8,7 +8,7 @@ import {
   DEFAULT_CIRCLE
 } from '../models/vertices'
 
-const TOOL_NAMES = {
+const TOOL_TYPES = {
   MOVE: 'MOVE',
   RESIZE: 'RESIZE',
   DROP: 'DROP',
@@ -16,8 +16,8 @@ const TOOL_NAMES = {
 }
 
 const TOOL_BLOCKERS = {
-  [TOOL_NAMES.MOVE]: [TOOL_NAMES.DROP],
-  [TOOL_NAMES.RESIZE]: [TOOL_NAMES.DROP]
+  [TOOL_TYPES.MOVE]: [TOOL_TYPES.DROP],
+  [TOOL_TYPES.RESIZE]: [TOOL_TYPES.DROP]
 }
 
 export const createRectangleWithDrag = ({
@@ -95,7 +95,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     stopTool()
     setSelectedTool(toolType)
 
-    if (TOOL_NAMES.DROP === selectedTool) {
+    if (TOOL_TYPES.DROP === selectedTool) {
       setCrudPayload({ paintbrushShape })
     }
   }
@@ -103,21 +103,21 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const handleMouseDown = vertex => {
     setCrudPayload({ ...crudPayload, vertex })
 
-    if ([TOOL_NAMES.RESIZE, TOOL_NAMES.DRAW].includes(selectedTool)) {
+    if ([TOOL_TYPES.RESIZE, TOOL_TYPES.DRAW].includes(selectedTool)) {
       setClickCoordinates(currentCoordinates)
     }
   }
 
   const updateVertexWithMouseMove = () => {
-    if (![TOOL_NAMES.MOVE, TOOL_NAMES.RESIZE].includes(selectedTool)) {
+    if (![TOOL_TYPES.MOVE, TOOL_TYPES.RESIZE].includes(selectedTool)) {
       return
     }
 
     let propertySet = {}
 
-    if (selectedTool === TOOL_NAMES.RESIZE) {
+    if (selectedTool === TOOL_TYPES.RESIZE) {
       propertySet = buildResizedRadius({ crudPayload, currentCoordinates })
-    } else if (selectedTool === TOOL_NAMES.MOVE) {
+    } else if (selectedTool === TOOL_TYPES.MOVE) {
       propertySet = {
         centreX: currentCoordinates.x,
         centreY: currentCoordinates.y
@@ -192,7 +192,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const handleMouseUp = () => {
-    if (selectedTool === TOOL_NAMES.DRAW) {
+    if (selectedTool === TOOL_TYPES.DRAW) {
       paintbrushShape === 'rectangle'
         && createRectangleWithDrag({
           rectangleVariableSized: buildRectangleVariableSized(),
@@ -206,7 +206,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
         })
     }
 
-    if ([TOOL_NAMES.DRAW, TOOL_NAMES.MOVE, TOOL_NAMES.RESIZE].includes(selectedTool)) {
+    if ([TOOL_TYPES.DRAW, TOOL_TYPES.MOVE, TOOL_TYPES.RESIZE].includes(selectedTool)) {
       stopTool()
     }
   }
