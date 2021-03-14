@@ -164,3 +164,13 @@ Chain of listeners
 
 A state for keeping the payload of the tool.
 * Why? A tool can be for either editing or creating. Designing the tool as a payload is more flexible than constraining it to a vertex ID, etc. This will push the datatype definition of the payload to the creator/updater function.
+
+Using the listener pattern to make each tool listen to a mouse event.
+* EG: the resize service selectively subscribes to only the relevant events.
+* Loop all the services to find which ones are subscribed.
+  * Why loop all of them? So we don't have to maintain multiple arrays of subscribers.
+* Levels of abstraction, from concrete to abstract:
+  1. Mouse handlers - the interface functions returned from the custom hook
+  2. Mouse event broadcaster - RECEIVES a mouse event. Loops every tool (eg: resize) to see if it's applicable to that tool.
+  3. Mouse event handlers - EG: when mouse-move while in resize mode, then update the vertex
+  4. Event handler helpers - EG: calculate the new radius of a circle for No. 3

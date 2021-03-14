@@ -2,7 +2,11 @@ import { useEffect, useState } from "react"
 
 import { getDistance } from '../geometry_helpers/get_distance'
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import { RADIUS_MINIMUM } from '../models/vertices'
+import {
+  RADIUS_MINIMUM,
+  DEFAULT_RECTANGLE,
+  DEFAULT_CIRCLE
+} from '../models/vertices'
 
 const TOOL_NAMES = {
   MOVE: 'MOVE',
@@ -17,12 +21,12 @@ const TOOL_BLOCKERS = {
 }
 
 export const createRectangleWithDrag = ({
-  rectangleProps,
+  rectangleVariableSized,
   createVertex
 }) => {
-  if (!rectangleProps) return null
+  if (!rectangleVariableSized) return null
 
-  const { top, left, width, height } = rectangleProps
+  const { top, left, width, height } = rectangleVariableSized
 
   const centreX = left + width / 2
   const centreY = top + height / 2
@@ -37,15 +41,15 @@ export const createRectangleWithDrag = ({
 }
 
 export const createCircleWithDrag = ({
-  circleProps,
+  circleVariableSized,
   createVertex
 }) => {
-  if (!circleProps) return null
+  if (!circleVariableSized) return null
 
-  if (circleProps.radius < RADIUS_MINIMUM) return
+  if (circleVariableSized.radius < RADIUS_MINIMUM) return
 
   createVertex({
-    ...circleProps,
+    ...circleVariableSized,
     shape: 'circle'
   })
 }
@@ -69,7 +73,6 @@ const buildResizedRadius = ({ crudPayload, currentCoordinates }) => {
   return newRadius
 }
 
-// TODO: ensure that clickCoordinates must be canvas coordinates, not the screen coordinates
 export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const [selectedTool, setSelectedTool] = useState(null)
   const [clickCoordinates, setClickCoordinates] = useState({
@@ -88,16 +91,21 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCrudPayload({})
   }
 
-  const startTool = ({ toolType, vertex, paintbrushShape }) => {
-    if (TOOL_BLOCKERS?.[toolType]?.includes(selectedTool)) {
-      return
-    }
-
+  const handleSelectTool = ({ toolType, paintbrushShape }) => {
     stopTool()
-
     setSelectedTool(toolType)
-    setCrudPayload({ vertex, paintbrushShape })
-    setClickCoordinates(currentCoordinates)
+
+    if (TOOL_NAMES.DROP === selectedTool) {
+      setCrudPayload({ paintbrushShape })
+    }
+  }
+
+  const handleMouseDown = vertex => {
+    setCrudPayload({ ...crudPayload, vertex })
+
+    if ([TOOL_NAMES.RESIZE, TOOL_NAMES.DRAW].includes(selectedTool)) {
+      setClickCoordinates(currentCoordinates)
+    }
   }
 
   const updateVertexWithMouseMove = () => {
@@ -132,8 +140,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     currentCoordinates?.x &&
     currentCoordinates?.y
 
-  const rectangleProps = () => {
-    if (!hasCoordinates) return
+  const buildRectangleVariableSized = () => {
+    if (!hasCoordinates) return null
 
     const left = Math.min(clickCoordinates.x, currentCoordinates.x)
     const top = Math.min(clickCoordinates.y, currentCoordinates.y)
@@ -143,8 +151,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     return { left, top, height, width }
   }
 
-  const circleProps = () => {
-    if (!hasCoordinates) return
+  const buildCircleVariableSized = () => {
+    if (!hasCoordinates) return null
 
     const { x: x1, y: y1 } = clickCoordinates || {}
     const { x: x2, y: y2 } = currentCoordinates || {}
@@ -171,13 +179,31 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     }
   }
 
-  const mouseUpListener = () => {
+  const circlePaintbrush = {
+    ...DEFAULT_CIRCLE,
+    centreX: currentCoordinates.x,
+    centreY: currentCoordinates.y
+  }
+
+  const rectanglePaintbrush = {
+    ...DEFAULT_RECTANGLE,
+    centreX: currentCoordinates.x,
+    centreY: currentCoordinates.y
+  }
+
+  const handleMouseUp = () => {
     if (selectedTool === TOOL_NAMES.DRAW) {
       paintbrushShape === 'rectangle'
-        && createRectangleWithDrag({ rectangleProps, createVertex })
+        && createRectangleWithDrag({
+          rectangleVariableSized: buildRectangleVariableSized(),
+          createVertex
+        })
 
       paintbrushShape === 'circle'
-        && createCircleWithDrag({ circleProps, createVertex })
+        && createCircleWithDrag({
+          circleVariableSized: buildCircleVariableSized(),
+          createVertex
+        })
     }
 
     if ([TOOL_NAMES.DRAW, TOOL_NAMES.MOVE, TOOL_NAMES.RESIZE].includes(selectedTool)) {
@@ -188,7 +214,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   return {
     currentCoordinates,
     setCurrentCoordinates,
-    startTool,
-    mouseUpListener
+    handleSelectTool,
+    handleMouseDown,
+    handleMouseUp
   }
 }
