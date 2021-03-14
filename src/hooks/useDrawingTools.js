@@ -106,6 +106,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     if ([TOOL_TYPES.RESIZE, TOOL_TYPES.DRAW].includes(selectedTool)) {
       setClickCoordinates(currentCoordinates)
     }
+
+    if (TOOL_TYPES.DROP === selectedTool) {
+      // create vertex
+    }
   }
 
   const updateVertexWithMouseMove = () => {
