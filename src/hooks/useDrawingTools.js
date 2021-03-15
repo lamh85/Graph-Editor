@@ -140,7 +140,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
-      const updatedProperties = buildResizedRadius({ crudPayload, currentCoordinates })
+      const updatedProperties = buildResizedRadius({
+        crudPayload,
+        currentCoordinates
+      })
       updateVertexWithMouseMove(updatedProperties)
     },
     handleMouseUp: () => stopTool()
