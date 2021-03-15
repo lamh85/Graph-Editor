@@ -8,12 +8,10 @@ import {
   DEFAULT_CIRCLE
 } from '../models/vertices'
 
-const TOOL_TYPES = {
-  MOVE: 'MOVE',
-  RESIZE: 'RESIZE',
-  DROP: 'DROP',
-  DRAW: 'DRAW'
-}
+const MOVE = 'MOVE'
+const RESIZE = 'RESIZE'
+const DROP = 'DROP'
+const DRAW = 'DRAW'
 
 export const createRectangleWithDrag = ({
   rectangleVariableSized,
@@ -118,7 +116,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const moveService = {
     toolName: MOVE,
-    toolBlockers: [TOOL_TYPES.DROP],
+    toolBlockers: [DROP],
     handleMouseDown: vertex => {
       handleSelectTool({ toolType: MOVE })
       setVertexPayload(vertex)
@@ -135,7 +133,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const resizeService = {
     toolName: RESIZE,
-    toolBlockers: [TOOL_TYPES.DROP],
+    toolBlockers: [DROP],
     handleMouseDown: vertex => {
       handleSelectTool({ toolType: RESIZE })
       copyToClickCoordinates()
