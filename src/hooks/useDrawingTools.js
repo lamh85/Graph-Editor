@@ -89,6 +89,14 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCrudPayload({})
   }
 
+  // Need this function because some tools are initiated by
+  // clicking on the toolbar rather than the canvas
+  const handleSelectTool = ({ toolType, paintbrushShape }) => {
+    stopTool()
+    setToolSelected(toolType)
+    setCrudPayload({ paintbrushShape })
+  }
+
   const setVertexPayload = vertex => {
     setCrudPayload({ ...crudPayload, vertex })
   }
@@ -111,7 +119,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const moveService = {
     toolName: MOVE,
     toolBlockers: [TOOL_TYPES.DROP],
-    handleMouseDown: vertex => setVertexPayload(vertex),
+    handleMouseDown: vertex => {
+      handleSelectTool({ toolType: MOVE })
+      setVertexPayload(vertex)
+    },
     handleMouseMove: () => {
       const updatedProperties = {
         centreX: currentCoordinates.x,
@@ -126,6 +137,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolName: RESIZE,
     toolBlockers: [TOOL_TYPES.DROP],
     handleMouseDown: vertex => {
+      handleSelectTool({ toolType: RESIZE })
       copyToClickCoordinates()
       setVertexPayload(vertex)
     },
@@ -162,14 +174,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   // mouse event broadcasters ---------------
-
-  // Need this function because some tools are initiated by
-  // clicking on the toolbar rather than the canvas
-  const handleSelectTool = ({ toolType, paintbrushShape }) => {
-    stopTool()
-    setToolSelected(toolType)
-    setCrudPayload({ paintbrushShape })
-  }
 
   const broadcastMouseEvent = ({ handlerName, payload }) => {
     const toolServices = [
