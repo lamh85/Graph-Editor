@@ -2,11 +2,8 @@ import { useEffect, useState } from "react"
 
 import { getDistance } from '../geometry_helpers/get_distance'
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import {
-  RADIUS_MINIMUM,
-  DEFAULT_RECTANGLE,
-  DEFAULT_CIRCLE
-} from '../models/vertices'
+import { RADIUS_MINIMUM } from '../models/vertices'
+import { getVertexBuilds } from '../hook_helpers/useDrawingTools'
 
 const MOVE = 'MOVE'
 const RESIZE = 'RESIZE'
@@ -78,6 +75,16 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     y: null
   })
   const [crudPayload, setCrudPayload] = useState({})
+
+  const {
+    rectangleVariableSized,
+    circleVariableSized,
+    circlePaintbrush,
+    rectanglePaintbrush
+  } = getVertexBuilds({
+    clickCoordinates,
+    currentCoordinates
+  })
 
   // shared between tool services ------------
 
@@ -162,13 +169,13 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     handleMouseUp: () => {
       paintbrushShape === 'rectangle'
         && createRectangleWithDrag({
-          rectangleVariableSized: buildRectangleVariableSized(),
+          rectangleVariableSized,
           createVertex
         })
 
       paintbrushShape === 'circle'
         && createCircleWithDrag({
-          circleVariableSized: buildCircleVariableSized(),
+          circleVariableSized,
           createVertex
         })
     }
@@ -206,65 +213,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const handleMouseUp = () => {
     broadcastMouseEvent({ handlerName: 'handleMouseUp' })
-  }
-
-  // other --------------------
-
-  const hasCoordinates =
-    clickCoordinates?.x &&
-    clickCoordinates?.y &&
-    currentCoordinates?.x &&
-    currentCoordinates?.y
-
-  const buildRectangleVariableSized = () => {
-    if (!hasCoordinates) return null
-
-    const left = Math.min(clickCoordinates.x, currentCoordinates.x)
-    const top = Math.min(clickCoordinates.y, currentCoordinates.y)
-    const height = Math.abs(currentCoordinates.y - clickCoordinates.y)
-    const width = Math.abs(currentCoordinates.x - clickCoordinates.x)
-
-    return { left, top, height, width }
-  }
-
-  const buildCircleVariableSized = () => {
-    if (!hasCoordinates) return null
-
-    const { x: x1, y: y1 } = clickCoordinates || {}
-    const { x: x2, y: y2 } = currentCoordinates || {}
-
-    if (!x1 || !y1 || !x2 || !y2) return null
-
-    const centreX = (x1 + x2) / 2
-    const centreY = (y1 + y2) / 2
-
-    const radius = getHypotenuseLength({
-      adjacent: centreX - x1,
-      opposite: centreY - y1
-    })
-
-    if (!radius) return null
-
-    return {
-      centreX,
-      centreY,
-      radius,
-      cx: centreX,
-      cy: centreY,
-      r: radius
-    }
-  }
-
-  const circlePaintbrush = {
-    ...DEFAULT_CIRCLE,
-    centreX: currentCoordinates.x,
-    centreY: currentCoordinates.y
-  }
-
-  const rectanglePaintbrush = {
-    ...DEFAULT_RECTANGLE,
-    centreX: currentCoordinates.x,
-    centreY: currentCoordinates.y
   }
 
   return {
