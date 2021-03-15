@@ -96,10 +96,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   // Need this function because some tools are initiated by
   // clicking on the toolbar rather than the canvas
-  const handleSelectTool = ({ toolType, paintbrushShape }) => {
+  const handleSelectTool = ({ toolType, shapeSelected }) => {
     stopTool()
     setToolSelected(toolType)
-    setCrudPayload({ paintbrushShape })
+    setCrudPayload({ shapeSelected })
   }
 
   const setVertexPayload = vertex => {
@@ -167,13 +167,13 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolName: DRAW,
     handleMouseDown: () => copyToClickCoordinates(),
     handleMouseUp: () => {
-      paintbrushShape === 'rectangle'
+      shapeSelected === 'rectangle'
         && createRectangleWithDrag({
           rectangleVariableSized,
           createVertex
         })
 
-      paintbrushShape === 'circle'
+      shapeSelected === 'circle'
         && createCircleWithDrag({
           circleVariableSized,
           createVertex
