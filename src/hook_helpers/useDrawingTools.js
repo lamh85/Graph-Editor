@@ -1,6 +1,7 @@
 import {
   DEFAULT_RECTANGLE,
-  DEFAULT_CIRCLE
+  DEFAULT_CIRCLE,
+  RADIUS_MINIMUM
 } from '../models/vertices'
 
 export const getVertexBuilds = ({
@@ -40,7 +41,9 @@ export const getVertexBuilds = ({
       opposite: centreY - y1
     })
 
-    if (!radius) return null
+    if (!radius || radius < RADIUS_MINIMUM) {
+      return null
+    }
 
     return {
       centreX,
