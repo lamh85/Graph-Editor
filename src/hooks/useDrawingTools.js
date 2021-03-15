@@ -89,15 +89,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCrudPayload({})
   }
 
-  const handleSelectTool = ({ toolType, paintbrushShape }) => {
-    stopTool()
-    setToolSelected(toolType)
-
-    if (TOOL_TYPES.DROP === toolSelected) {
-      setCrudPayload({ paintbrushShape })
-    }
-  }
-
   const setVertexPayload = vertex => {
     setCrudPayload({ ...crudPayload, vertex })
   }
@@ -171,6 +162,14 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   // mouse event broadcasters ---------------
+
+  // Need this function because some tools are initiated by
+  // clicking on the toolbar rather than the canvas
+  const handleSelectTool = ({ toolType, paintbrushShape }) => {
+    stopTool()
+    setToolSelected(toolType)
+    setCrudPayload({ paintbrushShape })
+  }
 
   const broadcastMouseEvent = ({ handlerName, payload }) => {
     const toolServices = [
