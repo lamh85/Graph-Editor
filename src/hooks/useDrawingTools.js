@@ -15,11 +15,6 @@ const TOOL_TYPES = {
   DRAW: 'DRAW'
 }
 
-const TOOL_BLOCKERS = {
-  [TOOL_TYPES.MOVE]: [TOOL_TYPES.DROP],
-  [TOOL_TYPES.RESIZE]: [TOOL_TYPES.DROP]
-}
-
 export const createRectangleWithDrag = ({
   rectangleVariableSized,
   createVertex
@@ -73,8 +68,9 @@ const buildResizedRadius = ({ crudPayload, currentCoordinates }) => {
   return newRadius
 }
 
+// TODO: maybe use "includes" to make this function smaller
 export const useDrawingTools = ({ updateVertex, createVertex }) => {
-  const [selectedTool, setSelectedTool] = useState(null)
+  const [toolSelected, setToolSelected] = useState(null)
   const [clickCoordinates, setClickCoordinates] = useState({
     x: null,
     y: null
@@ -85,58 +81,130 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   })
   const [crudPayload, setCrudPayload] = useState({})
 
+  // shared between tool services ------------
+
   const stopTool = () => {
-    setSelectedTool(null)
+    setToolSelected(null)
     setClickCoordinates({ x: null, y: null })
     setCrudPayload({})
   }
 
   const handleSelectTool = ({ toolType, paintbrushShape }) => {
     stopTool()
-    setSelectedTool(toolType)
+    setToolSelected(toolType)
 
-    if (TOOL_TYPES.DROP === selectedTool) {
+    if (TOOL_TYPES.DROP === toolSelected) {
       setCrudPayload({ paintbrushShape })
     }
   }
 
-  const handleMouseDown = vertex => {
+  const setVertexPayload = vertex => {
     setCrudPayload({ ...crudPayload, vertex })
-
-    if ([TOOL_TYPES.RESIZE, TOOL_TYPES.DRAW].includes(selectedTool)) {
-      setClickCoordinates(currentCoordinates)
-    }
-
-    if (TOOL_TYPES.DROP === selectedTool) {
-      // create vertex
-    }
   }
 
-  const updateVertexWithMouseMove = () => {
-    if (![TOOL_TYPES.MOVE, TOOL_TYPES.RESIZE].includes(selectedTool)) {
-      return
-    }
+  const copyToClickCoordinates = () => {
+    setClickCoordinates(currentCoordinates)
+  }
 
-    let propertySet = {}
-
-    if (selectedTool === TOOL_TYPES.RESIZE) {
-      propertySet = buildResizedRadius({ crudPayload, currentCoordinates })
-    } else if (selectedTool === TOOL_TYPES.MOVE) {
-      propertySet = {
-        centreX: currentCoordinates.x,
-        centreY: currentCoordinates.y
-      }
-    }
-
-    if (!propertySet) return
+  const updateVertexWithMouseMove = updatedProperties => {
+    if (!updatedProperties) return
 
     updateVertex({
       id: crudPayload.vertex.id,
-      propertySet
+      propertySet: updatedProperties
     })
   }
 
-  useEffect(updateVertexWithMouseMove, [currentCoordinates])
+  // tool services -----------------
+
+  const moveService = {
+    toolName: MOVE,
+    toolBlockers: [TOOL_TYPES.DROP],
+    handleMouseDown: vertex => setVertexPayload(vertex),
+    handleMouseMove: () => {
+      const updatedProperties = {
+        centreX: currentCoordinates.x,
+        centreY: currentCoordinates.y
+      }
+      updateVertexWithMouseMove(updatedProperties)
+    },
+    handleMouseUp: () => stopTool()
+  }
+
+  const resizeService = {
+    toolName: RESIZE,
+    toolBlockers: [TOOL_TYPES.DROP],
+    handleMouseDown: vertex => {
+      copyToClickCoordinates()
+      setVertexPayload(vertex)
+    },
+    handleMouseMove: () => {
+      const updatedProperties = buildResizedRadius({ crudPayload, currentCoordinates })
+      updateVertexWithMouseMove(updatedProperties)
+    },
+    handleMouseUp: () => stopTool()
+  }
+
+  const dropService = {
+    toolName: DROP,
+    handleMouseDown: () => {
+      // create a vertex
+    }
+  }
+
+  const drawService = {
+    toolName: DRAW,
+    handleMouseDown: () => copyToClickCoordinates(),
+    handleMouseUp: () => {
+      paintbrushShape === 'rectangle'
+        && createRectangleWithDrag({
+          rectangleVariableSized: buildRectangleVariableSized(),
+          createVertex
+        })
+
+      paintbrushShape === 'circle'
+        && createCircleWithDrag({
+          circleVariableSized: buildCircleVariableSized(),
+          createVertex
+        })
+    }
+  }
+
+  // mouse event broadcasters ---------------
+
+  const broadcastMouseEvent = ({ handlerName, payload }) => {
+    const toolServices = [
+      moveService,
+      resizeService,
+      dropService,
+      drawService
+    ]
+
+    toolServices.forEach(service => {
+      if (service?.toolBlockers?.includes(toolSelected)) {
+        return
+      }
+
+      service?.[handlerName](payload)
+    })
+  }
+
+  const handleMouseDown = vertex => {
+    broadcastMouseEvent({
+      handlerName: 'handleMouseDown',
+      payload: vertex
+    })
+  }
+
+  useEffect(() => {
+    broadcastMouseEvent({ handlerName: 'handleMouseMove' })
+  }, [currentCoordinates])
+
+  const handleMouseUp = () => {
+    broadcastMouseEvent({ handlerName: 'handleMouseUp' })
+  }
+
+  // other --------------------
 
   const hasCoordinates =
     clickCoordinates?.x &&
@@ -193,26 +261,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     ...DEFAULT_RECTANGLE,
     centreX: currentCoordinates.x,
     centreY: currentCoordinates.y
-  }
-
-  const handleMouseUp = () => {
-    if (selectedTool === TOOL_TYPES.DRAW) {
-      paintbrushShape === 'rectangle'
-        && createRectangleWithDrag({
-          rectangleVariableSized: buildRectangleVariableSized(),
-          createVertex
-        })
-
-      paintbrushShape === 'circle'
-        && createCircleWithDrag({
-          circleVariableSized: buildCircleVariableSized(),
-          createVertex
-        })
-    }
-
-    if ([TOOL_TYPES.DRAW, TOOL_TYPES.MOVE, TOOL_TYPES.RESIZE].includes(selectedTool)) {
-      stopTool()
-    }
   }
 
   return {
