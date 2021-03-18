@@ -94,14 +94,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCrudPayload({})
   }
 
-  // Need this function because some tools are initiated by
-  // clicking on the toolbar rather than the canvas
-  const handleSelectTool = ({ toolType, shapeSelected }) => {
-    stopTool()
-    setToolSelected(toolType)
-    setCrudPayload({ shapeSelected })
-  }
-
   const setVertexPayload = vertex => {
     setCrudPayload({ ...crudPayload, vertex })
   }
@@ -124,8 +116,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const moveService = {
     toolName: MOVE,
     toolBlockers: [DROP],
-    handleMouseDown: vertex => {
-      handleSelectTool({ toolType: MOVE })
+    handleMouseDownCanvas: vertex => {
+      setToolSelected(MOVE)
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
@@ -141,8 +133,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const resizeService = {
     toolName: RESIZE,
     toolBlockers: [DROP],
-    handleMouseDown: vertex => {
-      handleSelectTool({ toolType: RESIZE })
+    handleMouseDownCanvas: vertex => {
+      setToolSelected(RESIZE)
       copyToClickCoordinates()
       setVertexPayload(vertex)
     },
@@ -158,14 +150,13 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const dropService = {
     toolName: DROP,
-    handleMouseDown: () => {
-      // create a vertex
+    handleMouseDownCanvas: () => {
     }
   }
 
   const drawService = {
     toolName: DRAW,
-    handleMouseDown: () => copyToClickCoordinates(),
+    handleMouseDownCanvas: () => copyToClickCoordinates(),
     handleMouseUp: () => {
       shapeSelected === 'rectangle'
         && createRectangleWithDrag({
@@ -200,11 +191,17 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     })
   }
 
-  const handleMouseDown = vertex => {
+  const handleMouseDownCanvas = vertex => {
     broadcastMouseEvent({
-      handlerName: 'handleMouseDown',
+      handlerName: 'handleMouseDownCanvas',
       payload: vertex
     })
+  }
+
+  const handleMenuClick = ({ toolType, shapeSelected }) => {
+    stopTool()
+    setToolSelected(toolType)
+    setCrudPayload({ shapeSelected })
   }
 
   useEffect(() => {
@@ -218,8 +215,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   return {
     currentCoordinates,
     setCurrentCoordinates,
-    handleSelectTool,
-    handleMouseDown,
-    handleMouseUp
+    handleMouseDownCanvas,
+    handleMouseUp,
+    handleMenuClick
   }
 }

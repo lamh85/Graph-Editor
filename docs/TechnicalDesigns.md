@@ -104,11 +104,13 @@ Move
 * mouse up -> de-select the vertex
 
 Draw a vertex
+* select the tool in a menu
 * mouse down: empty space -> sets one x-y pair
 * mouse move -> update the second x-y pair, render a tentative vertex
 * mouse up -> create vertex
 
 Place a vertex
+* select the tool in a menu
 * mouse move -> render a tentative vertex
 * mouse down: anywhere -> create a vertex
 
@@ -117,7 +119,7 @@ Place a vertex
 Mouse down
 * set state: origin coordinates (already provided when initializing the custom hook)
 * set state: vertex, IF resizing or moving location
-* set state: tool selected
+* set state: tool selected, IF resizing or moving location
 * set state: paintbrush shape
 * Create a vertex IF paintrbrush mode
 
