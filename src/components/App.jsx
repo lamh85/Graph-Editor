@@ -257,9 +257,9 @@ const App = props => {
   const contextMenuNode = useRef()
   const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
-  const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
-  const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
-  const [paintbrushShape, setPaintbrushShape] = useState(null)
+  // const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
+  // const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
+  // const [paintbrushShape, setPaintbrushShape] = useState(null)
   // const [drawingsCoordinates, setDrawingsCoordinates] = useState({
   //   x: null,
   //   y: null
@@ -307,100 +307,109 @@ const App = props => {
 
   const canvasRef = useRef()
 
-  const areVerticesMouseEditable =
-    !isDrawRectangleMode
-    && !isDrawCircleMode
-    && !paintbrushShape
+  // const areVerticesMouseEditable =
+  //   !isDrawRectangleMode
+  //   && !isDrawCircleMode
+  //   && !paintbrushShape
 
-  const moveVertexService = useVertexMouseMove({
-    canvasRef,
-    isEnabled: areVerticesMouseEditable
+  const drawingTools = useDrawingTools({
+    updateVertex, createVertex
   })
 
-  const resizeVertexService = useVertexMouseMove({
-    canvasRef,
-    isEnabled: areVerticesMouseEditable
-  })
+  // const moveVertexService = useVertexMouseMove({
+  //   canvasRef,
+  //   isEnabled: areVerticesMouseEditable
+  // })
 
-  const manualRectCreator = useVertexMouseMove({
-    canvasRef,
-    isEnabled: isDrawRectangleMode
-  })
+  // const resizeVertexService = useVertexMouseMove({
+  //   canvasRef,
+  //   isEnabled: areVerticesMouseEditable
+  // })
 
-  const manualCircleCreator = useVertexMouseMove({
-    canvasRef,
-    isEnabled: isDrawCircleMode
-  })
+  // const manualRectCreator = useVertexMouseMove({
+  //   canvasRef,
+  //   isEnabled: isDrawRectangleMode
+  // })
+
+  // const manualCircleCreator = useVertexMouseMove({
+  //   canvasRef,
+  //   isEnabled: isDrawCircleMode
+  // })
  
   const {
     state: drawingsContainerCursorStyle,
     setState: setDrawingsContainerCursorStyle
   } = useDrawingsContainerCursorStyle()
 
-  useEffect(() => {
-    useEffectMoveVertex({
-      moveVertexService,
-      updateVertex
-    })
-  }, [moveVertexService.canvasCoordinates])
+  // useEffect(() => {
+  //   useEffectMoveVertex({
+  //     moveVertexService,
+  //     updateVertex
+  //   })
+  // }, [moveVertexService.canvasCoordinates])
 
-  useEffect(() => {
-    useEffectResizeVertex({
-      resizeVertexService,
-      updateVertex
-    })
+  // useEffect(() => {
+  //   useEffectResizeVertex({
+  //     resizeVertexService,
+  //     updateVertex
+  //   })
 
-    const {
-      selectedVertex,
-      canvasCoordinates
-    } = resizeVertexService
+  //   const {
+  //     selectedVertex,
+  //     canvasCoordinates
+  //   } = resizeVertexService
 
-    if (selectedVertex) {
-      const cursorStyle = getResizeCircleCursor({
-        vertexCentreX: selectedVertex.centreX,
-        vertexCentreY: selectedVertex.centreY,
-        cursorX: canvasCoordinates.x,
-        cursorY: canvasCoordinates.y
-      })
+  //   if (selectedVertex) {
+  //     const cursorStyle = getResizeCircleCursor({
+  //       vertexCentreX: selectedVertex.centreX,
+  //       vertexCentreY: selectedVertex.centreY,
+  //       cursorX: canvasCoordinates.x,
+  //       cursorY: canvasCoordinates.y
+  //     })
 
-      setDrawingsContainerCursorStyle(cursorStyle)
-    }
-  }, [resizeVertexService.canvasCoordinates])
+  //     setDrawingsContainerCursorStyle(cursorStyle)
+  //   }
+  // }, [resizeVertexService.canvasCoordinates])
 
-  const isPaintbrushEnabled = 
-    !moveVertexService.selectedVertex
-    && !resizeVertexService.selectedVertex
-    && !manualRectCreator.selectedVertex
-    && !manualCircleCreator.selectedVertex
+  // const isPaintbrushEnabled = 
+    // !moveVertexService.selectedVertex
+    // !resizeVertexService.selectedVertex
+    // !manualRectCreator.selectedVertex
+    // && !manualCircleCreator.selectedVertex
 
   return (
     <div
-      onMouseUp={() => {
-        if (manualRectCreator.selectedVertex) {
-          createRectangleWithDrag({
-            rectangleProps: manualRectCreator.rectangleProps,
-            createVertex
-          })
-        }
+      onMouseUp={
+        drawingTools.handleMouseUp
+        // () => {
+        // if (manualRectCreator.selectedVertex) {
+        //   createRectangleWithDrag({
+        //     rectangleProps: manualRectCreator.rectangleProps,
+        //     createVertex
+        //   })
+        // }
 
-        if (manualCircleCreator.selectedVertex) {
-          createCircleWithDrag({
-            circleProps: manualCircleCreator.circleProps,
-            createVertex
-          })
-        }
+        // if (manualCircleCreator.selectedVertex) {
+        //   createCircleWithDrag({
+        //     circleProps: manualCircleCreator.circleProps,
+        //     createVertex
+        //   })
+        // }
 
-        moveVertexService.mouseUpListener()
-        resizeVertexService.mouseUpListener()
-        manualRectCreator.mouseUpListener()
-        manualCircleCreator.mouseUpListener()
-      }}
-      onMouseMove={event => {
-        moveVertexService.mouseMoveListener(event)
-        resizeVertexService.mouseMoveListener(event)
-        manualRectCreator.mouseMoveListener(event)
-        manualCircleCreator.mouseMoveListener(event)
-      }}
+        // moveVertexService.mouseUpListener()
+        // resizeVertexService.mouseUpListener()
+        // manualRectCreator.mouseUpListener()
+        // manualCircleCreator.mouseUpListener()
+      // }
+      }
+      onMouseMove={
+        // event => {
+        // moveVertexService.mouseMoveListener(event)
+        // resizeVertexService.mouseMoveListener(event)
+        // manualRectCreator.mouseMoveListener(event)
+        // manualCircleCreator.mouseMoveListener(event)
+      // }
+      }
     >
       <DrawingsRow>
         <PositionWrapper>
@@ -412,26 +421,26 @@ const App = props => {
               event,
               renderContextMenu,
               createVertex,
-              setIsDrawRectangleMode,
-              isDrawRectangleMode,
-              isDrawCircleMode,
-              setIsDrawCircleMode
+              // setIsDrawRectangleMode,
+              // isDrawRectangleMode,
+              // isDrawCircleMode,
+              // setIsDrawCircleMode
             })}
             onMouseDown={event => {
-              manualRectCreator.mouseDownListener({
-                event,
-                vertex: 'TEMPORARY_RECTANGLE'
-              })
+              // manualRectCreator.mouseDownListener({
+              //   event,
+              //   vertex: 'TEMPORARY_RECTANGLE'
+              // })
 
-              manualCircleCreator.mouseDownListener({
-                event,
-                vertex: 'TEMPORARY_CIRCLE'
-              })
+              // manualCircleCreator.mouseDownListener({
+              //   event,
+              //   vertex: 'TEMPORARY_CIRCLE'
+              // })
             }}
-            isDrawRectangleMode={isDrawRectangleMode}
-            isDrawCircleMode={isDrawCircleMode}
+            // isDrawRectangleMode={isDrawRectangleMode}
+            // isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
-            isResizingVertex={!!resizeVertexService.selectedVertex}
+            // isResizingVertex={!!resizeVertexService.selectedVertex}
             onMouseMove={event => {
               const node = canvasRef.current
 
@@ -456,22 +465,22 @@ const App = props => {
               edges={edges}
               createEdge={createEdge}
               deleteEdge={deleteEdge}
-              moveVertexService={moveVertexService}
-              resizeVertexService={resizeVertexService}
+              // moveVertexService={moveVertexService}
+              // resizeVertexService={resizeVertexService}
               renderContextMenu={renderContextMenu}
-              areVerticesMouseEditable={areVerticesMouseEditable}
+              // areVerticesMouseEditable={areVerticesMouseEditable}
             />
-            <RectangleBuild
+            {/* <RectangleBuild
               rectangleProps={manualRectCreator.rectangleProps}
-            />
-            <CircleBuild
+            /> */}
+            {/* <CircleBuild
               circleProps={manualCircleCreator.circleProps}
-            />
-            <Paintbrush
+            /> */}
+            {/* <Paintbrush
               x={currentCoordinates.x}
               y={currentCoordinates.y}
               shape={isPaintbrushEnabled && paintbrushShape}
-            />
+            /> */}
           </DrawingsContainer>
           {isRenderingContextMenu && (
             <ContextMenu
@@ -483,7 +492,7 @@ const App = props => {
             />
           )}
         </PositionWrapper>
-        <Toolbar
+        {/* <Toolbar
           extraOptions={buildCommonContextOptions({
             isDrawRectangleMode,
             setIsDrawRectangleMode,
@@ -491,7 +500,7 @@ const App = props => {
             setIsDrawCircleMode
           })}
           setPaintbrushShape={setPaintbrushShape}
-        />
+        /> */}
       </DrawingsRow>
       <Editor
         gridIncrement={gridIncrement}

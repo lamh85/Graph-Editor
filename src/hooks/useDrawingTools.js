@@ -223,6 +223,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCurrentCoordinates,
     handleMouseDownCanvas,
     handleMouseUp,
-    handleMenuClick
+    handleMenuClick,
+    rectangleVariableSized,
+    circleVariableSized
   }
 }
