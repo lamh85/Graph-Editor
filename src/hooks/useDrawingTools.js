@@ -151,6 +151,12 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const dropService = {
     toolName: DROP,
     handleMouseDownCanvas: () => {
+      const vertexBuild = {
+        circle: circlePaintbrush,
+        rectangle: rectanglePaintbrush
+      }[crudPayload.shapeSelected]
+
+      createVertex(vertexBuild)
     }
   }
 
