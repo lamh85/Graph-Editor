@@ -426,17 +426,7 @@ const App = props => {
               // isDrawCircleMode,
               // setIsDrawCircleMode
             })}
-            onMouseDown={event => {
-              // manualRectCreator.mouseDownListener({
-              //   event,
-              //   vertex: 'TEMPORARY_RECTANGLE'
-              // })
-
-              // manualCircleCreator.mouseDownListener({
-              //   event,
-              //   vertex: 'TEMPORARY_CIRCLE'
-              // })
-            }}
+            onMouseDown={drawingTools.handleMouseDownCanvas}
             // isDrawRectangleMode={isDrawRectangleMode}
             // isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
@@ -444,7 +434,7 @@ const App = props => {
             onMouseMove={event => {
               const node = canvasRef.current
 
-              setCurrentCoordinates({
+              drawingTools.setCurrentCoordinates({
                 x: event.clientX - (node?.getBoundingClientRect().x || 0),
                 y: event.clientY - (node?.getBoundingClientRect().y || 0)
               })
