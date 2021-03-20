@@ -194,7 +194,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     })
   }
 
-  const handleMenuClick = ({ toolType, shapeSelected }) => {
+  const handleMenuSelection = ({ toolType, shapeSelected }) => {
     if (
       [DRAW, DROP].includes(toolSelected)
       && [MOVE, RESIZE].includes(toolType)
@@ -218,7 +218,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCurrentCoordinates,
     handleMouseDownCanvas,
     handleMouseUp,
-    handleMenuClick,
+    handleMenuSelection,
     rectangleVariableSized,
     circleVariableSized
   }
