@@ -114,10 +114,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   // tool services -----------------
 
   const moveService = {
-    toolName: MOVE,
     toolBlockers: [DROP],
     handleMouseDownCanvas: vertex => {
-      setToolSelected(MOVE)
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
@@ -131,10 +129,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const resizeService = {
-    toolName: RESIZE,
     toolBlockers: [DROP],
     handleMouseDownCanvas: vertex => {
-      setToolSelected(RESIZE)
       copyToClickCoordinates()
       setVertexPayload(vertex)
     },
@@ -149,7 +145,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const dropService = {
-    toolName: DROP,
     handleMouseDownCanvas: () => {
       const vertexBuild = {
         circle: circlePaintbrush,
@@ -161,7 +156,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const drawService = {
-    toolName: DRAW,
     handleMouseDownCanvas: () => copyToClickCoordinates(),
     handleMouseUp: () => {
       shapeSelected === 'rectangle'
@@ -181,20 +175,16 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   // mouse event broadcasters ---------------
 
   const broadcastMouseEvent = ({ handlerName, payload }) => {
-    const toolServices = [
-      moveService,
-      resizeService,
-      dropService,
-      drawService
-    ]
+    const toolService = {
+      MOVE: moveService,
+      RESIZE: resizeService,
+      DROP: dropService,
+      DRAW: drawService
+    }[toolSelected]
 
-    toolServices.forEach(service => {
-      if (service?.toolBlockers?.includes(toolSelected)) {
-        return
-      }
+    if (!toolService) return
 
-      service?.[handlerName](payload)
-    })
+    toolService?.[handlerName](payload)
   }
 
   const handleMouseDownCanvas = vertex => {
@@ -205,6 +195,11 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const handleMenuClick = ({ toolType, shapeSelected }) => {
+    if (
+      [DRAW, DROP].includes(toolSelected)
+      && [MOVE, RESIZE].includes(toolType)
+    ) return
+
     stopTool()
     setToolSelected(toolType)
     setCrudPayload({ shapeSelected })
