@@ -60,7 +60,7 @@ const buildResizedRadius = ({ crudPayload, currentCoordinates }) => {
 
   if (!newRadius || newRadius < RADIUS_MINIMUM) return null
 
-  return newRadius
+  return { radius: newRadius }
 }
 
 // TODO: maybe use "includes" to make this function smaller
@@ -116,6 +116,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const moveService = {
     toolBlockers: [DROP],
     handleMouseDownCanvas: vertex => {
+      // console.log('mouse down function')
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
@@ -174,43 +175,75 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   // mouse event broadcasters ---------------
 
-  const broadcastMouseEvent = ({ handlerName, payload }) => {
+  const broadcastMouseEvent = ({
+    handlerName,
+    payload,
+    tool
+  }) => {
+    const toolKey = toolSelected || tool
+
     const toolService = {
       MOVE: moveService,
       RESIZE: resizeService,
       DROP: dropService,
       DRAW: drawService
-    }[toolSelected]
+    }[toolKey]
 
     if (!toolService) return
 
     toolService?.[handlerName](payload)
   }
 
-  const handleMouseDownCanvas = vertex => {
+  const handleMouseDownCanvas = ({ vertex, tool }) => {
+    if (
+      tool
+      && [DRAW, DROP].includes(toolSelected)
+      && [MOVE, RESIZE].includes(tool)
+    ) return
+
+    if (tool) {
+      stopTool()
+      setToolSelected(tool)
+    }
+
+    // console.log(vertex)
+
     broadcastMouseEvent({
       handlerName: 'handleMouseDownCanvas',
-      payload: vertex
+      payload: vertex,
+      tool
     })
   }
 
   const handleMenuSelection = ({ toolType, shapeSelected }) => {
-    if (
-      [DRAW, DROP].includes(toolSelected)
-      && [MOVE, RESIZE].includes(toolType)
-    ) return
-
     stopTool()
     setToolSelected(toolType)
     setCrudPayload({ shapeSelected })
   }
 
   useEffect(() => {
+    if (!toolSelected) return
     broadcastMouseEvent({ handlerName: 'handleMouseMove' })
   }, [currentCoordinates])
 
   const handleMouseUp = () => {
     broadcastMouseEvent({ handlerName: 'handleMouseUp' })
+  }
+
+  // queries -----------------
+
+  const isToolSelected = toolQueried => toolSelected === toolQueried
+
+  const vertexSelected = crudPayload?.vertex
+
+  const toolsPermitted = () => {
+    const tools = ['DROP', 'DRAW']
+
+    if ([DRAW, DROP].includes(toolSelected)) {
+      return tools
+    } else {
+      return [...tools, 'MOVE', 'RESIZE']
+    }
   }
 
   return {
@@ -220,6 +253,9 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     handleMouseUp,
     handleMenuSelection,
     rectangleVariableSized,
-    circleVariableSized
+    circleVariableSized,
+    isToolSelected,
+    vertexSelected,
+    toolsPermitted: toolsPermitted()
   }
 }

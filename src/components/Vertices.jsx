@@ -125,9 +125,7 @@ const handleVertexContextClick = ({
 
 const CircleGroup = ({
   vertex,
-  resizeVertexService,
-  onMouseDownResize,
-  onMouseDownMove,
+  drawingTools,
   isMovingVertex,
   areVerticesMouseEditable
 }) => {
@@ -139,9 +137,12 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={onMouseDownResize}
+        onMouseDown={() => drawingTools.handleMouseDownCanvas({
+          tool: 'RESIZE',
+          vertex
+        })}
         onMouseOver={event => {
-          if (!!resizeVertexService.selectedVertex) return
+          if (drawingTools.vertexSelected) return
 
           const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
@@ -159,7 +160,10 @@ const CircleGroup = ({
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={onMouseDownMove}
+        onMouseDown={() => drawingTools.handleMouseDownCanvas({
+          tool: 'MOVE',
+          vertex
+        })}
         isMovingVertex={isMovingVertex}
         areVerticesMouseEditable={areVerticesMouseEditable}
       />
@@ -174,17 +178,12 @@ const Vertex = ({
   edges,
   createEdge,
   deleteEdge,
-  moveVertexService,
-  resizeVertexService,
-  areVerticesMouseEditable
+  areVerticesMouseEditable,
+  drawingTools
 }) => {
   const { centreX, centreY } = vertex
 
-  const isMovingVertex = !!moveVertexService.selectedVertex
-  const onMouseDownMove = event => moveVertexService.mouseDownListener({
-    event,
-    vertex
-  })
+  const isMovingVertex = drawingTools.isToolSelected('MOVE')
 
   return (
     <g
@@ -203,12 +202,7 @@ const Vertex = ({
       {vertex.shape === 'circle' && (
         <CircleGroup
           vertex={vertex}
-          onMouseDownResize={event => resizeVertexService.mouseDownListener({
-            event,
-            vertex
-          })}
-          resizeVertexService={resizeVertexService}
-          onMouseDownMove={onMouseDownMove}
+          drawingTools={drawingTools}
           isMovingVertex={isMovingVertex}
           areVerticesMouseEditable={areVerticesMouseEditable}
         />
@@ -218,7 +212,12 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={onMouseDownMove}
+          onMouseDown={() => {
+            drawingTools.handleMouseDownCanvas({
+              tool: 'MOVE',
+              vertex
+            })
+          }}
           isMovingVertex={isMovingVertex}
           areVerticesMouseEditable={areVerticesMouseEditable}
         />
@@ -241,9 +240,8 @@ export const Vertices = ({
   createEdge,
   deleteEdge,
   renderContextMenu,
-  moveVertexService,
-  resizeVertexService,
-  areVerticesMouseEditable
+  areVerticesMouseEditable,
+  drawingTools
 }) => {
   return vertices.map(vertex => {
     return (
@@ -255,8 +253,7 @@ export const Vertices = ({
         edges={edges}
         createEdge={createEdge}
         deleteEdge={deleteEdge}
-        moveVertexService={moveVertexService}
-        resizeVertexService={resizeVertexService}
+        drawingTools={drawingTools}
         areVerticesMouseEditable={areVerticesMouseEditable}
       />
     )

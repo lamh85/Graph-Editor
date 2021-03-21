@@ -307,14 +307,13 @@ const App = props => {
 
   const canvasRef = useRef()
 
-  // const areVerticesMouseEditable =
-  //   !isDrawRectangleMode
-  //   && !isDrawCircleMode
-  //   && !paintbrushShape
-
   const drawingTools = useDrawingTools({
     updateVertex, createVertex
   })
+
+  const areVerticesMouseEditable = drawingTools
+    .toolsPermitted
+    .some(toolPermitted => ['MOVE', 'RESIZE'].includes(toolPermitted))
 
   // const moveVertexService = useVertexMouseMove({
   //   canvasRef,
@@ -402,14 +401,6 @@ const App = props => {
         // manualCircleCreator.mouseUpListener()
       // }
       }
-      onMouseMove={
-        // event => {
-        // moveVertexService.mouseMoveListener(event)
-        // resizeVertexService.mouseMoveListener(event)
-        // manualRectCreator.mouseMoveListener(event)
-        // manualCircleCreator.mouseMoveListener(event)
-      // }
-      }
     >
       <DrawingsRow>
         <PositionWrapper>
@@ -455,10 +446,9 @@ const App = props => {
               edges={edges}
               createEdge={createEdge}
               deleteEdge={deleteEdge}
-              // moveVertexService={moveVertexService}
-              // resizeVertexService={resizeVertexService}
               renderContextMenu={renderContextMenu}
-              // areVerticesMouseEditable={areVerticesMouseEditable}
+              areVerticesMouseEditable={areVerticesMouseEditable}
+              drawingTools={drawingTools}
             />
             {/* <RectangleBuild
               rectangleProps={manualRectCreator.rectangleProps}

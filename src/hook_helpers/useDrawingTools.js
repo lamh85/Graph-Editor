@@ -3,6 +3,7 @@ import {
   DEFAULT_CIRCLE,
   RADIUS_MINIMUM
 } from '../models/vertices'
+import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
 
 export const getVertexBuilds = ({
   clickCoordinates,
