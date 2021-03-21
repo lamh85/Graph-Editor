@@ -116,7 +116,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const moveService = {
     toolBlockers: [DROP],
     handleMouseDownCanvas: vertex => {
-      // console.log('mouse down function')
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
@@ -205,8 +204,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
       stopTool()
       setToolSelected(tool)
     }
-
-    // console.log(vertex)
 
     broadcastMouseEvent({
       handlerName: 'handleMouseDownCanvas',
