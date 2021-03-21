@@ -116,12 +116,21 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const moveService = {
     toolBlockers: [DROP],
     handleMouseDownCanvas: vertex => {
-      setVertexPayload(vertex)
+      const distanceFromClickToCentre = {
+        x: currentCoordinates.x - vertex.centreX,
+        y: currentCoordinates.y - vertex.centreY
+      }
+
+      setCrudPayload({
+        vertex,
+        distanceFromClickToCentre
+      })
     },
     handleMouseMove: () => {
+      const { distanceFromClickToCentre } = crudPayload
       const updatedProperties = {
-        centreX: currentCoordinates.x,
-        centreY: currentCoordinates.y
+        centreX: currentCoordinates.x - distanceFromClickToCentre.x,
+        centreY: currentCoordinates.y - distanceFromClickToCentre.y
       }
       updateVertexWithMouseMove(updatedProperties)
     },

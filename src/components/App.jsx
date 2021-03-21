@@ -347,7 +347,7 @@ const App = props => {
   //   })
   // }, [moveVertexService.canvasCoordinates])
 
-  // useEffect(() => {
+  useEffect(() => {
   //   useEffectResizeVertex({
   //     resizeVertexService,
   //     updateVertex
@@ -358,17 +358,16 @@ const App = props => {
   //     canvasCoordinates
   //   } = resizeVertexService
 
-  //   if (selectedVertex) {
-  //     const cursorStyle = getResizeCircleCursor({
-  //       vertexCentreX: selectedVertex.centreX,
-  //       vertexCentreY: selectedVertex.centreY,
-  //       cursorX: canvasCoordinates.x,
-  //       cursorY: canvasCoordinates.y
-  //     })
-
-  //     setDrawingsContainerCursorStyle(cursorStyle)
-  //   }
-  // }, [resizeVertexService.canvasCoordinates])
+    if (drawingTools.isToolSelected('RESIZE')) {
+      const cursorStyle = getResizeCircleCursor({
+        vertexCentreX: drawingTools.vertexSelected.centreX,
+        vertexCentreY: drawingTools.vertexSelected.centreY,
+        cursorX: drawingTools.currentCoordinates.x,
+        cursorY: drawingTools.currentCoordinates.y
+      })
+      setDrawingsContainerCursorStyle(cursorStyle)
+    }
+  }, [drawingTools.currentCoordinates])
 
   // const isPaintbrushEnabled = 
     // !moveVertexService.selectedVertex
@@ -421,7 +420,7 @@ const App = props => {
             // isDrawRectangleMode={isDrawRectangleMode}
             // isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
-            // isResizingVertex={!!resizeVertexService.selectedVertex}
+            isResizingVertex={drawingTools.isToolSelected('RESIZE')}
             onMouseMove={event => {
               const node = canvasRef.current
 
