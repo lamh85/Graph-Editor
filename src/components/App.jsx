@@ -96,42 +96,48 @@ const renderEdge = ({ edge, index, tangents }) => {
   )
 }
 
-const buildCommonContextOptions = ({
-  isDrawRectangleMode,
-  setIsDrawRectangleMode,
-  isDrawCircleMode,
-  setIsDrawCircleMode
-}) => {
-  const disableDrawingMode = () => {
-    setIsDrawRectangleMode(false)
-    setIsDrawCircleMode(false)
-  }
+const buildCommonContextOptions = drawingTools => {
+  const {
+    handleMenuSelection,
+    isToolSelected,
+    shapeSelected
+  } = drawingTools
 
   const options = []
 
-  if (isDrawRectangleMode || isDrawCircleMode) {
+  if (isToolSelected('DRAW')) {
     options.push({
       display: 'CANCEL drawing shapes',
-      onClick: disableDrawingMode
+      onClick: drawingTools.stopTool
     })
   }
 
-  if (!isDrawRectangleMode) {
+  if (
+    !isToolSelected('DRAW')
+    && shapeSelected !== 'rectangle'
+  ) {
     options.push({
       display: 'START drawing rectangles',
       onClick: () => {
-        disableDrawingMode()
-        setIsDrawRectangleMode(true)
+        handleMenuSelection({
+          toolType: 'DRAW',
+          shapeSelected: 'rectangle'
+        })
       }
     })
   }
 
-  if (!isDrawCircleMode) {
+  if (
+    !isToolSelected('DRAW')
+    && shapeSelected !== 'circle'
+  ) {
     options.push({
       display: 'START drawing circles',
       onClick: () => {
-        disableDrawingMode()
-        setIsDrawCircleMode(true)
+        handleMenuSelection({
+          toolType: 'DRAW',
+          shapeSelected: 'circle'
+        })
       }
     })
   }
@@ -143,19 +149,12 @@ const handleContextClick = ({
   event,
   renderContextMenu,
   createVertex,
-  setIsDrawRectangleMode,
-  isDrawRectangleMode,
-  isDrawCircleMode,
-  setIsDrawCircleMode
+  drawingTools
 }) => {
   event.preventDefault()
+  console.log(drawingTools.isToolSelected('DRAW'))
 
-  const commonOptions = buildCommonContextOptions({
-    isDrawRectangleMode,
-    setIsDrawRectangleMode,
-    isDrawCircleMode,
-    setIsDrawCircleMode
-  })
+  const commonOptions = buildCommonContextOptions(drawingTools)
 
   const { clientX, clientY } = event
   const vertexCentre = { centreX: clientX, centreY: clientY }
@@ -229,6 +228,10 @@ const useDrawingsContainerCursorStyle = () => {
   return { state: innerState, setState }
 }
 
+const isContextMouseDown = event => {
+  return event.button > 0 || event.ctrlKey
+}
+
 const App = props => {
   useEffect(() => {
     const mouseDownParams = [
@@ -253,15 +256,6 @@ const App = props => {
   // const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
   // const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
   // const [paintbrushShape, setPaintbrushShape] = useState(null)
-  // const [drawingsCoordinates, setDrawingsCoordinates] = useState({
-  //   x: null,
-  //   y: null
-  // })
-
-  const {
-    setCurrentCoordinates,
-    currentCoordinates
-  } = useDrawingTools({})
 
   const {
     render: renderContextMenu,
@@ -333,15 +327,15 @@ const App = props => {
             ref={canvasRef}
             width={SVG_WIDTH}
             height={SVG_HEIGHT}
-            onContextMenu={event => handleContextClick({
-              event,
-              renderContextMenu,
-              createVertex,
-              // setIsDrawRectangleMode,
-              // isDrawRectangleMode,
-              // isDrawCircleMode,
-              // setIsDrawCircleMode
-            })}
+            onContextMenu={event => {
+              drawingTools.stopTool()
+              handleContextClick({
+                event,
+                renderContextMenu,
+                createVertex,
+                drawingTools
+              })
+            }}
             onMouseDown={drawingTools.handleMouseDownCanvas}
             // isDrawRectangleMode={isDrawRectangleMode}
             // isDrawCircleMode={isDrawCircleMode}
@@ -375,9 +369,12 @@ const App = props => {
               areVerticesMouseEditable={areVerticesMouseEditable}
               drawingTools={drawingTools}
             />
-            {/* <RectangleBuild
-              rectangleProps={manualRectCreator.rectangleProps}
-            /> */}
+            <RectangleBuild
+              rectangleProps={
+                drawingTools.isToolSelected('DRAW')
+                && drawingTools.rectangleVariableSized
+              }
+            />
             {/* <CircleBuild
               circleProps={manualCircleCreator.circleProps}
             /> */}

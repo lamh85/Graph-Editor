@@ -165,8 +165,16 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   }
 
   const drawService = {
-    handleMouseDownCanvas: () => copyToClickCoordinates(),
+    handleMouseDownCanvas: () => {
+      console.log('mouse down')
+      copyToClickCoordinates()
+    },
+    handleMouseMove: () => {
+      if (!clickCoordinates.x || !clickCoordinates.y) return
+    },
     handleMouseUp: () => {
+      if (!clickCoordinates.x || !clickCoordinates.y) return
+      
       shapeSelected === 'rectangle'
         && createRectangleWithDrag({
           rectangleVariableSized,
@@ -178,6 +186,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
           circleVariableSized,
           createVertex
         })
+      
+      setClickCoordinates({ x: null, y: null })
     }
   }
 
@@ -202,11 +212,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolService?.[handlerName](payload)
   }
 
-  const handleMouseDownCanvas = ({ vertex, tool }) => {
+  const handleMouseDownCanvas = ({ vertex, tool } = {}) => {
     if (
       tool
-      && [DRAW, DROP].includes(toolSelected)
-      && [MOVE, RESIZE].includes(tool)
+      && !toolsPermitted().includes(tool)
     ) return
 
     if (tool) {
@@ -252,16 +261,20 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     }
   }
 
+  const shapeSelected = crudPayload?.shapeSelected
+
   return {
     currentCoordinates,
     setCurrentCoordinates,
     handleMouseDownCanvas,
     handleMouseUp,
     handleMenuSelection,
+    stopTool,
     rectangleVariableSized,
     circleVariableSized,
     isToolSelected,
     vertexSelected,
+    shapeSelected,
     toolsPermitted: toolsPermitted()
   }
 }
