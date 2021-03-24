@@ -327,15 +327,15 @@ const App = props => {
             ref={canvasRef}
             width={SVG_WIDTH}
             height={SVG_HEIGHT}
-            onContextMenu={event => {
-              drawingTools.stopTool()
-              handleContextClick({
-                event,
-                renderContextMenu,
-                createVertex,
-                drawingTools
-              })
-            }}
+            // onContextMenu={event => {
+            //   drawingTools.stopTool()
+            //   handleContextClick({
+            //     event,
+            //     renderContextMenu,
+            //     createVertex,
+            //     drawingTools
+            //   })
+            // }}
             onMouseDown={drawingTools.handleMouseDownCanvas}
             // isDrawRectangleMode={isDrawRectangleMode}
             // isDrawCircleMode={isDrawCircleMode}
