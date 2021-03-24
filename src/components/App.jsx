@@ -371,13 +371,20 @@ const App = props => {
             />
             <RectangleBuild
               rectangleProps={
+                drawingTools.rectangleVariableSized
+              }
+              isToolSelected={
                 drawingTools.isToolSelected('DRAW')
-                && drawingTools.rectangleVariableSized
+                && drawingTools.shapeSelected === 'rectangle'
               }
             />
-            {/* <CircleBuild
-              circleProps={manualCircleCreator.circleProps}
-            /> */}
+            <CircleBuild
+              circleProps={drawingTools.circleVariableSized}
+              isToolSelected={
+                drawingTools.isToolSelected('DRAW')
+                && drawingTools.shapeSelected === 'circle'
+              }
+            />
             {/* <Paintbrush
               x={currentCoordinates.x}
               y={currentCoordinates.y}
@@ -394,15 +401,12 @@ const App = props => {
             />
           )}
         </PositionWrapper>
-        {/* <Toolbar
-          extraOptions={buildCommonContextOptions({
-            isDrawRectangleMode,
-            setIsDrawRectangleMode,
-            isDrawCircleMode,
-            setIsDrawCircleMode
-          })}
-          setPaintbrushShape={setPaintbrushShape}
-        /> */}
+        <Toolbar
+          extraOptions={buildCommonContextOptions(
+            drawingTools
+          )}
+          drawingTools={drawingTools}
+        />
       </DrawingsRow>
       <Editor
         gridIncrement={gridIncrement}

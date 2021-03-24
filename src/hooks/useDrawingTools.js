@@ -182,6 +182,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
         })
 
       shapeSelected === 'circle'
+        && circleVariableSized.radius >= RADIUS_MINIMUM
         && createCircleWithDrag({
           circleVariableSized,
           createVertex

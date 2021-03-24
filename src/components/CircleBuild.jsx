@@ -1,9 +1,10 @@
 import React from "react"
 
 export const CircleBuild = ({
-  circleProps
+  circleProps,
+  isToolSelected
 }) => {
-  if (!circleProps) return null
+  if (!isToolSelected || !circleProps) return null
 
   const { cx, cy, r } = circleProps
 

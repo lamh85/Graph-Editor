@@ -42,10 +42,6 @@ export const getVertexBuilds = ({
       opposite: centreY - y1
     })
 
-    if (!radius || radius < RADIUS_MINIMUM) {
-      return null
-    }
-
     return {
       centreX,
       centreY,

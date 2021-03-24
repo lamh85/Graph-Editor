@@ -1,9 +1,10 @@
 import React from "react"
 
 export const RectangleBuild = ({
-  rectangleProps
+  rectangleProps,
+  isToolSelected
 }) => {
-  if (!rectangleProps) return null
+  if (!isToolSelected || !rectangleProps) return null
 
   return (
     <rect
