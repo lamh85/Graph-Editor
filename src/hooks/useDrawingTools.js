@@ -165,7 +165,9 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
       }[crudPayload.shapeSelected]
 
       createVertex(vertexBuild)
-    }
+    },
+    handleMouseMove: () => {},
+    handleMouseUp: () => {}
   }
 
   const drawService = {
@@ -280,6 +282,8 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     isToolSelected,
     vertexSelected,
     shapeSelected,
-    toolsPermitted: toolsPermitted()
+    toolsPermitted: toolsPermitted(),
+    circlePaintbrush,
+    rectanglePaintbrush
   }
 }

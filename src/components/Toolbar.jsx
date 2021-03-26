@@ -11,13 +11,13 @@ export const Toolbar = ({
         Default mode
       </MenuItem>
       <MenuItem onClick={() => drawingTools.handleMenuSelection({
-        toolType: 'DRAW',
+        toolType: 'DROP',
         shapeSelected: 'circle'
       })}>
         Place a circle
       </MenuItem>
       <MenuItem onClick={() => drawingTools.handleMenuSelection({
-        toolType: 'DRAW',
+        toolType: 'DROP',
         shapeSelected: 'rectangle'
       })}>
         Place a rectangle

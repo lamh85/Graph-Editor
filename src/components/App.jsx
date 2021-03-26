@@ -385,11 +385,14 @@ const App = props => {
                 && drawingTools.shapeSelected === 'circle'
               }
             />
-            {/* <Paintbrush
-              x={currentCoordinates.x}
-              y={currentCoordinates.y}
-              shape={isPaintbrushEnabled && paintbrushShape}
-            /> */}
+            <Paintbrush
+              x={drawingTools.currentCoordinates.x}
+              y={drawingTools.currentCoordinates.y}
+              isToolSelected={drawingTools.isToolSelected('DROP')}
+              shapeSelected={drawingTools.shapeSelected}
+              circlePaintbrush={drawingTools.circlePaintbrush}
+              rectanglePaintbrush={drawingTools.rectanglePaintbrush}
+            />
           </DrawingsContainer>
           {isRenderingContextMenu && (
             <ContextMenu

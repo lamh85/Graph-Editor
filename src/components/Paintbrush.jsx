@@ -5,20 +5,23 @@ import {
 } from '../models/vertices'
 
 export const Paintbrush = ({
-  shape,
+  shapeSelected,
   x,
-  y
+  y,
+  isToolSelected,
+  circlePaintbrush,
+  rectanglePaintbrush
 }) => {
-  if (!shape || !x || !y) return null
+  if (!shapeSelected || !x || !y || !isToolSelected) return null
 
-  if (shape === 'circle') {
+  if (shapeSelected === 'circle') {
     return (
-      <circle fill="blue" cx={x} cy={y} r={RADIUS_MINIMUM} />
+      <circle fill="blue" cx={x} cy={y} r={circlePaintbrush.radius} />
     )
   }
 
-  if (shape === 'rectangle') {
-    const { height, width } = DEFAULT_RECTANGLE
+  if (shapeSelected === 'rectangle') {
+    const { height, width } = rectanglePaintbrush
 
     return (
       <rect
