@@ -23,11 +23,14 @@ export const Paintbrush = ({
   if (shapeSelected === 'rectangle') {
     const { height, width } = rectanglePaintbrush
 
+    const left = x - width / 2
+    const top = y - height / 2
+
     return (
       <rect
         fill="blue"
-        x={x}
-        y={y}
+        x={left}
+        y={top}
         height={height}
         width={width}
       />
