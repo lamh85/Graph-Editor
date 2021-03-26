@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { getDistance } from '../geometry_helpers/get_distance'
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
-import { RADIUS_MINIMUM } from '../models/vertices'
+import { RADIUS_MINIMUM, RECTANGLE_SIDE_MINIMUM } from '../models/vertices'
 import { getVertexBuilds } from '../hook_helpers/useDrawingTools'
 
 const MOVE = 'MOVE'
@@ -17,6 +17,10 @@ export const createRectangleWithDrag = ({
   if (!rectangleVariableSized) return null
 
   const { top, left, width, height } = rectangleVariableSized
+
+  if (width <= RECTANGLE_SIDE_MINIMUM || height <= RECTANGLE_SIDE_MINIMUM) {
+    return
+  }
 
   const centreX = left + width / 2
   const centreY = top + height / 2

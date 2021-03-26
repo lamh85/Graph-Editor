@@ -2,6 +2,8 @@ const DEFAULT_RADIUS = 40
 
 export const RADIUS_MINIMUM = 20
 
+export const RECTANGLE_SIDE_MINIMUM = 40
+
 export const DEFAULT_VERTICES = [
   { id: 1, centreX: 40, centreY: 40, radius: DEFAULT_RADIUS, shape: 'circle' },
   { id: 2, centreX: 200, centreY: 200, height: 50, width: 100, shape: 'rectangle' },
