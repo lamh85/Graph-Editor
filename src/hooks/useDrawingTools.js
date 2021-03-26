@@ -218,11 +218,15 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolService?.[handlerName](payload)
   }
 
+  const didRequestOpeningMenu = event => {
+    return event.ctrlKey || event.nativeEvent.which === 3
+  }
+
   const handleMouseDownCanvas = (
     event,
     { vertex, tool } = {}
   ) => {
-    if (event.nativeEvent.which === 3) return
+    if (didRequestOpeningMenu(event)) return
 
     if (
       tool

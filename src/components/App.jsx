@@ -325,6 +325,7 @@ const App = props => {
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
             onContextMenu={event => {
               console.log('context menu ---------')
+              console.log(event)
             }}
             onMouseMove={event => {
               const node = canvasRef.current
