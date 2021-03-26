@@ -324,8 +324,12 @@ const App = props => {
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
             onContextMenu={event => {
-              console.log('context menu ---------')
-              console.log(event)
+              handleContextClick({
+                event,
+                renderContextMenu,
+                createVertex,
+                drawingTools
+              })
             }}
             onMouseMove={event => {
               const node = canvasRef.current
