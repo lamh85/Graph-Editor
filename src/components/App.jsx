@@ -37,9 +37,7 @@ const DrawingsContainer = styled.svg`
 
   background: lightgrey;
 
-  ${props =>
-    (props.isDrawRectangleMode || props.isDrawCircleMode)
-    && css`
+  ${props => props.isDrawingShape && css`
     cursor: crosshair;
   `}
 
@@ -323,6 +321,7 @@ const App = props => {
             onMouseDown={drawingTools.handleMouseDownCanvas}
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
+            isDrawingShape={drawingTools.isToolSelected('DRAW')}
             onContextMenu={event => {
               handleContextClick({
                 event,
