@@ -12,7 +12,7 @@ import {
 import { SEED as EDGES_SEED } from '../models/edge'
 import { useArray } from '../hooks/useArray'
 import { useContextMenu } from '../hooks/useContextMenu'
-import { useVertexMouseMove } from '../hooks/useVertexMouseMove'
+import { useDrawingTools } from '../hooks/useDrawingTools'
 import { PositionWrapper } from './common/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
@@ -21,13 +21,9 @@ import { CircleBuild } from './CircleBuild.jsx'
 import Arrows from './Arrows.jsx'
 import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
-import {
-  getShapeTangent,
-  useEffectMoveVertex,
-  useEffectResizeVertex,
-  createRectangleWithDrag,
-  createCircleWithDrag
-} from '../component_helpers/app'
+import { Toolbar } from './Toolbar.jsx'
+import { Paintbrush } from './Paintbrush.jsx'
+import { getShapeTangent } from '../component_helpers/app'
 import { doShareAncestry } from '../helpers/dom'
 import { getResizeCircleCursor } from '../geometry_helpers/general'
 
@@ -41,9 +37,7 @@ const DrawingsContainer = styled.svg`
 
   background: lightgrey;
 
-  ${props =>
-    (props.isDrawRectangleMode || props.isDrawCircleMode)
-    && css`
+  ${props => props.isDrawingShape && css`
     cursor: crosshair;
   `}
 
@@ -54,6 +48,10 @@ const DrawingsContainer = styled.svg`
         cursor: ${props.resizeCursor} !important;
       }
   `}
+`
+
+const DrawingsRow = styled.div`
+  display: flex;
 `
 
 const renderEdge = ({ edge, index, tangents }) => {
@@ -96,19 +94,69 @@ const renderEdge = ({ edge, index, tangents }) => {
   )
 }
 
+const buildCommonContextOptions = drawingTools => {
+  const {
+    handleMenuSelection,
+    isToolSelected,
+    shapeSelected
+  } = drawingTools
+
+  const options = []
+
+  if (isToolSelected('DRAW')) {
+    options.push({
+      display: 'CANCEL drawing shapes',
+      onClick: drawingTools.stopTool
+    })
+  }
+
+  if (
+    !isToolSelected('DRAW')
+    && shapeSelected !== 'rectangle'
+  ) {
+    options.push({
+      display: 'START drawing rectangles',
+      onClick: () => {
+        handleMenuSelection({
+          toolType: 'DRAW',
+          shapeSelected: 'rectangle'
+        })
+      }
+    })
+  }
+
+  if (
+    !isToolSelected('DRAW')
+    && shapeSelected !== 'circle'
+  ) {
+    options.push({
+      display: 'START drawing circles',
+      onClick: () => {
+        handleMenuSelection({
+          toolType: 'DRAW',
+          shapeSelected: 'circle'
+        })
+      }
+    })
+  }
+
+  return options
+}
+
 const handleContextClick = ({
   event,
   renderContextMenu,
   createVertex,
-  setIsDrawRectangleMode,
-  isDrawRectangleMode,
-  isDrawCircleMode,
-  setIsDrawCircleMode
+  drawingTools
 }) => {
   event.preventDefault()
-  const { clientX, clientY } = event
+  console.log(drawingTools.isToolSelected('DRAW'))
 
+  const commonOptions = buildCommonContextOptions(drawingTools)
+
+  const { clientX, clientY } = event
   const vertexCentre = { centreX: clientX, centreY: clientY }
+
   const createCircle = () => createVertex({
     ...DEFAULT_CIRCLE,
     ...vertexCentre
@@ -119,33 +167,10 @@ const handleContextClick = ({
   })
 
   const items = [
-    { display: 'Create circle AUTOMATICALLY', onClick: createCircle },
-    { display: 'Create rectangle AUTOMATICALLY', onClick: createRectangle }
+    { display: 'Place circle HERE', onClick: createCircle },
+    { display: 'Place rectangle HERE', onClick: createRectangle },
+    ...commonOptions
   ]
-
-  if (isDrawRectangleMode) {
-    items.push({
-      display: 'CANCEL rectangle creator',
-      onClick: () => setIsDrawRectangleMode(false)
-    })
-  } else {
-    items.push({
-      display: 'Create rectangle MANUALLY',
-      onClick: () => setIsDrawRectangleMode(true)
-    })
-  }
-
-  if (isDrawCircleMode) {
-    items.push({
-      display: 'CANCEL circle creator',
-      onClick: () => setIsDrawCircleMode(false)
-    })
-  } else {
-    items.push({
-      display: 'Create circle MANUALLY',
-      onClick: () => setIsDrawCircleMode(true)
-    })
-  }
 
   renderContextMenu({ x: clientX, y: clientY, items })
 }
@@ -222,8 +247,6 @@ const App = props => {
   const contextMenuNode = useRef()
   const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
-  const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
-  const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
 
   const {
     render: renderContextMenu,
@@ -262,27 +285,13 @@ const App = props => {
 
   const canvasRef = useRef()
 
-  const areVerticesMouseEditable = !isDrawRectangleMode && !isDrawCircleMode
-
-  const moveVertexService = useVertexMouseMove({
-    canvasRef,
-    isEnabled: areVerticesMouseEditable
+  const drawingTools = useDrawingTools({
+    updateVertex, createVertex
   })
 
-  const resizeVertexService = useVertexMouseMove({
-    canvasRef,
-    isEnabled: areVerticesMouseEditable
-  })
-
-  const manualRectCreator = useVertexMouseMove({
-    canvasRef,
-    isEnabled: isDrawRectangleMode
-  })
-
-  const manualCircleCreator = useVertexMouseMove({
-    canvasRef,
-    isEnabled: isDrawCircleMode
-  })
+  const areVerticesMouseEditable = drawingTools
+    .toolsPermitted
+    .some(toolPermitted => ['MOVE', 'RESIZE'].includes(toolPermitted))
  
   const {
     state: drawingsContainerCursorStyle,
@@ -290,131 +299,107 @@ const App = props => {
   } = useDrawingsContainerCursorStyle()
 
   useEffect(() => {
-    useEffectMoveVertex({
-      moveVertexService,
-      updateVertex
-    })
-  }, [moveVertexService.canvasCoordinates])
-
-  useEffect(() => {
-    useEffectResizeVertex({
-      resizeVertexService,
-      updateVertex
-    })
-
-    const {
-      selectedVertex,
-      canvasCoordinates
-    } = resizeVertexService
-
-    if (selectedVertex) {
+    if (drawingTools.isToolSelected('RESIZE')) {
       const cursorStyle = getResizeCircleCursor({
-        vertexCentreX: selectedVertex.centreX,
-        vertexCentreY: selectedVertex.centreY,
-        cursorX: canvasCoordinates.x,
-        cursorY: canvasCoordinates.y
+        vertexCentreX: drawingTools.vertexSelected.centreX,
+        vertexCentreY: drawingTools.vertexSelected.centreY,
+        cursorX: drawingTools.currentCoordinates.x,
+        cursorY: drawingTools.currentCoordinates.y
       })
-
       setDrawingsContainerCursorStyle(cursorStyle)
     }
-  }, [resizeVertexService.canvasCoordinates])
+  }, [drawingTools.currentCoordinates])
 
   return (
-    <div
-      onMouseUp={() => {
-        if (manualRectCreator.selectedVertex) {
-          createRectangleWithDrag({
-            rectangleProps: manualRectCreator.rectangleProps,
-            createVertex
-          })
-        }
+    <div onMouseUp={drawingTools.handleMouseUp}>
+      <DrawingsRow>
+        <PositionWrapper>
+          <DrawingsContainer
+            ref={canvasRef}
+            width={SVG_WIDTH}
+            height={SVG_HEIGHT}
+            onMouseDown={drawingTools.handleMouseDownCanvas}
+            resizeCursor={drawingsContainerCursorStyle}
+            isResizingVertex={drawingTools.isToolSelected('RESIZE')}
+            isDrawingShape={drawingTools.isToolSelected('DRAW')}
+            onContextMenu={event => {
+              handleContextClick({
+                event,
+                renderContextMenu,
+                createVertex,
+                drawingTools
+              })
+            }}
+            onMouseMove={event => {
+              const node = canvasRef.current
 
-        if (manualCircleCreator.selectedVertex) {
-          createCircleWithDrag({
-            circleProps: manualCircleCreator.circleProps,
-            createVertex
-          })
-        }
-
-        moveVertexService.mouseUpListener()
-        resizeVertexService.mouseUpListener()
-        manualRectCreator.mouseUpListener()
-        manualCircleCreator.mouseUpListener()
-      }}
-      onMouseMove={event => {
-        moveVertexService.mouseMoveListener(event)
-        resizeVertexService.mouseMoveListener(event)
-        manualRectCreator.mouseMoveListener(event)
-        manualCircleCreator.mouseMoveListener(event)
-      }}
-    >
-      <PositionWrapper>
-        <DrawingsContainer
-          ref={canvasRef}
-          width={SVG_WIDTH}
-          height={SVG_HEIGHT}
-          onContextMenu={event => handleContextClick({
-            event,
-            renderContextMenu,
-            createVertex,
-            setIsDrawRectangleMode,
-            isDrawRectangleMode,
-            isDrawCircleMode,
-            setIsDrawCircleMode
-          })}
-          onMouseDown={event => {
-            manualRectCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_RECTANGLE'
-            })
-
-            manualCircleCreator.mouseDownListener({
-              event,
-              vertex: 'TEMPORARY_CIRCLE'
-            })
-          }}
-          isDrawRectangleMode={isDrawRectangleMode}
-          isDrawCircleMode={isDrawCircleMode}
-          resizeCursor={drawingsContainerCursorStyle}
-          isResizingVertex={!!resizeVertexService.selectedVertex}
-        >
-          <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
-          {
-            edges.map((edge, index) => {
-              return renderEdge({ edge, index, tangents })
-            })
-          }
-          <Arrows
-            arrows={arrows}
-            tangents={tangents}
-          />
-          <Vertices
-            vertices={vertices}
-            edges={edges}
-            createEdge={createEdge}
-            deleteEdge={deleteEdge}
-            moveVertexService={moveVertexService}
-            resizeVertexService={resizeVertexService}
-            renderContextMenu={renderContextMenu}
-            areVerticesMouseEditable={areVerticesMouseEditable}
-          />
-          <RectangleBuild
-            rectangleProps={manualRectCreator.rectangleProps}
-          />
-          <CircleBuild
-            circleProps={manualCircleCreator.circleProps}
-          />
-        </DrawingsContainer>
-        {isRenderingContextMenu && (
-          <ContextMenu
-            nodeRef={contextMenuNode}
-            coordX={contextMenuCoordinates.x}
-            coordY={contextMenuCoordinates.y}
-            closeMenu={unRenderContextMenu}
-            items={contextMenuItems}
-          />
-        )}
-      </PositionWrapper>
+              drawingTools.setCurrentCoordinates({
+                x: event.clientX - (node?.getBoundingClientRect().x || 0),
+                y: event.clientY - (node?.getBoundingClientRect().y || 0)
+              })
+            }}
+          >
+            <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
+            {
+              edges.map((edge, index) => {
+                return renderEdge({ edge, index, tangents })
+              })
+            }
+            <Arrows
+              arrows={arrows}
+              tangents={tangents}
+            />
+            <Vertices
+              vertices={vertices}
+              edges={edges}
+              createEdge={createEdge}
+              deleteEdge={deleteEdge}
+              renderContextMenu={renderContextMenu}
+              areVerticesMouseEditable={areVerticesMouseEditable}
+              drawingTools={drawingTools}
+            />
+            <RectangleBuild
+              rectangleProps={
+                drawingTools.rectangleVariableSized
+              }
+              isToolSelected={
+                drawingTools.isToolSelected('DRAW')
+                && drawingTools.shapeSelected === 'rectangle'
+              }
+            />
+            <CircleBuild
+              circleProps={drawingTools.circleVariableSized}
+              isToolSelected={
+                drawingTools.isToolSelected('DRAW')
+                && drawingTools.shapeSelected === 'circle'
+              }
+            />
+            <Paintbrush
+              x={drawingTools.currentCoordinates.x}
+              y={drawingTools.currentCoordinates.y}
+              isToolSelected={drawingTools.isToolSelected('DROP')}
+              shapeSelected={drawingTools.shapeSelected}
+              circlePaintbrush={drawingTools.circlePaintbrush}
+              rectanglePaintbrush={drawingTools.rectanglePaintbrush}
+            />
+          </DrawingsContainer>
+          {isRenderingContextMenu && (
+            <ContextMenu
+              nodeRef={contextMenuNode}
+              coordX={contextMenuCoordinates.x}
+              coordY={contextMenuCoordinates.y}
+              closeMenu={unRenderContextMenu}
+              items={contextMenuItems}
+            />
+          )}
+        </PositionWrapper>
+        <Toolbar
+          extraOptions={buildCommonContextOptions(
+            drawingTools
+          )}
+          drawingTools={drawingTools}
+        />
+      </DrawingsRow>
       <Editor
         gridIncrement={gridIncrement}
         setGridIncrement={setGridIncrement}

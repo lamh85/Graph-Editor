@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import styled from 'styled-components'
 
 import { Triangle } from './common/Triangle.jsx'
+import { MenuItem } from './common/MenuItem.jsx'
 
 const StyledContextMenu = styled.div`
   max-width: 200px;
@@ -9,18 +10,6 @@ const StyledContextMenu = styled.div`
   position: absolute;
   left: ${props => props.left || 0}px;
   top: ${props => props.top || 0}px;
-`
-
-const MenuItem = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 5px;
-  border: 1px solid grey;
-
-  &:hover {
-    background: yellow;
-  }
 `
 
 const handleItemClick = ({ event, clickAction, closeMenu }) => {

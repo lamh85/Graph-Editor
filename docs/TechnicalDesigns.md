@@ -84,3 +84,95 @@ Mouse move
 
 Mouse up
 * Create the shape
+
+# Coordinating different mouse tools
+
+Only one tool can be active at a time.
+
+EG: if paintbrush mode is enabled, then shape-drawing mode is disabled
+
+## Comparing flows:
+
+Resize
+* mouse down: vertex's outline -> select the vertex
+* mouse move -> update the vertex and render
+* mouse up -> de-select the vertex
+
+Move
+* mouse down: vertex -> select the vertex
+* mouse move -> update the vertex and render
+* mouse up -> de-select the vertex
+
+Draw a vertex
+* select the tool in a menu
+* mouse down: empty space -> sets one x-y pair
+* mouse move -> update the second x-y pair, render a tentative vertex
+* mouse up -> create vertex
+
+Place a vertex
+* select the tool in a menu
+* mouse move -> render a tentative vertex
+* mouse down: anywhere -> create a vertex
+
+## Flow consolidated by mouse events
+
+Mouse down
+* set state: origin coordinates (already provided when initializing the custom hook)
+* set state: vertex, IF resizing or moving location
+* set state: tool selected, IF resizing or moving location
+* set state: paintbrush shape
+* Create a vertex IF paintrbrush mode
+
+Mouse move
+* set state: the build of the vertex IF paintbrush mode
+* update vertex IF resizing or moving location
+
+Mouse up
+* create IF drag-to-create
+
+## Interaction between different tools
+
+Flow pattern 1
+* User choose paintbrush
+* User attempts to resize a vertex
+* App does nothing because it is still in paintbrush mode
+* Use cliciks a button to disable paintrbrush mode
+* Now user can resize a vertex
+
+Flow pattern 2
+* User mouse-down on a vertex to start moving it
+* While mouse-moving the vertex, no other modes can be enabled because mouse-moving prevents clicking. All other tools require clicking on a vertex or clicking a menu item.
+
+## Possible design patterns
+
+Template: https://refactoring.guru/design-patterns/template-method/ruby/example#example-0
+* Super class defines the high-level logical flow
+* Subclasses define the modules of that flow
+
+Strategy: https://refactoring.guru/design-patterns/strategy/ruby/example#example-0
+* The subclasses control the flow
+* The super class defines some of the details for all different strategies.
+* EG: Navigation app. A strategy is a mean of transportation. But all strategies must have a starting point, end point, same API stardards for retrieving map data, etc.
+
+MVC:
+* "Controller" = request handler
+* "Model" = states, and logic for CRUD state
+
+Chain of listeners
+* custom hook listens to the components
+* the create/update services listen to the hook (more applicable to mousemove event)
+
+## Random thoughts
+
+A state for keeping the payload of the tool.
+* Why? A tool can be for either editing or creating. Designing the tool as a payload is more flexible than constraining it to a vertex ID, etc. This will push the datatype definition of the payload to the creator/updater function.
+
+Using the listener pattern to make each tool listen to a mouse event.
+* EG: the resize service selectively subscribes to only the relevant events.
+* Loop all the services to find which ones are subscribed.
+  * Why loop all of them? So we don't have to maintain multiple arrays of subscribers.
+* Levels of abstraction, from concrete to abstract:
+  1. Mouse handlers - the interface functions returned from the custom hook
+  2. Mouse event broadcaster - RECEIVES a mouse event. Loops every tool (eg: resize) to see if it's applicable to that tool.
+  3. Mouse event handlers - EG: when mouse-move while in resize mode, then update the vertex
+  4. Event handler helpers - EG: calculate the new radius of a circle for No. 3
