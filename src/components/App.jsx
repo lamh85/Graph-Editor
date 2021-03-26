@@ -253,9 +253,6 @@ const App = props => {
   const contextMenuNode = useRef()
   const [gridIncrement, setGridIncrement] = useState(100)
   const [tangents, setTangents] = useState([])
-  // const [isDrawRectangleMode, setIsDrawRectangleMode] = useState(false)
-  // const [isDrawCircleMode, setIsDrawCircleMode] = useState(false)
-  // const [paintbrushShape, setPaintbrushShape] = useState(null)
 
   const {
     render: renderContextMenu,
@@ -327,18 +324,7 @@ const App = props => {
             ref={canvasRef}
             width={SVG_WIDTH}
             height={SVG_HEIGHT}
-            // onContextMenu={event => {
-            //   drawingTools.stopTool()
-            //   handleContextClick({
-            //     event,
-            //     renderContextMenu,
-            //     createVertex,
-            //     drawingTools
-            //   })
-            // }}
             onMouseDown={drawingTools.handleMouseDownCanvas}
-            // isDrawRectangleMode={isDrawRectangleMode}
-            // isDrawCircleMode={isDrawCircleMode}
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
             onMouseMove={event => {
