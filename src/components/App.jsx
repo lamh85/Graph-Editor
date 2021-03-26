@@ -228,10 +228,6 @@ const useDrawingsContainerCursorStyle = () => {
   return { state: innerState, setState }
 }
 
-const isContextMouseDown = event => {
-  return event.button > 0 || event.ctrlKey
-}
-
 const App = props => {
   useEffect(() => {
     const mouseDownParams = [
@@ -327,6 +323,9 @@ const App = props => {
             onMouseDown={drawingTools.handleMouseDownCanvas}
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
+            onContextMenu={event => {
+              console.log('context menu ---------')
+            }}
             onMouseMove={event => {
               const node = canvasRef.current
 

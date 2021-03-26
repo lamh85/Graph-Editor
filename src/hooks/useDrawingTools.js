@@ -172,7 +172,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const drawService = {
     handleMouseDownCanvas: () => {
-      console.log('mouse down')
       copyToClickCoordinates()
     },
     handleMouseMove: () => {
@@ -219,7 +218,12 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolService?.[handlerName](payload)
   }
 
-  const handleMouseDownCanvas = ({ vertex, tool } = {}) => {
+  const handleMouseDownCanvas = (
+    event,
+    { vertex, tool } = {}
+  ) => {
+    if (event.nativeEvent.which === 3) return
+
     if (
       tool
       && !toolsPermitted().includes(tool)

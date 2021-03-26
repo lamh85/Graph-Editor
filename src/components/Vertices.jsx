@@ -137,10 +137,10 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={() => drawingTools.handleMouseDownCanvas({
-          tool: 'RESIZE',
-          vertex
-        })}
+        onMouseDown={event => drawingTools.handleMouseDownCanvas(
+          event,
+          { tool: 'RESIZE', vertex }
+        )}
         onMouseOver={event => {
           if (drawingTools.vertexSelected) return
 
@@ -160,10 +160,10 @@ const CircleGroup = ({
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={() => drawingTools.handleMouseDownCanvas({
-          tool: 'MOVE',
-          vertex
-        })}
+        onMouseDown={event => drawingTools.handleMouseDownCanvas(
+          event,
+          { tool: 'MOVE', vertex }
+        )}
         isMovingVertex={isMovingVertex}
         areVerticesMouseEditable={areVerticesMouseEditable}
       />
@@ -212,12 +212,10 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={() => {
-            drawingTools.handleMouseDownCanvas({
-              tool: 'MOVE',
-              vertex
-            })
-          }}
+          onMouseDown={event => drawingTools.handleMouseDownCanvas(
+            event,
+            { tool: 'MOVE', vertex }
+          )}
           isMovingVertex={isMovingVertex}
           areVerticesMouseEditable={areVerticesMouseEditable}
         />
