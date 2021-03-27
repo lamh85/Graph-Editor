@@ -1,12 +1,19 @@
 import React from "react"
+import styled from 'styled-components'
+
 import { MenuItem } from './common/MenuItem.jsx'
+
+const StyleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`
 
 export const Toolbar = ({
   extraOptions,
   drawingTools
 }) => {
   return (
-    <>
+    <StyleWrapper>
       <MenuItem onClick={drawingTools.stopTool}>
         Default mode
       </MenuItem>
@@ -30,6 +37,6 @@ export const Toolbar = ({
           </MenuItem>
         )
       })}
-    </>
+    </StyleWrapper>
   )
 }
