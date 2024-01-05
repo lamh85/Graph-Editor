@@ -20,6 +20,14 @@ Features:
 * There is a menu for right-clicking empty spaces and right-clicking any shape.
 * Can CRUD arrows that connect the shapes.
 
+Video demo: move, resize, add shapes:
+
+https://github.com/lamh85/Graph-Editor/assets/2058381/62992e10-b70e-42be-8f86-7786f7428932
+
+Video demo: right click, CRUD arrows:
+
+https://github.com/lamh85/Graph-Editor/assets/2058381/63c299c0-0dd5-47be-98b5-93b018f1322e
+
 # Why did I make this?
 
 To practice React.
