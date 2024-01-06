@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../models/polygons'
@@ -8,6 +8,11 @@ const StyledEditor = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
+`
+
+const H1 = styled.h1`
+  font-family: sans-serif;
+  font-size: 1.5em;
 `
 
 const Row = styled.div`
@@ -20,61 +25,59 @@ const Row = styled.div`
   }
 `
 
-const handleEdgeChange = ({ event, endProperty, updateEdge, edgeId, editedEdge }) => {
+const handleEdgeChange = ({
+  event,
+  endProperty,
+  updateEdge,
+  edgeId,
+  editedEdge,
+}) => {
   const vertexId = parseInt(event.target.value)
   const newAttributeValue = {
     ...editedEdge[endProperty],
-    vertexId
+    vertexId,
   }
 
   updateEdge({
     id: edgeId,
     property: endProperty,
-    value: newAttributeValue
+    value: newAttributeValue,
   })
 }
 
 const EdgeEndInput = ({ value, handleChange }) => {
-  return (
-    <input
-      type="number"
-      value={value}
-      onChange={handleChange}
-    />
-  )
+  return <input type="number" value={value} onChange={handleChange} />
 }
 
 const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
   return (
     <div>
-      <h1>Edges</h1>
-      {
-        edges.map(edge => {
-          return (
-            <div key={edge.id}>
-              ID: {edge.id}
-              {[0, 1].map((endNumber) => {
-                return (
-                  <EdgeEndInput
-                    key={`${edge.id}-${endNumber}`}
-                    value={edge[`end${endNumber}`].vertexId}
-                    handleChange={event => handleEdgeChange({
+      <H1>Edges</H1>
+      {edges.map((edge) => {
+        return (
+          <div key={edge.id}>
+            ID: {edge.id}
+            {[0, 1].map((endNumber) => {
+              return (
+                <EdgeEndInput
+                  key={`${edge.id}-${endNumber}`}
+                  value={edge[`end${endNumber}`].vertexId}
+                  handleChange={(event) =>
+                    handleEdgeChange({
                       updateEdge,
                       event,
                       endProperty: `end${endNumber}`,
                       edgeId: edge.id,
-                      editedEdge: edge
-                    })}
-                  />
-                )
-              })}
-            </div>
-          )
-        })
-      }
-      <button onClick={() => createEdge(EDGE_TEMPLATE)}>
-        Add Edge
-      </button>
+                      editedEdge: edge,
+                    })
+                  }
+                />
+              )
+            })}
+          </div>
+        )
+      })}
+      <button onClick={() => createEdge(EDGE_TEMPLATE)}>Add Edge</button>
     </div>
   )
 }
@@ -83,7 +86,7 @@ const validateArrowValue = (property, value) => {
   const formatter = {
     endId: parseInt,
     edgeId: parseInt,
-    id: parseInt
+    id: parseInt,
   }[property]
 
   if (!formatter) return value
@@ -101,11 +104,7 @@ const handleArrowChange = (event, updateArrow) => {
   updateArrow({ id, property, value })
 }
 
-const ArrowEdgeEndForm = ({
-  arrowEdgeEndId,
-  formEndId,
-  inputProps
-}) => {
+const ArrowEdgeEndForm = ({ arrowEdgeEndId, formEndId, inputProps }) => {
   return (
     <>
       <div>End {formEndId}</div>
@@ -119,60 +118,52 @@ const ArrowEdgeEndForm = ({
 }
 
 const ArrowsPanel = ({ arrows, createArrow, deleteArrow, updateArrow }) => {
-  const highestId = arrows.map(arrow => arrow.id).reverse()[0]
+  const highestId = arrows.map((arrow) => arrow.id).reverse()[0]
   const newId = highestId + 1
   const newArrowProps = { ...ARROW_TEMPLATE, id: newId }
 
   return (
     <div>
-      <h1>Arrows</h1>
-      {
-        arrows.map((arrow, index) => {
-          const { id, edgeId, endId, shape } = arrow
+      <H1>Arrows</H1>
+      {arrows.map((arrow, index) => {
+        const { id, edgeId, endId, shape } = arrow
 
-          const inputProps = {
-            'data-arrow-id': id,
-            onChange: event => handleArrowChange(event, updateArrow)
-          }
+        const inputProps = {
+          'data-arrow-id': id,
+          onChange: (event) => handleArrowChange(event, updateArrow),
+        }
 
-          const radioProps = { ...inputProps, type: 'radio', 'data-property': 'endId' }
+        const radioProps = {
+          ...inputProps,
+          type: 'radio',
+          'data-property': 'endId',
+        }
 
-          return (
-            <React.Fragment key={`arrow-row-${id}`}>
-              <Row>
-                <div>ID: {id}</div>
-                <div>
-                  Edge ID:
-                  <input
-                    {...inputProps}
-                    value={edgeId}
-                    data-property="edgeId"
+        return (
+          <React.Fragment key={`arrow-row-${id}`}>
+            <Row>
+              <div>ID: {id}</div>
+              <div>
+                Edge ID:
+                <input {...inputProps} value={edgeId} data-property="edgeId" />
+              </div>
+              {[0, 1].map((formEndId) => {
+                return (
+                  <ArrowEdgeEndForm
+                    key={`arrow${id}-end${formEndId}`}
+                    arrowEdgeEndId={endId}
+                    formEndId={formEndId}
+                    inputProps={radioProps}
                   />
-                </div>
-                {
-                  [0, 1].map(formEndId => {
-                    return (
-                      <ArrowEdgeEndForm
-                        key={`arrow${id}-end${formEndId}`}
-                        arrowEdgeEndId={endId}
-                        formEndId={formEndId}
-                        inputProps={radioProps}
-                      />
-                    )
-                  })
-                }
-                <div>Shape: {shape}</div>
-                <button onClick={() => deleteArrow('id', id)}>
-                  Delete
-                </button>
-              </Row>
-            </React.Fragment>
-          )
-        })
-      }
-      <button onClick={() => createArrow(newArrowProps)}>
-        Add Arrow
-      </button>
+                )
+              })}
+              <div>Shape: {shape}</div>
+              <button onClick={() => deleteArrow('id', id)}>Delete</button>
+            </Row>
+          </React.Fragment>
+        )
+      })}
+      <button onClick={() => createArrow(newArrowProps)}>Add Arrow</button>
     </div>
   )
 }
@@ -199,33 +190,33 @@ const Editor = ({
   arrows,
   createArrow,
   deleteArrow,
-  updateArrow
+  updateArrow,
 }) => {
   const [gridSizeInput, setGridSizeInput] = useState(gridIncrement)
 
   return (
     <StyledEditor>
       <div>
-        <h1>Grid Square Size</h1>
+        <H1>Grid Square Size</H1>
         <input
           value={gridSizeInput}
-          onChange={event => handleGridIncrementChange(event, setGridSizeInput)}
+          onChange={(event) =>
+            handleGridIncrementChange(event, setGridSizeInput)
+          }
         />
-        <button onClick={() => setGridIncrement(gridSizeInput)}>
-          Apply
-        </button>
-        <h1>Vertices (centre)</h1>
-        {
-          vertices.map((vertex, index) => {
-            const { id } = vertex
-            return (
-              <Row key={index}>
-                <div>{id}:: X: {vertex.centreX}, Y: {vertex.centreY}</div>
-                <button onClick={() => deleteVertex('id', id)}>Delete</button>
-              </Row>
-            )
-          })
-        }
+        <button onClick={() => setGridIncrement(gridSizeInput)}>Apply</button>
+        <H1>Vertices (centre)</H1>
+        {vertices.map((vertex, index) => {
+          const { id } = vertex
+          return (
+            <Row key={index}>
+              <div>
+                {id}:: X: {vertex.centreX}, Y: {vertex.centreY}
+              </div>
+              <button onClick={() => deleteVertex('id', id)}>Delete</button>
+            </Row>
+          )
+        })}
         <button onClick={() => createVertex(VERTEX_TEMPLATE)}>
           Add Vertex
         </button>
