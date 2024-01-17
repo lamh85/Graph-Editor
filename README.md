@@ -36,7 +36,7 @@ I am interested in graphically intensive, and graphically complex logic. EG: dat
 
 # Code Quality
 
-## Directory Structure 
+## Directory Structure  (under construction)
 
 Like with many apps, this codebase is a snapshot of my preferred conventions **of the time**.
 
