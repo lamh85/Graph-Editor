@@ -1,10 +1,10 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import { App } from './App.jsx'
+import Home from '.'
 
-describe('App.jsx', () => {
+describe('Home.jsx', () => {
   beforeEach(() => {
-    render(<App />)
+    render(<Home />)
   })
 
   describe('Startup', () => {

@@ -1,8 +1,5 @@
 import React from 'react'
-import {
-  RADIUS_MINIMUM,
-  DEFAULT_RECTANGLE
-} from '../models/vertices'
+import { RADIUS_MINIMUM, DEFAULT_RECTANGLE } from '../../models/vertices'
 
 export const Paintbrush = ({
   shapeSelected,
@@ -10,14 +7,12 @@ export const Paintbrush = ({
   y,
   isToolSelected,
   circlePaintbrush,
-  rectanglePaintbrush
+  rectanglePaintbrush,
 }) => {
   if (!shapeSelected || !x || !y || !isToolSelected) return null
 
   if (shapeSelected === 'circle') {
-    return (
-      <circle fill="blue" cx={x} cy={y} r={circlePaintbrush.radius} />
-    )
+    return <circle fill="blue" cx={x} cy={y} r={circlePaintbrush.radius} />
   }
 
   if (shapeSelected === 'rectangle') {
@@ -26,14 +21,6 @@ export const Paintbrush = ({
     const left = x - width / 2
     const top = y - height / 2
 
-    return (
-      <rect
-        fill="blue"
-        x={left}
-        y={top}
-        height={height}
-        width={width}
-      />
-    )
+    return <rect fill="blue" x={left} y={top} height={height} width={width} />
   }
 }
