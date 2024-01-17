@@ -1,18 +1,15 @@
-import React, { useState } from "react"
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import {
   getUnconnectedVertices,
   getConnectedVertices,
-  vertexRectangleProps
-} from '../component_helpers/vertices'
-import { vertexCircleProps } from '../helpers/dom'
-import { getResizeCircleCursor } from '../geometry_helpers/general'
+  vertexRectangleProps,
+} from '../../component_helpers/vertices'
+import { vertexCircleProps } from '../../helpers/dom'
+import { getResizeCircleCursor } from '../../geometry_helpers/general'
 
-const moveCursorStyle = props => {
-  const {
-    areVerticesMouseEditable,
-    isMovingVertex
-  } = props
+const moveCursorStyle = (props) => {
+  const { areVerticesMouseEditable, isMovingVertex } = props
 
   if (!areVerticesMouseEditable) return ''
 
@@ -23,34 +20,34 @@ const moveCursorStyle = props => {
 }
 
 const CircleInner = styled.circle`
-  ${props => moveCursorStyle(props)}
+  ${(props) => moveCursorStyle(props)}
 `
 
 const CircleOuter = styled.circle`
-  ${props =>
-    props.resizeCursor
-    && props.areVerticesMouseEditable
-    && `
+  ${(props) =>
+    props.resizeCursor &&
+    props.areVerticesMouseEditable &&
+    `
     cursor: ${props.resizeCursor};
   `}
 `
 
 const Rectangle = styled.rect`
-  ${props => moveCursorStyle(props)}
+  ${(props) => moveCursorStyle(props)}
 `
 
 const SvgText = styled.text`
-  ${props => moveCursorStyle(props.isMovingVertex)}
+  ${(props) => moveCursorStyle(props.isMovingVertex)}
 `
 
 const handleConnectVertexClick = ({ vertex1Id, vertex2Id, createEdge }) => {
   const newEdge = {
     end0: {
-      vertexId: vertex1Id
+      vertexId: vertex1Id,
     },
     end1: {
-      vertexId: vertex2Id
-    }
+      vertexId: vertex2Id,
+    },
   }
 
   createEdge(newEdge)
@@ -60,15 +57,17 @@ const handleDisconnectVertexClick = ({
   vertex1Id,
   vertex2Id,
   edges,
-  deleteEdge
+  deleteEdge,
 }) => {
-  const connectionEdge = edges.find(edge => {
+  const connectionEdge = edges.find((edge) => {
     const {
       end0: { vertexId: connectedVertex1 },
       end1: { vertexId: connectedVertex2 },
     } = edge
 
-    const connectedVertices = [connectedVertex1, connectedVertex2].sort().join(',')
+    const connectedVertices = [connectedVertex1, connectedVertex2]
+      .sort()
+      .join(',')
     const queryVertices = [vertex1Id, vertex2Id].sort().join(',')
 
     return connectedVertices === queryVertices
@@ -84,42 +83,48 @@ const handleVertexContextClick = ({
   createEdge,
   renderContextMenu,
   event,
-  deleteEdge
+  deleteEdge,
 }) => {
   event.preventDefault()
   event.stopPropagation()
-  const unconnectedVertices = getUnconnectedVertices({ vertexId, vertices, edges })
+  const unconnectedVertices = getUnconnectedVertices({
+    vertexId,
+    vertices,
+    edges,
+  })
 
   const connectedVertices = getConnectedVertices(vertexId, edges)
 
   const menuItems = [
-    ...unconnectedVertices.map(unconnectedId => {
+    ...unconnectedVertices.map((unconnectedId) => {
       return {
         display: `Connect to Vertex ${unconnectedId}`,
-        onClick: () => handleConnectVertexClick({
-          vertex1Id: vertexId,
-          vertex2Id: unconnectedId,
-          createEdge
-        })
+        onClick: () =>
+          handleConnectVertexClick({
+            vertex1Id: vertexId,
+            vertex2Id: unconnectedId,
+            createEdge,
+          }),
       }
     }),
-    ...connectedVertices.map(connectedId => {
+    ...connectedVertices.map((connectedId) => {
       return {
         display: `DISCONNECT from Vertex ${connectedId}`,
-        onClick: () => handleDisconnectVertexClick({
-          vertex1Id: vertexId,
-          vertex2Id: connectedId,
-          edges,
-          deleteEdge
-        })
+        onClick: () =>
+          handleDisconnectVertexClick({
+            vertex1Id: vertexId,
+            vertex2Id: connectedId,
+            edges,
+            deleteEdge,
+          }),
       }
-    })
+    }),
   ]
 
   renderContextMenu({
     x: event.clientX,
     y: event.clientY,
-    items: menuItems
+    items: menuItems,
   })
 }
 
@@ -127,7 +132,7 @@ const CircleGroup = ({
   vertex,
   drawingTools,
   isMovingVertex,
-  areVerticesMouseEditable
+  areVerticesMouseEditable,
 }) => {
   const [resizeCursor, setResizeCursor] = useState()
 
@@ -137,18 +142,17 @@ const CircleGroup = ({
         {...vertexCircleProps(vertex)}
         key={`outer-circle-${vertex.id}`}
         fill="black"
-        onMouseDown={event => drawingTools.handleMouseDownCanvas(
-          event,
-          { tool: 'RESIZE', vertex }
-        )}
-        onMouseOver={event => {
+        onMouseDown={(event) =>
+          drawingTools.handleMouseDownCanvas(event, { tool: 'RESIZE', vertex })
+        }
+        onMouseOver={(event) => {
           if (drawingTools.vertexSelected) return
 
           const cursorStyle = getResizeCircleCursor({
             vertexCentreX: vertex.centreX,
             vertexCentreY: vertex.centreY,
             cursorX: event.clientX,
-            cursorY: event.clientY
+            cursorY: event.clientY,
           })
           setResizeCursor(cursorStyle)
         }}
@@ -160,10 +164,9 @@ const CircleGroup = ({
         key={`inner-circle-${vertex.id}`}
         r={vertex.radius - 3}
         fill="red"
-        onMouseDown={event => drawingTools.handleMouseDownCanvas(
-          event,
-          { tool: 'MOVE', vertex }
-        )}
+        onMouseDown={(event) =>
+          drawingTools.handleMouseDownCanvas(event, { tool: 'MOVE', vertex })
+        }
         isMovingVertex={isMovingVertex}
         areVerticesMouseEditable={areVerticesMouseEditable}
       />
@@ -179,7 +182,7 @@ const Vertex = ({
   createEdge,
   deleteEdge,
   areVerticesMouseEditable,
-  drawingTools
+  drawingTools,
 }) => {
   const { centreX, centreY } = vertex
 
@@ -187,7 +190,7 @@ const Vertex = ({
 
   return (
     <g
-      onContextMenu={event => {
+      onContextMenu={(event) => {
         return handleVertexContextClick({
           vertexId: vertex.id,
           vertices,
@@ -195,7 +198,7 @@ const Vertex = ({
           createEdge,
           renderContextMenu,
           event,
-          deleteEdge
+          deleteEdge,
         })
       }}
     >
@@ -212,10 +215,9 @@ const Vertex = ({
           {...vertexRectangleProps(vertex)}
           key={`rectangle-${vertex.id}`}
           fill="red"
-          onMouseDown={event => drawingTools.handleMouseDownCanvas(
-            event,
-            { tool: 'MOVE', vertex }
-          )}
+          onMouseDown={(event) =>
+            drawingTools.handleMouseDownCanvas(event, { tool: 'MOVE', vertex })
+          }
           isMovingVertex={isMovingVertex}
           areVerticesMouseEditable={areVerticesMouseEditable}
         />
@@ -225,7 +227,8 @@ const Vertex = ({
         y={centreY}
         fontSize="15"
         fill="yellow"
-        isMovingVertex={isMovingVertex}>
+        isMovingVertex={isMovingVertex}
+      >
         {vertex.id}
       </SvgText>
     </g>
@@ -239,9 +242,9 @@ export const Vertices = ({
   deleteEdge,
   renderContextMenu,
   areVerticesMouseEditable,
-  drawingTools
+  drawingTools,
 }) => {
-  return vertices.map(vertex => {
+  return vertices.map((vertex) => {
     return (
       <Vertex
         vertex={vertex}

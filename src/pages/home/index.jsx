@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
-import { hot } from "react-hot-loader"
+import { hot } from 'react-hot-loader'
 
-import { DEFAULT_ARROWS } from '../models/polygons'
+import { DEFAULT_ARROWS } from '../../models/polygons.js'
 import {
   DEFAULT_VERTICES,
   DEFAULT_CIRCLE,
   DEFAULT_RECTANGLE,
-  RADIUS_MINIMUM
-} from '../models/vertices'
-import { SEED as EDGES_SEED } from '../models/edge'
-import { useArray } from '../hooks/useArray'
-import { useContextMenu } from '../hooks/useContextMenu'
-import { useDrawingTools } from '../hooks/useDrawingTools'
-import { PositionWrapper } from './common/Wrappers.jsx'
+  RADIUS_MINIMUM,
+} from '../../models/vertices.js'
+import { SEED as EDGES_SEED } from '../../models/edge.js'
+import { useArray } from '../../hooks/useArray.js'
+import { useContextMenu } from '../../hooks/useContextMenu.js'
+import { useDrawingTools } from '../../hooks/useDrawingTools.js'
+import { PositionWrapper } from '../../components/Wrappers.jsx'
 import { Grid } from './Grid.jsx'
 import { Vertices } from './Vertices.jsx'
 import { RectangleBuild } from './RectangleBuild.jsx'
@@ -23,31 +23,36 @@ import { Editor } from './Editor.jsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { Toolbar } from './Toolbar.jsx'
 import { Paintbrush } from './Paintbrush.jsx'
-import { getShapeTangent } from '../component_helpers/app'
-import { doShareAncestry } from '../helpers/dom'
-import { getResizeCircleCursor } from '../geometry_helpers/general'
+import { getShapeTangent } from '../../component_helpers/app.js'
+import { doShareAncestry } from '../../helpers/dom.js'
+import { getResizeCircleCursor } from '../../geometry_helpers/general.js'
 
 const SVG_HEIGHT = 500
 const SVG_WIDTH = 900
 
 const DrawingsContainer = styled.svg`
-  , * {
+  ,
+  * {
     user-select: none;
   }
 
   background: lightgrey;
 
-  ${props => props.isDrawingShape && css`
-    cursor: crosshair;
-  `}
+  ${(props) =>
+    props.isDrawingShape &&
+    css`
+      cursor: crosshair;
+    `}
 
-  ${props =>
-    props.resizeCursor
-    && props.isResizingVertex && css`
-      , * {
+  ${(props) =>
+    props.resizeCursor &&
+    props.isResizingVertex &&
+    css`
+      ,
+      * {
         cursor: ${props.resizeCursor} !important;
       }
-  `}
+    `}
 `
 
 const DrawingsRow = styled.div`
@@ -58,13 +63,13 @@ const renderEdge = ({ edge, index, tangents }) => {
   const { end0, end1 } = edge
   if (!end0.vertexId || !end1.vertexId || !tangents?.length) return
 
-  const end0Coordinates = tangents.find(tangent => {
+  const end0Coordinates = tangents.find((tangent) => {
     return tangent.endId === 0 && tangent.edgeId === edge.id
   })?.coordinates
 
   if (!end0Coordinates) return null
 
-  const end1Coordinates = tangents.find(tangent => {
+  const end1Coordinates = tangents.find((tangent) => {
     return tangent.endId === 1 && tangent.edgeId === edge.id
   })?.coordinates
 
@@ -80,7 +85,7 @@ const renderEdge = ({ edge, index, tangents }) => {
     y2,
     stroke: 'red',
     strokeWidth: 2,
-    key: index
+    key: index,
   }
 
   const averageX = (x1 + x2) / 2
@@ -89,54 +94,46 @@ const renderEdge = ({ edge, index, tangents }) => {
   return (
     <g key={`edge${edge.id}`}>
       <line {...lineProps} />
-      <text x={averageX} y={averageY} fontSize="15" fill="black">Edge {edge.id}</text>
+      <text x={averageX} y={averageY} fontSize="15" fill="black">
+        Edge {edge.id}
+      </text>
     </g>
   )
 }
 
-const buildCommonContextOptions = drawingTools => {
-  const {
-    handleMenuSelection,
-    isToolSelected,
-    shapeSelected
-  } = drawingTools
+const buildCommonContextOptions = (drawingTools) => {
+  const { handleMenuSelection, isToolSelected, shapeSelected } = drawingTools
 
   const options = []
 
   if (isToolSelected('DRAW')) {
     options.push({
       display: 'CANCEL drawing shapes',
-      onClick: drawingTools.stopTool
+      onClick: drawingTools.stopTool,
     })
   }
 
-  if (
-    !isToolSelected('DRAW')
-    && shapeSelected !== 'rectangle'
-  ) {
+  if (!isToolSelected('DRAW') && shapeSelected !== 'rectangle') {
     options.push({
       display: 'START drawing rectangles',
       onClick: () => {
         handleMenuSelection({
           toolType: 'DRAW',
-          shapeSelected: 'rectangle'
+          shapeSelected: 'rectangle',
         })
-      }
+      },
     })
   }
 
-  if (
-    !isToolSelected('DRAW')
-    && shapeSelected !== 'circle'
-  ) {
+  if (!isToolSelected('DRAW') && shapeSelected !== 'circle') {
     options.push({
       display: 'START drawing circles',
       onClick: () => {
         handleMenuSelection({
           toolType: 'DRAW',
-          shapeSelected: 'circle'
+          shapeSelected: 'circle',
         })
-      }
+      },
     })
   }
 
@@ -147,7 +144,7 @@ const handleContextClick = ({
   event,
   renderContextMenu,
   createVertex,
-  drawingTools
+  drawingTools,
 }) => {
   event.preventDefault()
   console.log(drawingTools.isToolSelected('DRAW'))
@@ -157,25 +154,31 @@ const handleContextClick = ({
   const { clientX, clientY } = event
   const vertexCentre = { centreX: clientX, centreY: clientY }
 
-  const createCircle = () => createVertex({
-    ...DEFAULT_CIRCLE,
-    ...vertexCentre
-  })
-  const createRectangle = () => createVertex({
-    ...DEFAULT_RECTANGLE,
-    ...vertexCentre
-  })
+  const createCircle = () =>
+    createVertex({
+      ...DEFAULT_CIRCLE,
+      ...vertexCentre,
+    })
+  const createRectangle = () =>
+    createVertex({
+      ...DEFAULT_RECTANGLE,
+      ...vertexCentre,
+    })
 
   const items = [
     { display: 'Place circle HERE', onClick: createCircle },
     { display: 'Place rectangle HERE', onClick: createRectangle },
-    ...commonOptions
+    ...commonOptions,
   ]
 
   renderContextMenu({ x: clientX, y: clientY, items })
 }
 
-const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) => {
+const handleDocumentClick = ({
+  event,
+  contextMenuNode,
+  unRenderContextMenu,
+}) => {
   if (doShareAncestry(event.target, contextMenuNode.current)) {
     return
   }
@@ -188,7 +191,7 @@ const handleDocumentClick = ({ event, contextMenuNode, unRenderContextMenu }) =>
 const updateTangents = ({ edges, findVertex, setTangents }) => {
   const tangents = []
 
-  edges.forEach(edge => {
+  edges.forEach((edge) => {
     if (!edge.end0?.vertexId || !edge.end1?.vertexId) return
 
     const vertex0 = findVertex(edge.end0.vertexId)
@@ -196,9 +199,9 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
 
     const vertexPairs = [
       { origin: vertex0, destination: vertex1 },
-      { origin: vertex1, destination: vertex0 }
+      { origin: vertex1, destination: vertex0 },
     ]
-    
+
     vertexPairs.forEach((pair, index) => {
       const tangent = getShapeTangent(pair)
 
@@ -206,7 +209,7 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
         edgeId: edge.id,
         endId: index,
         vertexId: pair.origin.id,
-        coordinates: tangent
+        coordinates: tangent,
       })
     })
   })
@@ -217,7 +220,7 @@ const updateTangents = ({ edges, findVertex, setTangents }) => {
 const useDrawingsContainerCursorStyle = () => {
   const [innerState, setInnerState] = useState('default')
 
-  const setState = state => {
+  const setState = (state) => {
     if (!state) setInnerState('default')
 
     setInnerState(state)
@@ -226,15 +229,16 @@ const useDrawingsContainerCursorStyle = () => {
   return { state: innerState, setState }
 }
 
-const App = props => {
+const Home = (props) => {
   useEffect(() => {
     const mouseDownParams = [
       'mousedown',
-      event => handleDocumentClick({
-        event,
-        contextMenuNode,
-        unRenderContextMenu
-      })
+      (event) =>
+        handleDocumentClick({
+          event,
+          contextMenuNode,
+          unRenderContextMenu,
+        }),
     ]
 
     document.addEventListener(...mouseDownParams)
@@ -253,7 +257,7 @@ const App = props => {
     unRender: unRenderContextMenu,
     isRendering: isRenderingContextMenu,
     coordinates: contextMenuCoordinates,
-    items: contextMenuItems
+    items: contextMenuItems,
   } = useContextMenu()
 
   const {
@@ -261,7 +265,7 @@ const App = props => {
     find: findVertex,
     push: createVertex,
     removeByProperty: deleteVertex,
-    updateItem: updateVertex
+    updateItem: updateVertex,
   } = useArray(DEFAULT_VERTICES)
 
   const {
@@ -269,7 +273,7 @@ const App = props => {
     find: findEdge,
     push: createEdge,
     removeByProperty: deleteEdge,
-    updateItem: updateEdge
+    updateItem: updateEdge,
   } = useArray(EDGES_SEED)
 
   useEffect(() => {
@@ -280,22 +284,23 @@ const App = props => {
     state: arrows,
     push: createArrow,
     removeByProperty: deleteArrow,
-    updateItem: updateArrow
+    updateItem: updateArrow,
   } = useArray(DEFAULT_ARROWS)
 
   const canvasRef = useRef()
 
   const drawingTools = useDrawingTools({
-    updateVertex, createVertex
+    updateVertex,
+    createVertex,
   })
 
-  const areVerticesMouseEditable = drawingTools
-    .toolsPermitted
-    .some(toolPermitted => ['MOVE', 'RESIZE'].includes(toolPermitted))
- 
+  const areVerticesMouseEditable = drawingTools.toolsPermitted.some(
+    (toolPermitted) => ['MOVE', 'RESIZE'].includes(toolPermitted)
+  )
+
   const {
     state: drawingsContainerCursorStyle,
-    setState: setDrawingsContainerCursorStyle
+    setState: setDrawingsContainerCursorStyle,
   } = useDrawingsContainerCursorStyle()
 
   useEffect(() => {
@@ -304,7 +309,7 @@ const App = props => {
         vertexCentreX: drawingTools.vertexSelected.centreX,
         vertexCentreY: drawingTools.vertexSelected.centreY,
         cursorX: drawingTools.currentCoordinates.x,
-        cursorY: drawingTools.currentCoordinates.y
+        cursorY: drawingTools.currentCoordinates.y,
       })
       setDrawingsContainerCursorStyle(cursorStyle)
     }
@@ -322,33 +327,32 @@ const App = props => {
             resizeCursor={drawingsContainerCursorStyle}
             isResizingVertex={drawingTools.isToolSelected('RESIZE')}
             isDrawingShape={drawingTools.isToolSelected('DRAW')}
-            onContextMenu={event => {
+            onContextMenu={(event) => {
               handleContextClick({
                 event,
                 renderContextMenu,
                 createVertex,
-                drawingTools
+                drawingTools,
               })
             }}
-            onMouseMove={event => {
+            onMouseMove={(event) => {
               const node = canvasRef.current
 
               drawingTools.setCurrentCoordinates({
                 x: event.clientX - (node?.getBoundingClientRect().x || 0),
-                y: event.clientY - (node?.getBoundingClientRect().y || 0)
+                y: event.clientY - (node?.getBoundingClientRect().y || 0),
               })
             }}
           >
-            <Grid width={SVG_WIDTH} height={SVG_HEIGHT} increment={gridIncrement} />
-            {
-              edges.map((edge, index) => {
-                return renderEdge({ edge, index, tangents })
-              })
-            }
-            <Arrows
-              arrows={arrows}
-              tangents={tangents}
+            <Grid
+              width={SVG_WIDTH}
+              height={SVG_HEIGHT}
+              increment={gridIncrement}
             />
+            {edges.map((edge, index) => {
+              return renderEdge({ edge, index, tangents })
+            })}
+            <Arrows arrows={arrows} tangents={tangents} />
             <Vertices
               vertices={vertices}
               edges={edges}
@@ -359,19 +363,17 @@ const App = props => {
               drawingTools={drawingTools}
             />
             <RectangleBuild
-              rectangleProps={
-                drawingTools.rectangleVariableSized
-              }
+              rectangleProps={drawingTools.rectangleVariableSized}
               isToolSelected={
-                drawingTools.isToolSelected('DRAW')
-                && drawingTools.shapeSelected === 'rectangle'
+                drawingTools.isToolSelected('DRAW') &&
+                drawingTools.shapeSelected === 'rectangle'
               }
             />
             <CircleBuild
               circleProps={drawingTools.circleVariableSized}
               isToolSelected={
-                drawingTools.isToolSelected('DRAW')
-                && drawingTools.shapeSelected === 'circle'
+                drawingTools.isToolSelected('DRAW') &&
+                drawingTools.shapeSelected === 'circle'
               }
             />
             <Paintbrush
@@ -394,9 +396,7 @@ const App = props => {
           )}
         </PositionWrapper>
         <Toolbar
-          extraOptions={buildCommonContextOptions(
-            drawingTools
-          )}
+          extraOptions={buildCommonContextOptions(drawingTools)}
           drawingTools={drawingTools}
         />
       </DrawingsRow>
@@ -418,4 +418,4 @@ const App = props => {
   )
 }
 
-export { App }
+export default Home
