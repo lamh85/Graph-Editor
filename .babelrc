@@ -12,5 +12,10 @@
         "fileName": false
       }
     ]
-  ]
+  ],
+  "env": {
+      "test": {
+        "plugins": ["@babel/plugin-transform-runtime"]
+      }
+  }
 }
