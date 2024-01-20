@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import Home from '.'
+import Home from './index.jsx'
 
 describe('Home.jsx', () => {
   beforeEach(() => {
@@ -16,6 +16,16 @@ describe('Home.jsx', () => {
 
       expect(circles.length).toEqual(2)
       expect(rectangles.length).toEqual(1)
+    })
+  })
+
+  describe('Core cursor features', () => {
+    it('Move a circle', async () => {
+      const circle = document.querySelector(
+        '[class*="CircleInner"]'
+      ) as HTMLElement
+      const bounds = circle.getBoundingClientRect()
+      console.log(bounds.top, bounds.right, bounds.bottom, bounds.left)
     })
   })
 })
