@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import Home from './index.jsx'
 
 describe('Home.jsx', () => {
@@ -21,11 +21,20 @@ describe('Home.jsx', () => {
 
   describe('Core cursor features', () => {
     it('Move a circle', async () => {
-      const circle = document.querySelector(
-        '[class*="CircleInner"]'
-      ) as HTMLElement
-      const bounds = circle.getBoundingClientRect()
-      console.log(bounds.top, bounds.right, bounds.bottom, bounds.left)
+      const circle = document.querySelector('[class*="CircleInner"]')
+
+      const xBefore = circle.getAttribute('cx')
+      const yBefore = circle.getAttribute('cy')
+
+      fireEvent.mouseDown(circle)
+      fireEvent.mouseMove(circle, { clientX: 10, clientY: 15 })
+      fireEvent.mouseUp(circle)
+
+      const xAfter = circle.getAttribute('cx')
+      const yAfter = circle.getAttribute('cy')
+
+      expect(parseInt(xAfter) - parseInt(xBefore)).toEqual(10)
+      expect(parseInt(yAfter) - parseInt(yBefore)).toEqual(15)
     })
   })
 })
