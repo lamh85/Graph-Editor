@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
 import { getDistance } from '../geometry_helpers/get_distance'
 import { getHypotenuseLength } from '../geometry_helpers/trigonometry'
@@ -12,7 +12,7 @@ const DRAW = 'DRAW'
 
 export const createRectangleWithDrag = ({
   rectangleVariableSized,
-  createVertex
+  createVertex,
 }) => {
   if (!rectangleVariableSized) return null
 
@@ -30,21 +30,18 @@ export const createRectangleWithDrag = ({
     centreY,
     height,
     width,
-    shape: 'rectangle'
+    shape: 'rectangle',
   })
 }
 
-export const createCircleWithDrag = ({
-  circleVariableSized,
-  createVertex
-}) => {
+export const createCircleWithDrag = ({ circleVariableSized, createVertex }) => {
   if (!circleVariableSized) return null
 
   if (circleVariableSized.radius < RADIUS_MINIMUM) return
 
   createVertex({
     ...circleVariableSized,
-    shape: 'circle'
+    shape: 'circle',
   })
 }
 
@@ -52,14 +49,14 @@ const buildResizedRadius = ({ crudPayload, currentCoordinates }) => {
   const raidusTriangle = getDistance({
     origin: {
       x: crudPayload.vertex.centreX,
-      y: crudPayload.vertex.centreY
+      y: crudPayload.vertex.centreY,
     },
-    destination: currentCoordinates
+    destination: currentCoordinates,
   })
 
   const newRadius = getHypotenuseLength({
     adjacent: raidusTriangle.height,
-    opposite: raidusTriangle.width
+    opposite: raidusTriangle.width,
   })
 
   if (!newRadius || newRadius < RADIUS_MINIMUM) return null
@@ -72,11 +69,11 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
   const [toolSelected, setToolSelected] = useState(null)
   const [clickCoordinates, setClickCoordinates] = useState({
     x: null,
-    y: null
+    y: null,
   })
   const [currentCoordinates, setCurrentCoordinates] = useState({
     x: null,
-    y: null
+    y: null,
   })
   const [crudPayload, setCrudPayload] = useState({})
 
@@ -84,10 +81,10 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     rectangleVariableSized,
     circleVariableSized,
     circlePaintbrush,
-    rectanglePaintbrush
+    rectanglePaintbrush,
   } = getVertexBuilds({
     clickCoordinates,
-    currentCoordinates
+    currentCoordinates,
   })
 
   // shared between tool services ------------
@@ -98,7 +95,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setCrudPayload({})
   }
 
-  const setVertexPayload = vertex => {
+  const setVertexPayload = (vertex) => {
     setCrudPayload({ ...crudPayload, vertex })
   }
 
@@ -106,12 +103,12 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     setClickCoordinates(currentCoordinates)
   }
 
-  const updateVertexWithMouseMove = updatedProperties => {
+  const updateVertexWithMouseMove = (updatedProperties) => {
     if (!updatedProperties) return
 
     updateVertex({
       id: crudPayload.vertex.id,
-      propertySet: updatedProperties
+      propertySet: updatedProperties,
     })
   }
 
@@ -119,55 +116,55 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   const moveService = {
     toolBlockers: [DROP],
-    handleMouseDownCanvas: vertex => {
+    handleMouseDownCanvas: (vertex) => {
       const distanceFromClickToCentre = {
         x: currentCoordinates.x - vertex.centreX,
-        y: currentCoordinates.y - vertex.centreY
+        y: currentCoordinates.y - vertex.centreY,
       }
 
       setCrudPayload({
         vertex,
-        distanceFromClickToCentre
+        distanceFromClickToCentre,
       })
     },
     handleMouseMove: () => {
       const { distanceFromClickToCentre } = crudPayload
       const updatedProperties = {
         centreX: currentCoordinates.x - distanceFromClickToCentre.x,
-        centreY: currentCoordinates.y - distanceFromClickToCentre.y
+        centreY: currentCoordinates.y - distanceFromClickToCentre.y,
       }
       updateVertexWithMouseMove(updatedProperties)
     },
-    handleMouseUp: () => stopTool()
+    handleMouseUp: () => stopTool(),
   }
 
   const resizeService = {
     toolBlockers: [DROP],
-    handleMouseDownCanvas: vertex => {
+    handleMouseDownCanvas: (vertex) => {
       copyToClickCoordinates()
       setVertexPayload(vertex)
     },
     handleMouseMove: () => {
       const updatedProperties = buildResizedRadius({
         crudPayload,
-        currentCoordinates
+        currentCoordinates,
       })
       updateVertexWithMouseMove(updatedProperties)
     },
-    handleMouseUp: () => stopTool()
+    handleMouseUp: () => stopTool(),
   }
 
   const dropService = {
     handleMouseDownCanvas: () => {
       const vertexBuild = {
         circle: circlePaintbrush,
-        rectangle: rectanglePaintbrush
+        rectangle: rectanglePaintbrush,
       }[crudPayload.shapeSelected]
 
       createVertex(vertexBuild)
     },
     handleMouseMove: () => {},
-    handleMouseUp: () => {}
+    handleMouseUp: () => {},
   }
 
   const drawService = {
@@ -179,38 +176,34 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     },
     handleMouseUp: () => {
       if (!clickCoordinates.x || !clickCoordinates.y) return
-      
-      shapeSelected === 'rectangle'
-        && createRectangleWithDrag({
+
+      shapeSelected === 'rectangle' &&
+        createRectangleWithDrag({
           rectangleVariableSized,
-          createVertex
+          createVertex,
         })
 
-      shapeSelected === 'circle'
-        && circleVariableSized.radius >= RADIUS_MINIMUM
-        && createCircleWithDrag({
+      shapeSelected === 'circle' &&
+        circleVariableSized.radius >= RADIUS_MINIMUM &&
+        createCircleWithDrag({
           circleVariableSized,
-          createVertex
+          createVertex,
         })
-      
+
       setClickCoordinates({ x: null, y: null })
-    }
+    },
   }
 
   // mouse event broadcasters ---------------
 
-  const broadcastMouseEvent = ({
-    handlerName,
-    payload,
-    tool
-  }) => {
+  const broadcastMouseEvent = ({ handlerName, payload, tool }) => {
     const toolKey = toolSelected || tool
 
     const toolService = {
       MOVE: moveService,
       RESIZE: resizeService,
       DROP: dropService,
-      DRAW: drawService
+      DRAW: drawService,
     }[toolKey]
 
     if (!toolService) return
@@ -218,20 +211,14 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     toolService?.[handlerName](payload)
   }
 
-  const didRequestOpeningMenu = event => {
+  const didRequestOpeningMenu = (event) => {
     return event.ctrlKey || event.nativeEvent.which === 3
   }
 
-  const handleMouseDownCanvas = (
-    event,
-    { vertex, tool } = {}
-  ) => {
+  const handleMouseDownCanvas = (event, { vertex, tool } = {}) => {
     if (didRequestOpeningMenu(event)) return
 
-    if (
-      tool
-      && !toolsPermitted().includes(tool)
-    ) return
+    if (tool && !toolsPermitted().includes(tool)) return
 
     if (tool) {
       stopTool()
@@ -241,11 +228,13 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     broadcastMouseEvent({
       handlerName: 'handleMouseDownCanvas',
       payload: vertex,
-      tool
+      tool,
     })
   }
 
   const handleMenuSelection = ({ toolType, shapeSelected }) => {
+    console.log('toolType: ', toolType)
+    console.log('shapeSelected: ', shapeSelected)
     stopTool()
     setToolSelected(toolType)
     setCrudPayload({ shapeSelected })
@@ -262,7 +251,7 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
 
   // queries -----------------
 
-  const isToolSelected = toolQueried => toolSelected === toolQueried
+  const isToolSelected = (toolQueried) => toolSelected === toolQueried
 
   const vertexSelected = crudPayload?.vertex
 
@@ -292,6 +281,6 @@ export const useDrawingTools = ({ updateVertex, createVertex }) => {
     shapeSelected,
     toolsPermitted: toolsPermitted(),
     circlePaintbrush,
-    rectanglePaintbrush
+    rectanglePaintbrush,
   }
 }
