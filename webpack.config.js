@@ -1,30 +1,25 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
   devServer: {
     contentBase: './dist',
-    hot: true
+    hot: true,
   },
-  devtool: "eval-source-map",
+  devtool: 'eval-source-map',
   entry: './src/index.js',
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: [
-          /node_modules/,
-          /\.test\.js$/
-        ],
-        loader: "babel-loader"
-      }
-    ]
+        test: /\.(js|jsx|tsx|ts)$/,
+        exclude: [/node_modules/, /\.test\.js$/],
+        loader: 'babel-loader',
+      },
+    ],
   },
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin()
-  ]
-};
+  plugins: [new webpack.HotModuleReplacementPlugin()],
+}
