@@ -9,7 +9,7 @@ import {
   DEFAULT_RECTANGLE,
   RADIUS_MINIMUM,
 } from '../../models/vertices.js'
-import { SEED as EDGES_SEED } from '../../models/edge.js'
+import { SEED as EDGES_SEED } from '../../models/edge.ts'
 import { useArray } from '../../hooks/useArray.js'
 import { useContextMenu } from '../../hooks/useContextMenu.js'
 import { useDrawingTools } from '../../hooks/useDrawingTools.js'

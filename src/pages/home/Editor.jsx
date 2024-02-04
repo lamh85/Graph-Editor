@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../../models/polygons'
-import { TEMPLATE as EDGE_TEMPLATE } from '../../models/edge'
+import { TEMPLATE as EDGE_TEMPLATE } from '../../models/edge.ts'
 
 const StyledEditor = styled.div`
   display: flex;
