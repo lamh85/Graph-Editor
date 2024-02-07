@@ -22,6 +22,7 @@ export const TEMPLATE = {
 
 export type EdgeT = {
   id: number
+  weight?: number
   end0: EndT
   end1: EndT
 }
