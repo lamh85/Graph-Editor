@@ -31,8 +31,21 @@ const handleEdgeChange = ({
   updateEdge,
   edgeId,
   editedEdge,
+  vertices,
+  setFormError,
 }) => {
   const vertexId = parseInt(event.target.value)
+  const validVertexIds = vertices.map((vertex) => vertex.id)
+
+  // TODO: this solution prevents editing an invalid ID, which is required for
+  // the user to correct the value.
+  if (!validVertexIds.includes(vertexId)) {
+    setFormError('Invalid Vertex ID: ', vertexId)
+    return
+  } else {
+    setFormError(null)
+  }
+
   const newAttributeValue = {
     ...editedEdge[endProperty],
     vertexId,
@@ -49,10 +62,13 @@ const EdgeEndInput = ({ value, handleChange }) => {
   return <input type="number" value={value} onChange={handleChange} />
 }
 
-const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
+const EdgesPanel = ({ createEdge, updateEdge, edges, vertices }) => {
+  const [formError, setFormError] = useState('')
+
   return (
     <div>
       <H1>Edges</H1>
+      <div>{formError}</div>
       {edges.map((edge) => {
         return (
           <div key={edge.id}>
@@ -69,6 +85,8 @@ const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
                       endProperty: `end${endNumber}`,
                       edgeId: edge.id,
                       editedEdge: edge,
+                      vertices,
+                      setFormError,
                     })
                   }
                 />
@@ -225,6 +243,7 @@ const Editor = ({
         createEdge={createEdge}
         updateEdge={updateEdge}
         edges={edges}
+        vertices={vertices}
       />
       <ArrowsPanel
         arrows={arrows}
