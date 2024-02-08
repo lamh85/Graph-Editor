@@ -37,6 +37,8 @@ const handleEdgeChange = ({
     vertexId,
   }
 
+  console.log('newAttributeValue: ', endProperty, ' ', newAttributeValue)
+
   updateEdge({
     id: edgeId,
     property: endProperty,
