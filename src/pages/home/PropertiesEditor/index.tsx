@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-
-import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../../models/polygons'
-import { TEMPLATE as EDGE_TEMPLATE } from '../../models/edge.ts'
+import { ARROW_TEMPLATE, VERTEX_TEMPLATE } from '../../../models/polygons'
+import { EdgesPanel } from './EdgesPanel.tsx'
 
 const StyledEditor = styled.div`
   display: flex;
@@ -24,63 +23,6 @@ const Row = styled.div`
     margin-right: 10px;
   }
 `
-
-const handleEdgeChange = ({
-  event,
-  endProperty,
-  updateEdge,
-  edgeId,
-  editedEdge,
-}) => {
-  const vertexId = parseInt(event.target.value)
-  const newAttributeValue = {
-    ...editedEdge[endProperty],
-    vertexId,
-  }
-
-  updateEdge({
-    id: edgeId,
-    property: endProperty,
-    value: newAttributeValue,
-  })
-}
-
-const EdgeEndInput = ({ value, handleChange }) => {
-  return <input type="number" value={value} onChange={handleChange} />
-}
-
-const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
-  return (
-    <div>
-      <H1>Edges</H1>
-      {edges.map((edge) => {
-        return (
-          <div key={edge.id}>
-            ID: {edge.id}
-            {[0, 1].map((endNumber) => {
-              return (
-                <EdgeEndInput
-                  key={`${edge.id}-${endNumber}`}
-                  value={edge[`end${endNumber}`].vertexId}
-                  handleChange={(event) =>
-                    handleEdgeChange({
-                      updateEdge,
-                      event,
-                      endProperty: `end${endNumber}`,
-                      edgeId: edge.id,
-                      editedEdge: edge,
-                    })
-                  }
-                />
-              )
-            })}
-          </div>
-        )
-      })}
-      <button onClick={() => createEdge(EDGE_TEMPLATE)}>Add Edge</button>
-    </div>
-  )
-}
 
 const validateArrowValue = (property, value) => {
   const formatter = {
@@ -178,7 +120,7 @@ const handleGridIncrementChange = (event, setGridSizeInput) => {
   setGridSizeInput(newValue)
 }
 
-const Editor = ({
+const PropertiesEditor = ({
   gridIncrement,
   setGridIncrement,
   vertices,
@@ -236,4 +178,4 @@ const Editor = ({
   )
 }
 
-export { Editor }
+export { PropertiesEditor }
