@@ -19,7 +19,7 @@ import { Vertices } from './Vertices.jsx'
 import { RectangleBuild } from './RectangleBuild.jsx'
 import { CircleBuild } from './CircleBuild.jsx'
 import Arrows from './Arrows.jsx'
-import { Editor } from './Editor.jsx'
+import { PropertiesEditor } from './PropertiesEditor/index.tsx'
 import { ContextMenu } from './ContextMenu.jsx'
 import { Toolbar } from './Toolbar.jsx'
 import { Paintbrush } from './Paintbrush.jsx'
@@ -400,7 +400,7 @@ const Home = (props) => {
           drawingTools={drawingTools}
         />
       </DrawingsRow>
-      <Editor
+      <PropertiesEditor
         gridIncrement={gridIncrement}
         setGridIncrement={setGridIncrement}
         vertices={vertices}
