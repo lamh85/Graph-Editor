@@ -1,31 +1,50 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { TEMPLATE as EDGE_TEMPLATE } from '../../../models/edge.ts'
+import { TEMPLATE as EDGE_TEMPLATE, EdgeT } from '../../../models/edge.ts'
 
 const H1 = styled.h1`
   font-family: sans-serif;
   font-size: 1.5em;
 `
 
-export function EdgesPanel({ createEdge, updateEdge, edges }) {
-  const handleChange = ({ event, endProperty, edgeId, editedEdge }) => {
-    const vertexId = parseInt(event.target.value)
-    const newAttributeValue = {
-      ...editedEdge[endProperty],
-      vertexId,
+export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
+  const [edgesInput, setEdgesInput] = useState<EdgeT[]>(edges)
+
+  const vertexIds = vertices.map((vertex) => vertex.id)
+
+  const handleUpdateEndVetex = (event, edgeId, inputIndex, endNumber) => {
+    const inputClone = [...edgesInput]
+    const editedEdge = inputClone[inputIndex]
+    const newVertexId = parseInt(event.target.value)
+    const propertyName = `end${endNumber}`
+
+    const endValue = {
+      ...editedEdge[propertyName],
+      vertexId: newVertexId,
+    }
+
+    inputClone[inputIndex] = {
+      ...editedEdge,
+      [propertyName]: endValue,
+    }
+
+    setEdgesInput(inputClone)
+
+    if (!vertexIds.includes(newVertexId)) {
+      return
     }
 
     updateEdge({
       id: edgeId,
-      property: endProperty,
-      value: newAttributeValue,
+      property: propertyName,
+      value: endValue,
     })
   }
 
   return (
     <div>
       <H1>Edges</H1>
-      {edges.map((edge) => {
+      {edgesInput.map((edge, inputIndex) => {
         return (
           <div key={edge.id}>
             ID: {edge.id}
@@ -33,14 +52,9 @@ export function EdgesPanel({ createEdge, updateEdge, edges }) {
               return (
                 <EdgeEndInput
                   key={`${edge.id}-${endNumber}`}
-                  value={edge[`end${endNumber}`].vertexId}
+                  value={edge?.[`end${endNumber}`]?.vertexId}
                   handleChange={(event) =>
-                    handleChange({
-                      event,
-                      endProperty: `end${endNumber}`,
-                      edgeId: edge.id,
-                      editedEdge: edge,
-                    })
+                    handleUpdateEndVetex(event, edge.id, inputIndex, endNumber)
                   }
                 />
               )

@@ -167,6 +167,7 @@ const PropertiesEditor = ({
         createEdge={createEdge}
         updateEdge={updateEdge}
         edges={edges}
+        vertices={vertices}
       />
       <ArrowsPanel
         arrows={arrows}
