@@ -7,8 +7,13 @@ const H1 = styled.h1`
   font-size: 1.5em;
 `
 
+type EdgeInputT = EdgeT & {
+  validationMessage?: string
+  validationSource?: string
+}
+
 export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
-  const [edgesInput, setEdgesInput] = useState<EdgeT[]>(edges)
+  const [edgesInput, setEdgesInput] = useState<EdgeInputT[]>(edges)
 
   const vertexIds = vertices.map((vertex) => vertex.id)
 
@@ -23,14 +28,25 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
       vertexId: newVertexId,
     }
 
+    const isValidVertex = vertexIds.includes(newVertexId)
+    let validationMessage = ''
+    let validationSource = ''
+
+    if (!isValidVertex) {
+      validationMessage = 'Invalid Vertex'
+      validationSource = propertyName
+    }
+
     inputClone[inputIndex] = {
       ...editedEdge,
       [propertyName]: endValue,
+      validationMessage,
+      validationSource,
     }
 
     setEdgesInput(inputClone)
 
-    if (!vertexIds.includes(newVertexId)) {
+    if (!isValidVertex) {
       return
     }
 
@@ -47,8 +63,14 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
       {edgesInput.map((edge, inputIndex) => {
         return (
           <div key={edge.id}>
-            ID: {edge.id}
+            <div>Edge ID: {edge.id}</div>
             {[0, 1].map((endNumber) => {
+              const validationMessage =
+                edge?.validationSource == `end${endNumber}` &&
+                edge?.validationMessage.length > 0
+                  ? edge?.validationMessage
+                  : ''
+
               return (
                 <EdgeEndInput
                   key={`${edge.id}-${endNumber}`}
@@ -56,6 +78,8 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
                   handleChange={(event) =>
                     handleUpdateEndVetex(event, edge.id, inputIndex, endNumber)
                   }
+                  endId={endNumber}
+                  validationMessage={validationMessage}
                 />
               )
             })}
@@ -67,6 +91,12 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
   )
 }
 
-function EdgeEndInput({ value, handleChange }) {
-  return <input type="number" value={value} onChange={handleChange} />
+function EdgeEndInput({ value, handleChange, endId, validationMessage }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row' }}>
+      <div>End ID {endId}</div>
+      <input type="number" value={value} onChange={handleChange} />
+      <div>{validationMessage}</div>
+    </div>
+  )
 }
