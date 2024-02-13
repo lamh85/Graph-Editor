@@ -20,7 +20,7 @@ export const TEMPLATE = {
   end1: TEMPLATE_END,
 }
 
-type EdgeT = {
+export type EdgeT = {
   id: number
   end0: EndT
   end1: EndT
