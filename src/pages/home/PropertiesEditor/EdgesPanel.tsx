@@ -83,6 +83,10 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
                 />
               )
             })}
+            <div style={{ display: 'block' }}>
+              <div>Weight</div>
+              <input />
+            </div>
           </div>
         )
       })}

@@ -46,50 +46,6 @@ const handleEdgeChange = ({
   })
 }
 
-const EdgeEndInput = ({ value, handleChange }) => {
-  return <input type="number" value={value} onChange={handleChange} />
-}
-
-const EdgesPanel = ({ createEdge, updateEdge, edges }) => {
-  return (
-    <div>
-      <H1>Edges</H1>
-      {edges.map((edge) => {
-        return (
-          <div key={edge.id} style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ marginRight: '5px' }}>ID {edge.id}:</div>
-            {[0, 1].map((endNumber) => {
-              return (
-                <div style={{ marginRight: '5px', display: 'block' }}>
-                  <div>End {endNumber}'s Vertex ID:</div>
-                  <EdgeEndInput
-                    key={`${edge.id}-${endNumber}`}
-                    value={edge[`end${endNumber}`].vertexId}
-                    handleChange={(event) =>
-                      handleEdgeChange({
-                        updateEdge,
-                        event,
-                        endProperty: `end${endNumber}`,
-                        edgeId: edge.id,
-                        editedEdge: edge,
-                      })
-                    }
-                  />
-                </div>
-              )
-            })}
-            <div style={{ display: 'block' }}>
-              <div>Weight</div>
-              <input />
-            </div>
-          </div>
-        )
-      })}
-      <button onClick={() => createEdge(EDGE_TEMPLATE)}>Add Edge</button>
-    </div>
-  )
-}
-
 const validateArrowValue = (property, value) => {
   const formatter = {
     endId: parseInt,
