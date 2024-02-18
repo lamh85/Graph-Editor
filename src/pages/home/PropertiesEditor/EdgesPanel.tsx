@@ -57,13 +57,32 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
     })
   }
 
+  const handleUpdateWeight = (event, edgeId, inputIndex) => {
+    const inputClone = [...edgesInput]
+    const editedEdge = inputClone[inputIndex]
+    const newWeight = parseInt(event.target.value)
+
+    inputClone[inputIndex] = {
+      ...editedEdge,
+      weight: newWeight,
+    }
+
+    setEdgesInput(inputClone)
+
+    updateEdge({
+      id: edgeId,
+      property: 'weight',
+      value: newWeight,
+    })
+  }
+
   return (
     <div>
       <H1>Edges</H1>
       {edgesInput.map((edge, inputIndex) => {
         return (
           <div key={edge.id}>
-            <div>Edge ID: {edge.id}</div>
+            <div style={{ fontWeight: 'bold' }}>Edge ID: {edge.id}</div>
             {[0, 1].map((endNumber) => {
               const validationMessage =
                 edge?.validationSource == `end${endNumber}` &&
@@ -83,6 +102,15 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
                 />
               )
             })}
+            <div style={{ display: 'block' }}>
+              <div>Weight</div>
+              <input
+                value={edge?.weight}
+                onChange={(event) =>
+                  handleUpdateWeight(event, edge.id, inputIndex)
+                }
+              />
+            </div>
           </div>
         )
       })}
