@@ -24,28 +24,6 @@ const Row = styled.div`
   }
 `
 
-const handleEdgeChange = ({
-  event,
-  endProperty,
-  updateEdge,
-  edgeId,
-  editedEdge,
-}) => {
-  const vertexId = parseInt(event.target.value)
-  const newAttributeValue = {
-    ...editedEdge[endProperty],
-    vertexId,
-  }
-
-  console.log('newAttributeValue: ', endProperty, ' ', newAttributeValue)
-
-  updateEdge({
-    id: edgeId,
-    property: endProperty,
-    value: newAttributeValue,
-  })
-}
-
 const validateArrowValue = (property, value) => {
   const formatter = {
     endId: parseInt,
