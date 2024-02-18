@@ -82,7 +82,7 @@ export function EdgesPanel({ createEdge, updateEdge, edges, vertices }) {
       {edgesInput.map((edge, inputIndex) => {
         return (
           <div key={edge.id}>
-            <div>Edge ID: {edge.id}</div>
+            <div style={{ fontWeight: 'bold' }}>Edge ID: {edge.id}</div>
             {[0, 1].map((endNumber) => {
               const validationMessage =
                 edge?.validationSource == `end${endNumber}` &&
