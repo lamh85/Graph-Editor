@@ -114,7 +114,7 @@ const handleGridIncrementChange = (event, setGridSizeInput) => {
   let newValue = parseInt(event.target.value)
 
   if (String(newValue) === 'NaN') {
-    newValue = ''
+    newValue = null
   }
 
   setGridSizeInput(newValue)
@@ -134,7 +134,9 @@ const PropertiesEditor = ({
   deleteArrow,
   updateArrow,
 }) => {
-  const [gridSizeInput, setGridSizeInput] = useState(gridIncrement)
+  const [gridSizeInput, setGridSizeInput] = useState<number | null>(
+    gridIncrement
+  )
 
   return (
     <StyledEditor>
